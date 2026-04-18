@@ -1,0 +1,55 @@
+<h2>Login &amp; Register screens — dark mode support?</h2>
+<p class="subtitle">Currently hardcoded to white. Should they follow the system theme or stay always-light?</p>
+
+<div class="split">
+
+  <div class="mockup" data-choice="always-light" onclick="toggleSelect(this)" style="cursor:pointer;">
+    <div class="mockup-header">A — Always Light (simpler)</div>
+    <div class="mockup-body" style="background:#fff; border-radius:8px; padding:20px; min-height:280px;">
+      <div style="text-align:center; margin-bottom:20px;">
+        <div style="font-size:22px; font-weight:bold; color:#00897B; margin-bottom:4px;">Hello Again!</div>
+        <div style="font-size:13px; color:#757575;">Login to continue your fitness journey</div>
+      </div>
+      <div style="border:1.5px solid #00897B; border-radius:10px; padding:10px 14px; margin-bottom:12px; font-size:13px; color:#333;">Email</div>
+      <div style="border:1.5px solid #ddd; border-radius:10px; padding:10px 14px; margin-bottom:20px; font-size:13px; color:#999;">Password</div>
+      <div style="background:#00897B; color:#fff; border-radius:10px; padding:12px; text-align:center; font-weight:bold; font-size:14px;">Login</div>
+      <div style="text-align:center; margin-top:14px; font-size:12px; color:#999;">Don't have an account? <span style="color:#00897B; font-weight:bold;">Register</span></div>
+    </div>
+  </div>
+
+  <div class="mockup" data-choice="theme-aware" onclick="toggleSelect(this)" style="cursor:pointer;">
+    <div class="mockup-header">B — Theme-aware (dark mode too)</div>
+    <div class="mockup-body" style="background:#121212; border-radius:8px; padding:20px; min-height:280px;">
+      <div style="text-align:center; margin-bottom:20px;">
+        <div style="font-size:22px; font-weight:bold; color:#4DB6AC; margin-bottom:4px;">Hello Again!</div>
+        <div style="font-size:13px; color:#aaa;">Login to continue your fitness journey</div>
+      </div>
+      <div style="border:1.5px solid #4DB6AC; border-radius:10px; padding:10px 14px; margin-bottom:12px; font-size:13px; color:#ddd;">Email</div>
+      <div style="border:1.5px solid #444; border-radius:10px; padding:10px 14px; margin-bottom:20px; font-size:13px; color:#777;">Password</div>
+      <div style="background:#00897B; color:#fff; border-radius:10px; padding:12px; text-align:center; font-weight:bold; font-size:14px;">Login</div>
+      <div style="text-align:center; margin-top:14px; font-size:12px; color:#777;">Don't have an account? <span style="color:#4DB6AC; font-weight:bold;">Register</span></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="section" style="margin-top:20px;">
+  <div class="pros-cons">
+    <div class="pros">
+      <h4>A — Always Light</h4>
+      <ul>
+        <li>Simpler — no theme switching code in auth</li>
+        <li>Many major apps (Google, Instagram) keep auth always-light</li>
+        <li>Fewer edge cases to test</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <h4>B — Theme-aware</h4>
+      <ul>
+        <li>Consistent with the rest of the app</li>
+        <li>Respects user's system-level dark mode preference</li>
+        <li>Required if dark mode is a core feature</li>
+      </ul>
+    </div>
+  </div>
+</div>

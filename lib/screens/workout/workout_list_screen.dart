@@ -1,0 +1,306 @@
+// ignore_for_file: library_private_types_in_public_api
+
+import 'package:fitness_tracker_app/screens/workout/new_workout_screen.dart';
+import 'package:fitness_tracker_app/screens/workout/workout_detail_screen.dart';
+import 'package:flutter/material.dart';
+import '../../services/api_service.dart';
+
+class WorkoutManagementScreen extends StatefulWidget {
+  const WorkoutManagementScreen({super.key});
+
+  @override
+  _WorkoutManagementScreenState createState() => _WorkoutManagementScreenState();
+}
+
+class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
+  final ApiService _apiService = ApiService();
+
+  List<Map<String, dynamic>> _workouts = [];
+  bool _isLoading = true;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchWorkouts();
+  }
+
+  Future<void> _fetchWorkouts() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final List<dynamic> workouts = await _apiService.fetchWorkout();
+      setState(() {
+        _workouts = workouts.map((workout) => workout as Map<String, dynamic>).toList();
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Failed to load workouts: ${e.toString()}';
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _deleteWorkout(int workoutId) async {
+    try {
+      await _apiService.deleteCustomWorkout(workoutId);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Workout deleted successfully',
+                style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+          ),
+        );
+        _fetchWorkouts();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to delete workout: ${e.toString()}',
+                style: TextStyle(color: Theme.of(context).colorScheme.onError)),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
+  }
+
+  void _navigateToCreateWorkout() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const NewWorkoutScreen()),
+    );
+    if (result == true) {
+      _fetchWorkouts();
+    }
+  }
+
+  void _navigateToWorkoutDetails(Map<String, dynamic> workout) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => WorkoutDetailScreen(workoutId: workout['id']),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        title: const Text('Workout Management', style: TextStyle(fontWeight: FontWeight.bold)),
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        centerTitle: true,
+        backgroundColor: colorScheme.surface,
+        foregroundColor: colorScheme.onSurface,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _fetchWorkouts,
+            tooltip: 'Refresh workouts',
+          ),
+        ],
+      ),
+      body: _isLoading
+          ? _buildLoadingState(colorScheme)
+          : _errorMessage != null
+          ? _buildErrorState(colorScheme)
+          : _buildWorkoutsList(theme, colorScheme),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _navigateToCreateWorkout,
+        backgroundColor: colorScheme.primary,
+        child: Icon(Icons.add, color: colorScheme.onPrimary),
+      ),
+    );
+  }
+
+  Widget _buildWorkoutsList(ThemeData theme, ColorScheme colorScheme) {
+    if (_workouts.isEmpty) {
+      return _buildEmptyState(theme, colorScheme);
+    }
+
+    return RefreshIndicator(
+      onRefresh: _fetchWorkouts,
+      color: colorScheme.primary,
+      child: ListView.separated(
+        padding: const EdgeInsets.all(16),
+        itemCount: _workouts.length,
+        separatorBuilder: (context, index) => const SizedBox(height: 12),
+        itemBuilder: (context, index) {
+          final workout = _workouts[index];
+          return _buildWorkoutCard(theme, colorScheme, workout);
+        },
+      ),
+    );
+  }
+
+  Widget _buildWorkoutCard(ThemeData theme, ColorScheme colorScheme, Map<String, dynamic> workout) {
+    return Card(
+      elevation: 2,
+      color: colorScheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+        side: BorderSide(color: colorScheme.primary.withValues(alpha: 0.15)),
+      ),
+      child: InkWell(
+        onTap: () => _navigateToWorkoutDetails(workout),
+        borderRadius: BorderRadius.circular(14),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: colorScheme.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.fitness_center,
+                  color: colorScheme.primary,
+                  size: 28,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      workout['name'] ?? 'Unnamed Workout',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      workout['description'] ?? 'No description',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.delete_outline, color: colorScheme.error),
+                onPressed: () => _deleteWorkout(workout['id']),
+                tooltip: 'Delete workout',
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(ThemeData theme, ColorScheme colorScheme) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.fitness_center_outlined,
+            size: 64,
+            color: colorScheme.primary.withValues(alpha: 0.3),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'No Workouts Yet',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: colorScheme.primary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Create your first workout to get started',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 24),
+          FilledButton.icon(
+            onPressed: _navigateToCreateWorkout,
+            icon: Icon(Icons.add, color: colorScheme.onPrimary),
+            label: const Text('Create New Workout'),
+            style: FilledButton.styleFrom(
+              backgroundColor: colorScheme.primary,
+              foregroundColor: colorScheme.onPrimary,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingState(ColorScheme colorScheme) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(color: colorScheme.primary),
+          const SizedBox(height: 16),
+          Text(
+            'Loading workouts...',
+            style: TextStyle(color: colorScheme.primary),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState(ColorScheme colorScheme) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.error_outline, size: 64, color: colorScheme.error),
+          const SizedBox(height: 16),
+          Text(
+            'Error Loading Workouts',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: colorScheme.error,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Text(
+              _errorMessage ?? 'An unknown error occurred',
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton.icon(
+            onPressed: _fetchWorkouts,
+            icon: const Icon(Icons.refresh),
+            label: const Text('Try Again'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: colorScheme.primary,
+              foregroundColor: colorScheme.onPrimary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

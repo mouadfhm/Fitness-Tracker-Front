@@ -1,0 +1,84 @@
+<h2>Card &amp; surface style — which feels right?</h2>
+<p class="subtitle">This sets the tone for food cards, workout cards, macro cards, profile tiles — everything.</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="elevated" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f5f5f5; padding:16px; min-height:140px; display:flex; flex-direction:column; gap:10px; align-items:stretch;">
+      <!-- Macro card -->
+      <div style="background:#fff; border-radius:12px; padding:12px; box-shadow: 0 3px 10px rgba(0,0,0,0.12);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <span style="color:#00897B; font-size:18px;">🔥</span>
+          <span style="font-weight:bold; font-size:12px; color:#333;">Calories</span>
+        </div>
+        <div style="font-size:13px; font-weight:600; color:#222; margin-bottom:6px;">1,240 / 2,000</div>
+        <div style="height:6px; background:#E0F2F1; border-radius:3px;"><div style="width:62%; height:100%; background:#00897B; border-radius:3px;"></div></div>
+      </div>
+      <!-- Food card -->
+      <div style="background:#fff; border-radius:12px; padding:10px 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.10); display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="font-weight:bold; font-size:12px; color:#222;">Chicken Breast</div>
+          <div style="font-size:11px; color:#777;">165 kcal · P: 31g</div>
+        </div>
+        <span style="color:#00897B; font-size:12px;">›</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Elevated (shadow)</h3>
+      <p>Cards float above the surface with drop shadows. Warm, approachable, classic Material feel. Works well on light backgrounds.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="outlined" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f5f5f5; padding:16px; min-height:140px; display:flex; flex-direction:column; gap:10px; align-items:stretch;">
+      <!-- Macro card -->
+      <div style="background:#fff; border-radius:12px; padding:12px; border: 1.5px solid #B2DFDB;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <span style="color:#00897B; font-size:18px;">🔥</span>
+          <span style="font-weight:bold; font-size:12px; color:#333;">Calories</span>
+        </div>
+        <div style="font-size:13px; font-weight:600; color:#222; margin-bottom:6px;">1,240 / 2,000</div>
+        <div style="height:6px; background:#E0F2F1; border-radius:3px;"><div style="width:62%; height:100%; background:#00897B; border-radius:3px;"></div></div>
+      </div>
+      <!-- Food card -->
+      <div style="background:#fff; border-radius:12px; padding:10px 14px; border: 1.5px solid #B2DFDB; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="font-weight:bold; font-size:12px; color:#222;">Chicken Breast</div>
+          <div style="font-size:11px; color:#777;">165 kcal · P: 31g</div>
+        </div>
+        <span style="color:#00897B; font-size:12px;">›</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Outlined (border, no shadow)</h3>
+      <p>Clean, flat, modern. Cards are defined by a teal-tinted border. Works equally well in light and dark mode — no shadow rendering issues.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="filled" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#E0F2F1; padding:16px; min-height:140px; display:flex; flex-direction:column; gap:10px; align-items:stretch;">
+      <!-- Macro card -->
+      <div style="background:#fff; border-radius:12px; padding:12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); border: 1px solid rgba(0,137,123,0.15);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <span style="color:#00897B; font-size:18px;">🔥</span>
+          <span style="font-weight:bold; font-size:12px; color:#333;">Calories</span>
+        </div>
+        <div style="font-size:13px; font-weight:600; color:#222; margin-bottom:6px;">1,240 / 2,000</div>
+        <div style="height:6px; background:#E0F2F1; border-radius:3px;"><div style="width:62%; height:100%; background:#00897B; border-radius:3px;"></div></div>
+      </div>
+      <!-- Food card -->
+      <div style="background:#fff; border-radius:12px; padding:10px 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); border: 1px solid rgba(0,137,123,0.15); display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="font-weight:bold; font-size:12px; color:#222;">Chicken Breast</div>
+          <div style="font-size:11px; color:#777;">165 kcal · P: 31g</div>
+        </div>
+        <span style="color:#00897B; font-size:12px;">›</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Tinted surface + subtle shadow</h3>
+      <p>The scaffold background gets a very light teal tint. Cards sit on it with a whisper of shadow and a faint border. Feels premium, on-brand, and works in both modes.</p>
+    </div>
+  </div>
+
+</div>

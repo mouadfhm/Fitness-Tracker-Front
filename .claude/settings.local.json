@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bash *)",
+      "Bash(cat /c/Users/fahim/OneDrive/Documents/fitness_tracker_front/.superpowers/brainstorm/*/state/server-info)",
+      "Bash(flutter analyze *)",
+      "Bash(grep -v \"^$\")",
+      "Bash(powershell -Command ' *)",
+      "Bash(sed -n '195,215p' lib/screens/meal_detail_screen.dart)",
+      "Bash(sed -n '455,490p' lib/screens/profile_screen.dart)",
+      "Bash(sed -n '80,90p' lib/screens/update_profile_screen.dart)",
+      "Bash(sed -n '900,925p' lib/screens/workout/workout_calendar_screen.dart)",
+      "Bash(sed -n '265,285p' lib/screens/workout/workout_list_screen.dart)",
+      "Bash(sed -n '175,210p' lib/screens/foods_screen.dart)",
+      "Bash(sed -n '265,280p' lib/screens/foods_screen.dart)",
+      "Bash(flutter build *)",
+      "Bash(sed -n '100,115p' lib/screens/workout/edit_workout_screen.dart)",
+      "Bash(sed -n '440,450p' lib/screens/workout/edit_workout_screen.dart)",
+      "Bash(sed -n '655,665p' lib/screens/workout/edit_workout_screen.dart)",
+      "Bash(sed -n '623,635p' lib/screens/workout/new_workout_screen.dart)",
+      "Bash(sed -n '50,65p' lib/screens/register_screen.dart)",
+      "Bash(sed -n '38,55p' lib/providers/achievement_provider.dart)",
+      "Bash(grep -v \"firebase_service\\\\|//.*debugPrint\\\\|//.*print\")",
+      "Bash(flutter test *)",
+      "Bash(flutter pub *)",
+      "Bash(powershell -c \"Get-Item 'lib/assets/kling_20260418_VIDEO_Image1make_1770_0.mp4' | Select-Object Length\")"
+    ]
+  }
+}

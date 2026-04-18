@@ -1,0 +1,176 @@
+<h2>Workout Screen — Full Design</h2>
+<p class="subtitle">Simple mode (default) on the left · Advanced mode on the right. Toggle in AppBar switches between them.</p>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">Simple Mode (default)</div>
+    <div class="mockup-body" style="padding: 0; overflow: hidden; font-family: sans-serif;">
+      <!-- AppBar -->
+      <div style="background: white; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0;">
+        <span style="font-weight: bold; font-size: 16px; color: #1e293b;">Workouts</span>
+        <div style="background: #f1f5f9; border-radius: 20px; padding: 3px; display: flex; gap: 2px;">
+          <div style="background: #6366f1; color: white; border-radius: 16px; padding: 5px 12px; font-size: 11px; font-weight: bold;">Simple</div>
+          <div style="color: #94a3b8; border-radius: 16px; padding: 5px 12px; font-size: 11px;">Advanced</div>
+        </div>
+      </div>
+      <!-- Search bar -->
+      <div style="margin: 12px 12px 8px; background: #f8fafc; border-radius: 10px; padding: 9px 12px; display: flex; align-items: center; gap: 8px; border: 1px solid #e2e8f0;">
+        <span style="color: #94a3b8;">🔍</span>
+        <span style="color: #94a3b8; font-size: 13px;">Search Exercises...</span>
+      </div>
+      <!-- Category pills -->
+      <div style="display: flex; gap: 6px; padding: 0 12px 10px; overflow: hidden;">
+        <div style="background: #6366f1; color: white; border-radius: 16px; padding: 5px 12px; font-size: 11px; white-space: nowrap;">All</div>
+        <div style="background: white; color: #64748b; border: 1px solid #e2e8f0; border-radius: 16px; padding: 5px 10px; font-size: 11px; white-space: nowrap;">Cardio</div>
+        <div style="background: white; color: #64748b; border: 1px solid #e2e8f0; border-radius: 16px; padding: 5px 10px; font-size: 11px; white-space: nowrap;">Strength</div>
+      </div>
+      <!-- Workout grid -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 12px;">
+        <div style="background: white; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden;">
+          <div style="background: #fee2e2; height: 70px; display: flex; align-items: center; justify-content: center; font-size: 28px;">🏃</div>
+          <div style="padding: 8px;">
+            <div style="font-size: 12px; font-weight: bold; color: #1e293b;">Running</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+              <span style="background: #fee2e2; color: #dc2626; border-radius: 8px; padding: 2px 6px; font-size: 9px; font-weight: bold;">Cardio</span>
+              <div style="display: flex; gap: 2px;">
+                <div style="width: 4px; height: 7px; background: #dc2626; border-radius: 2px;"></div>
+                <div style="width: 4px; height: 10px; background: #dc2626; border-radius: 2px;"></div>
+                <div style="width: 4px; height: 7px; background: #e2e8f0; border-radius: 2px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="background: white; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden;">
+          <div style="background: #dbeafe; height: 70px; display: flex; align-items: center; justify-content: center; font-size: 28px;">🏋️</div>
+          <div style="padding: 8px;">
+            <div style="font-size: 12px; font-weight: bold; color: #1e293b;">Weight Training</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+              <span style="background: #dbeafe; color: #2563eb; border-radius: 8px; padding: 2px 6px; font-size: 9px; font-weight: bold;">Strength</span>
+              <div style="display: flex; gap: 2px;">
+                <div style="width: 4px; height: 7px; background: #2563eb; border-radius: 2px;"></div>
+                <div style="width: 4px; height: 10px; background: #2563eb; border-radius: 2px;"></div>
+                <div style="width: 4px; height: 14px; background: #2563eb; border-radius: 2px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="background: white; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden;">
+          <div style="background: #f3e8ff; height: 70px; display: flex; align-items: center; justify-content: center; font-size: 28px;">🧘</div>
+          <div style="padding: 8px;">
+            <div style="font-size: 12px; font-weight: bold; color: #1e293b;">Yoga</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+              <span style="background: #f3e8ff; color: #9333ea; border-radius: 8px; padding: 2px 6px; font-size: 9px; font-weight: bold;">Flex</span>
+              <div style="display: flex; gap: 2px;">
+                <div style="width: 4px; height: 7px; background: #9333ea; border-radius: 2px;"></div>
+                <div style="width: 4px; height: 10px; background: #e2e8f0; border-radius: 2px;"></div>
+                <div style="width: 4px; height: 14px; background: #e2e8f0; border-radius: 2px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="background: white; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden;">
+          <div style="background: #dcfce7; height: 70px; display: flex; align-items: center; justify-content: center; font-size: 28px;">🚴</div>
+          <div style="padding: 8px;">
+            <div style="font-size: 12px; font-weight: bold; color: #1e293b;">Cycling</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+              <span style="background: #dcfce7; color: #16a34a; border-radius: 8px; padding: 2px 6px; font-size: 9px; font-weight: bold;">Cycling</span>
+              <div style="display: flex; gap: 2px;">
+                <div style="width: 4px; height: 7px; background: #16a34a; border-radius: 2px;"></div>
+                <div style="width: 4px; height: 10px; background: #16a34a; border-radius: 2px;"></div>
+                <div style="width: 4px; height: 14px; background: #e2e8f0; border-radius: 2px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Bottom nav hint -->
+      <div style="margin-top: 12px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-around; padding: 8px 0;">
+        <div style="text-align:center; font-size: 10px; color: #94a3b8;">🏠<br>Home</div>
+        <div style="text-align:center; font-size: 10px; color: #6366f1; font-weight: bold;">💪<br>Workouts</div>
+        <div style="text-align:center; font-size: 10px; color: #94a3b8;">🥗<br>Foods</div>
+        <div style="text-align:center; font-size: 10px; color: #94a3b8;">👤<br>Profile</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">Advanced Mode (toggled)</div>
+    <div class="mockup-body" style="padding: 0; overflow: hidden; font-family: sans-serif;">
+      <!-- AppBar -->
+      <div style="background: white; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0;">
+        <span style="font-weight: bold; font-size: 16px; color: #1e293b;">Workouts</span>
+        <div style="background: #f1f5f9; border-radius: 20px; padding: 3px; display: flex; gap: 2px;">
+          <div style="color: #94a3b8; border-radius: 16px; padding: 5px 12px; font-size: 11px;">Simple</div>
+          <div style="background: #6366f1; color: white; border-radius: 16px; padding: 5px 12px; font-size: 11px; font-weight: bold;">Advanced</div>
+        </div>
+      </div>
+      <!-- Calendar header -->
+      <div style="padding: 10px 14px; background: #6366f1; color: white;">
+        <div style="font-size: 13px; font-weight: bold; margin-bottom: 6px;">April 2026</div>
+        <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;">
+          <div style="font-size: 9px; color: rgba(255,255,255,0.7);">M</div>
+          <div style="font-size: 9px; color: rgba(255,255,255,0.7);">T</div>
+          <div style="font-size: 9px; color: rgba(255,255,255,0.7);">W</div>
+          <div style="font-size: 9px; color: rgba(255,255,255,0.7);">T</div>
+          <div style="font-size: 9px; color: rgba(255,255,255,0.7);">F</div>
+          <div style="font-size: 9px; color: rgba(255,255,255,0.7);">S</div>
+          <div style="font-size: 9px; color: rgba(255,255,255,0.7);">S</div>
+          <div style="font-size: 10px; color: rgba(255,255,255,0.6);">31</div>
+          <div style="font-size: 10px; color: white;">1</div>
+          <div style="font-size: 10px; color: white;">2</div>
+          <div style="font-size: 10px; color: white;">3</div>
+          <div style="font-size: 10px; color: white;">4</div>
+          <div style="font-size: 10px; color: white;">5</div>
+          <div style="font-size: 10px; color: white;">6</div>
+          <div style="font-size: 10px; color: white;">7</div>
+          <div style="font-size: 10px; color: white;">8</div>
+          <div style="font-size: 10px; color: white;">9</div>
+          <div style="font-size: 10px; color: white;">10</div>
+          <div style="font-size: 10px; color: white;">11</div>
+          <div style="font-size: 10px; color: white;">12</div>
+          <div style="font-size: 10px; color: white;">13</div>
+          <div style="font-size: 10px; background: rgba(255,255,255,0.3); border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; margin: auto; font-weight: bold;">14</div>
+          <div style="font-size: 10px; background: white; color: #6366f1; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; margin: auto; font-weight: bold;">17</div>
+        </div>
+      </div>
+      <!-- Workout list -->
+      <div style="padding: 10px 12px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-size: 11px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Today's Plan</div>
+        <div style="background: white; border-radius: 10px; padding: 10px 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 10px;">
+          <div style="width: 36px; height: 36px; background: #dbeafe; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px;">🏋️</div>
+          <div style="flex: 1;">
+            <div style="font-size: 12px; font-weight: bold; color: #1e293b;">Push Day</div>
+            <div style="font-size: 10px; color: #94a3b8;">6 exercises · 45 min</div>
+          </div>
+          <div style="width: 8px; height: 8px; background: #22c55e; border-radius: 50%;"></div>
+        </div>
+        <div style="background: white; border-radius: 10px; padding: 10px 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 10px;">
+          <div style="width: 36px; height: 36px; background: #fee2e2; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px;">🏃</div>
+          <div style="flex: 1;">
+            <div style="font-size: 12px; font-weight: bold; color: #1e293b;">5K Run</div>
+            <div style="font-size: 10px; color: #94a3b8;">Cardio · 30 min</div>
+          </div>
+          <div style="width: 8px; height: 8px; background: #f59e0b; border-radius: 50%;"></div>
+        </div>
+      </div>
+      <!-- Bottom nav hint -->
+      <div style="border-top: 1px solid #e2e8f0; display: flex; justify-content: space-around; padding: 8px 0;">
+        <div style="text-align:center; font-size: 10px; color: #94a3b8;">🏠<br>Home</div>
+        <div style="text-align:center; font-size: 10px; color: #6366f1; font-weight: bold;">💪<br>Workouts</div>
+        <div style="text-align:center; font-size: 10px; color: #94a3b8;">🥗<br>Foods</div>
+        <div style="text-align:center; font-size: 10px; color: #94a3b8;">👤<br>Profile</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top: 20px; background: #f8fafc; border-radius: 12px; padding: 16px 20px; border: 1px solid #e2e8f0;">
+  <h3 style="margin: 0 0 8px;">How it works</h3>
+  <ul style="margin: 0; padding-left: 18px; color: #475569; font-size: 13px; line-height: 1.8;">
+    <li>Bottom nav Workout tab routes to a new <strong>WorkoutRootScreen</strong></li>
+    <li>Root screen holds an <strong>IndexedStack</strong> with both views mounted</li>
+    <li>AppBar segmented pill reads/writes mode to <strong>SharedPreferences</strong></li>
+    <li>Default on fresh install: <strong>Simple mode</strong></li>
+    <li>Switching mode is instant — no rebuild, no navigation</li>
+  </ul>
+</div>

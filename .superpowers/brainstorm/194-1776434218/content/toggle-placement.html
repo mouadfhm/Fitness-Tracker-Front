@@ -1,0 +1,92 @@
+<h2>Where should the Simple ↔ Advanced toggle live?</h2>
+<p class="subtitle">The toggle switches between the browse-and-log screen and the full workout calendar.</p>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background: #f1f5f9; padding: 0; overflow: hidden; border-radius: 8px 8px 0 0;">
+      <!-- App bar mockup -->
+      <div style="background: white; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0;">
+        <span style="font-weight: bold; font-size: 15px; color: #1e293b;">Workouts</span>
+        <div style="background: #f1f5f9; border-radius: 20px; padding: 4px; display: flex; gap: 2px;">
+          <div style="background: #6366f1; color: white; border-radius: 16px; padding: 4px 10px; font-size: 11px; font-weight: bold;">Simple</div>
+          <div style="color: #94a3b8; border-radius: 16px; padding: 4px 10px; font-size: 11px;">Advanced</div>
+        </div>
+      </div>
+      <!-- Search bar -->
+      <div style="margin: 10px 12px; background: white; border-radius: 10px; padding: 8px 12px; display: flex; align-items: center; gap: 8px; border: 1px solid #e2e8f0;">
+        <span style="color: #94a3b8; font-size: 14px;">🔍</span>
+        <span style="color: #94a3b8; font-size: 13px;">Search Exercises...</span>
+      </div>
+      <!-- Category pills -->
+      <div style="display: flex; gap: 6px; padding: 0 12px; overflow: hidden;">
+        <div style="background: #6366f1; color: white; border-radius: 16px; padding: 4px 10px; font-size: 11px; white-space: nowrap;">All</div>
+        <div style="background: white; color: #64748b; border: 1px solid #e2e8f0; border-radius: 16px; padding: 4px 10px; font-size: 11px; white-space: nowrap;">Cardio</div>
+        <div style="background: white; color: #64748b; border: 1px solid #e2e8f0; border-radius: 16px; padding: 4px 10px; font-size: 11px; white-space: nowrap;">Strength</div>
+      </div>
+      <div style="height: 30px;"></div>
+    </div>
+    <div class="card-body">
+      <h3>A — Segmented toggle in AppBar</h3>
+      <p>Pill-style toggle sits in the top-right of the app bar. Always visible, one tap to switch. Compact and doesn't take up body space.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background: #f1f5f9; padding: 0; overflow: hidden; border-radius: 8px 8px 0 0;">
+      <!-- App bar -->
+      <div style="background: white; padding: 12px 16px; border-bottom: 1px solid #e2e8f0;">
+        <span style="font-weight: bold; font-size: 15px; color: #1e293b;">Workouts</span>
+      </div>
+      <!-- Banner toggle below app bar -->
+      <div style="background: #eef2ff; margin: 10px 12px; border-radius: 12px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between;">
+        <div>
+          <div style="font-size: 12px; font-weight: bold; color: #4338ca;">Simple Mode</div>
+          <div style="font-size: 10px; color: #6366f1;">Browse and log any exercise</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span style="font-size: 10px; color: #6366f1;">Advanced</span>
+          <div style="width: 36px; height: 20px; background: #6366f1; border-radius: 10px; display: flex; align-items: center; padding: 2px;">
+            <div style="width: 16px; height: 16px; background: white; border-radius: 50%;"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Search bar -->
+      <div style="margin: 0 12px; background: white; border-radius: 10px; padding: 8px 12px; display: flex; align-items: center; gap: 8px; border: 1px solid #e2e8f0;">
+        <span style="color: #94a3b8; font-size: 14px;">🔍</span>
+        <span style="color: #94a3b8; font-size: 13px;">Search Exercises...</span>
+      </div>
+      <div style="height: 16px;"></div>
+    </div>
+    <div class="card-body">
+      <h3>B — Banner below AppBar</h3>
+      <p>A colored banner strip shows the current mode with a toggle switch. Descriptive — explains what the mode does. Slightly more space used.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background: #f1f5f9; padding: 0; overflow: hidden; border-radius: 8px 8px 0 0;">
+      <!-- App bar with action icon -->
+      <div style="background: white; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0;">
+        <span style="font-weight: bold; font-size: 15px; color: #1e293b;">Workouts</span>
+        <div style="width: 32px; height: 32px; background: #f1f5f9; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+          <span style="font-size: 16px;">⚙️</span>
+        </div>
+      </div>
+      <!-- Search -->
+      <div style="margin: 10px 12px; background: white; border-radius: 10px; padding: 8px 12px; display: flex; align-items: center; gap: 8px; border: 1px solid #e2e8f0;">
+        <span style="color: #94a3b8; font-size: 14px;">🔍</span>
+        <span style="color: #94a3b8; font-size: 13px;">Search Exercises...</span>
+      </div>
+      <!-- Bottom sheet hint -->
+      <div style="margin: 0 12px; background: white; border-radius: 10px; padding: 8px 12px; border: 1px dashed #c7d2fe; display: flex; align-items: center; gap: 6px;">
+        <span style="font-size: 12px;">💡</span>
+        <span style="font-size: 11px; color: #6366f1;">Tap ⚙️ to switch to Advanced Mode</span>
+      </div>
+      <div style="height: 20px;"></div>
+    </div>
+    <div class="card-body">
+      <h3>C — Settings icon → bottom sheet</h3>
+      <p>A settings icon in the app bar opens a bottom sheet with the mode toggle plus a brief explanation. Keeps the main screen clean; a hint tooltip guides first-time users.</p>
+    </div>
+  </div>
+</div>
