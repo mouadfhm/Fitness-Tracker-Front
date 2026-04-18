@@ -551,142 +551,157 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                     )
                     : SliverPadding(
                       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                      sliver: SliverGrid(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              childAspectRatio: 0.8,
-                              crossAxisSpacing: 16,
-                              mainAxisSpacing: 16,
-                            ),
-                        delegate: SliverChildBuilderDelegate((context, index) {
-                          final workout = provider.filteredWorkouts[index];
-                          final description =
-                              workout['description'] ?? 'No Description';
-                          final category = workout['name'] ?? 'Other';
-                          final difficulty =
-                              workout['caloriesPerKg'] > 2
-                                  ? 'Hard'
-                                  : workout['caloriesPerKg'] > 1
-                                  ? 'Medium'
-                                  : 'Easy';
+                      sliver: SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            final workout = provider.filteredWorkouts[index];
+                            final description =
+                                workout['description'] ?? 'No Description';
+                            final category = workout['name'] ?? 'Other';
+                            final caloriesPerKg =
+                                (workout['caloriesPerKg'] as num).toDouble();
+                            final difficulty = caloriesPerKg > 2
+                                ? 'Hard'
+                                : caloriesPerKg > 1
+                                    ? 'Medium'
+                                    : 'Easy';
+                            final Color categoryColor =
+                                _getCategoryColor(category);
 
-                          final Color categoryColor = _getCategoryColor(
-                            category,
-                          );
-
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder:
-                                      (_) => WorkoutDetailsScreen(
-                                        workout: workout,
-                                      ),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: colorScheme.surfaceContainerHighest,
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: colorScheme.shadow.withValues(alpha: 0.06),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 3),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // Top half with category-based color and icon
-                                  Container(
-                                    height: 100,
-                                    decoration: BoxDecoration(
-                                      color: categoryColor.withValues(alpha: 0.15),
-                                      borderRadius: const BorderRadius.only(
-                                        topLeft: Radius.circular(20),
-                                        topRight: Radius.circular(20),
-                                      ),
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          WorkoutDetailsScreen(workout: workout),
                                     ),
-                                    child: Center(
-                                      child: Icon(
-                                        _getCategoryIcon(category),
-                                        size: 45,
-                                        color: categoryColor,
-                                      ),
+                                  );
+                                },
+                                child: Card(
+                                  elevation: 2,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                    side: BorderSide(
+                                      color: colorScheme.primary
+                                          .withValues(alpha: 0.15),
+                                      width: 1,
                                     ),
                                   ),
-                                  // Bottom half with workout details
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(12),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                              description,
-                                              style: const TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                              maxLines: 2,
-                                            ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(14),
+                                    child: Row(
+                                      children: [
+                                        // Icon chip
+                                        Container(
+                                          width: 52,
+                                          height: 52,
+                                          decoration: BoxDecoration(
+                                            color: categoryColor
+                                                .withValues(alpha: 0.2),
+                                            borderRadius:
+                                                BorderRadius.circular(14),
                                           ),
-                                          const SizedBox(height: 4),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
+                                          child: Icon(
+                                            _getCategoryIcon(category),
+                                            size: 28,
+                                            color: categoryColor,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 14),
+                                        // Info column
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
-                                              Flexible(
-                                                child: Container(
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                        horizontal: 8,
-                                                        vertical: 4,
-                                                      ),
-                                                  decoration: BoxDecoration(
-                                                    color: categoryColor
-                                                        .withValues(alpha: 0.1),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          12,
-                                                        ),
-                                                  ),
-                                                  child: Text(
-                                                    category,
-                                                    style: TextStyle(
-                                                      fontSize: 11,
-                                                      color: categoryColor,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
+                                              Text(
+                                                description,
+                                                style: const TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.bold,
                                                 ),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
                                               ),
-                                              const SizedBox(width: 4),
-                                              _buildDifficultyIndicator(
-                                                difficulty,
+                                              const SizedBox(height: 5),
+                                              Row(
+                                                children: [
+                                                  Container(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 8,
+                                                        vertical: 3),
+                                                    decoration: BoxDecoration(
+                                                      color: categoryColor
+                                                          .withValues(
+                                                              alpha: 0.15),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              6),
+                                                    ),
+                                                    child: Text(
+                                                      category,
+                                                      style: TextStyle(
+                                                        fontSize: 11,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        color: categoryColor,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 8),
+                                                  Icon(
+                                                    Icons.local_fire_department,
+                                                    size: 13,
+                                                    color: colorScheme
+                                                        .onSurfaceVariant,
+                                                  ),
+                                                  const SizedBox(width: 2),
+                                                  Text(
+                                                    '${caloriesPerKg.toStringAsFixed(1)} kcal/kg',
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: colorScheme
+                                                          .onSurfaceVariant,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ],
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        // Difficulty column
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          children: [
+                                            _buildDifficultyIndicator(
+                                                difficulty),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              difficulty.toUpperCase(),
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w600,
+                                                color:
+                                                    colorScheme.outlineVariant,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ],
+                                ),
                               ),
-                            ),
-                          );
-                        }, childCount: provider.filteredWorkouts.length),
+                            );
+                          },
+                          childCount: provider.filteredWorkouts.length,
+                        ),
                       ),
                     ),
               ],
