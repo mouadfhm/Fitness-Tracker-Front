@@ -56,19 +56,22 @@ Approach: two focused widgets + a constants file. No service layer or provider n
 
 ### `ad_config.dart`
 
-Holds all ad unit ID constants with a `// TODO: replace with real IDs` comment on each. Uses Google's official test IDs by default:
+Holds all ad unit ID constants. Banner uses the real production ID (same unit for Android and iOS). Native uses test IDs until a native ad unit is created in AdMob.
 
 ```dart
-// Banner
-static const String bannerAndroid = 'ca-app-pub-3940256099942544/6300978111';
-static const String bannerIos     = 'ca-app-pub-3940256099942544/2934735716';
+// AdMob App ID: ca-app-pub-4974791906266394~1619455967
+// (configured in AndroidManifest.xml and Info.plist)
 
-// Native
+// Banner — real production ID
+static const String bannerAdUnitId = 'ca-app-pub-4974791906266394/1779797786';
+
+// Native — test IDs until real native unit is created in AdMob
+// TODO: create a Native ad unit in AdMob and replace these
 static const String nativeAndroid = 'ca-app-pub-3940256099942544/2247696110';
 static const String nativeIos     = 'ca-app-pub-3940256099942544/3986624511';
 ```
 
-Returns the correct ID based on `Platform.isAndroid`.
+Single banner ID used for both platforms. Native returns correct ID based on `Platform.isAndroid`.
 
 ### `AdBannerWidget`
 
@@ -90,8 +93,11 @@ A top-level function `injectNativeAds(List<Widget> items)` returns a new list wi
 
 ## Ad Unit IDs
 
-Real AdMob IDs to replace after testing (existing app ID in code: `ca-app-pub-4974791906266394`):
-- Banner Android: replace `ad_config.dart` constant
-- Banner iOS: replace `ad_config.dart` constant  
-- Native Android: replace `ad_config.dart` constant
-- Native iOS: replace `ad_config.dart` constant
+| Format | ID |
+|--------|----|
+| AdMob App ID | `ca-app-pub-4974791906266394~1619455967` |
+| Banner (Android + iOS) | `ca-app-pub-4974791906266394/1779797786` |
+| Native Android | Test ID — create real unit in AdMob and update `ad_config.dart` |
+| Native iOS | Test ID — create real unit in AdMob and update `ad_config.dart` |
+
+The app ID must be added to `AndroidManifest.xml` (`com.google.android.gms.ads.APPLICATION_ID` meta-data) and `ios/Runner/Info.plist` (`GADApplicationIdentifier` key).
