@@ -1,7 +1,6 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:media_kit/media_kit.dart';
 import 'package:provider/provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/profile_provider.dart';
@@ -16,11 +15,12 @@ import 'screens/profile_screen.dart';
 import 'screens/workout_root_screen.dart';
 import 'services/token_service.dart';
 import 'services/navigation_service.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  MediaKit.ensureInitialized();
-  await dotenv.load(fileName: ".env.production");
+  await MobileAds.instance.initialize();
+await dotenv.load(fileName: ".env.production");
   final token = await TokenService.getToken();
   runApp(
     MultiProvider(
