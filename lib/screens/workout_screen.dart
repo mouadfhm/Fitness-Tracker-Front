@@ -633,26 +633,29 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                                               const SizedBox(height: 5),
                                               Row(
                                                 children: [
-                                                  Container(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                        horizontal: 8,
-                                                        vertical: 3),
-                                                    decoration: BoxDecoration(
-                                                      color: categoryColor
-                                                          .withValues(
-                                                              alpha: 0.15),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              6),
-                                                    ),
-                                                    child: Text(
-                                                      category,
-                                                      style: TextStyle(
-                                                        fontSize: 11,
-                                                        fontWeight:
-                                                            FontWeight.w700,
-                                                        color: categoryColor,
+                                                  Flexible(
+                                                    child: Container(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 8,
+                                                          vertical: 3),
+                                                      decoration: BoxDecoration(
+                                                        color: categoryColor
+                                                            .withValues(
+                                                                alpha: 0.15),
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                                6),
+                                                      ),
+                                                      child: Text(
+                                                        category,
+                                                        style: TextStyle(
+                                                          fontSize: 11,
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                          color: categoryColor,
+                                                        ),
+                                                        overflow: TextOverflow.ellipsis,
                                                       ),
                                                     ),
                                                   ),
@@ -664,12 +667,15 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                                                         .onSurfaceVariant,
                                                   ),
                                                   const SizedBox(width: 2),
-                                                  Text(
-                                                    '${caloriesPerKg.toStringAsFixed(1)} kcal/kg',
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: colorScheme
-                                                          .onSurfaceVariant,
+                                                  Flexible(
+                                                    child: Text(
+                                                      '${caloriesPerKg.toStringAsFixed(1)} kcal/kg',
+                                                      style: TextStyle(
+                                                        fontSize: 12,
+                                                        color: colorScheme
+                                                            .onSurfaceVariant,
+                                                      ),
+                                                      overflow: TextOverflow.ellipsis,
                                                     ),
                                                   ),
                                                 ],
