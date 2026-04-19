@@ -4,6 +4,8 @@ import 'package:fitness_tracker_app/screens/workout/new_workout_screen.dart';
 import 'package:fitness_tracker_app/screens/workout/workout_detail_screen.dart';
 import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
+import '../../utils/add_banner.dart';
+import '../../utils/ad_list_helper.dart';
 
 class WorkoutManagementScreen extends StatefulWidget {
   const WorkoutManagementScreen({super.key});
@@ -117,6 +119,7 @@ class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
           : _errorMessage != null
           ? _buildErrorState(colorScheme)
           : _buildWorkoutsList(theme, colorScheme),
+      bottomNavigationBar: const AdBannerWidget(),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToCreateWorkout,
         backgroundColor: colorScheme.primary,
@@ -135,12 +138,15 @@ class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
       color: colorScheme.primary,
       child: ListView.separated(
         padding: const EdgeInsets.all(16),
-        itemCount: _workouts.length,
-        separatorBuilder: (context, index) => const SizedBox(height: 12),
-        itemBuilder: (context, index) {
-          final workout = _workouts[index];
-          return _buildWorkoutCard(theme, colorScheme, workout);
-        },
+        itemCount: effectiveItemCount(_workouts.length),
+        separatorBuilder: (context, index) =>
+            isAdIndex(index) || isAdIndex(index + 1)
+                ? const SizedBox.shrink()
+                : const SizedBox(height: 12),
+        itemBuilder: (context, index) => adAwareItemBuilder(
+          index,
+          (realIndex) => _buildWorkoutCard(theme, colorScheme, _workouts[realIndex]),
+        ),
       ),
     );
   }
