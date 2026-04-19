@@ -46,10 +46,7 @@ dependencies:
   file: 7.0.1  # For handling File objects
   firebase_core: any
   firebase_messaging: any
-  media_kit: ^1.1.11
-  media_kit_video: ^1.2.5
-  media_kit_libs_windows_video: ^1.0.9
-  # google_mobile_ads: ^5.0.0
+  google_mobile_ads: ^5.0.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
