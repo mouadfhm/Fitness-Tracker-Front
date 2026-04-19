@@ -1,47 +1,49 @@
-// import 'package:google_mobile_ads/google_mobile_ads.dart';
-// import 'package:flutter/material.dart';
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'ad_config.dart';
 
-// class AdBanner extends StatefulWidget {
-//   const AdBanner({super.key});
+class AdBannerWidget extends StatefulWidget {
+  const AdBannerWidget({super.key});
 
-//   @override
-//   State<AdBanner> createState() => _AdBannerState();
-// }
+  @override
+  State<AdBannerWidget> createState() => _AdBannerWidgetState();
+}
 
-// class _AdBannerState extends State<AdBanner> {
-//   BannerAd? _bannerAd;
+class _AdBannerWidgetState extends State<AdBannerWidget> {
+  BannerAd? _bannerAd;
 
-//   @override
-//   void didChangeDependencies() {
-//     super.didChangeDependencies();
-//     _bannerAd = BannerAd(
-//       adUnitId: 'ca-app-pub-4974791906266394/1515332348', // Replace with your Ad Unit ID
-//       size: AdSize.banner,
-//       request: AdRequest(),
-//       listener: BannerAdListener(
-//         onAdLoaded: (ad) {
-//           setState(() {
-//             _bannerAd = ad as BannerAd;
-//           });
-//         },
-//         onAdFailedToLoad: (ad, err) {
-//           print('Failed to load a banner ad: ${err.message}');
-//           setState(() {
-//             _bannerAd = null;
-//           });
-//         },
-//       ),
-//     )..load();
-//   }
+  @override
+  void initState() {
+    super.initState();
+    if (!Platform.isAndroid && !Platform.isIOS) return;
+    _bannerAd = BannerAd(
+      adUnitId: AdConfig.adUnitId,
+      size: AdSize.banner,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (ad) => setState(() => _bannerAd = ad as BannerAd),
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          setState(() => _bannerAd = null);
+        },
+      ),
+    )..load();
+  }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       alignment: Alignment.center,
-//       width: _bannerAd?.size.width.toDouble(),
-//       height: _bannerAd?.size.height.toDouble(),
-//       child: _bannerAd == null ? const SizedBox.shrink() : AdWidget(ad: _bannerAd!),
-//     );
-//   }
-// }
+  @override
+  void dispose() {
+    _bannerAd?.dispose();
+    super.dispose();
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    if (_bannerAd == null) return const SizedBox.shrink();
+    return SizedBox(
+      width: _bannerAd!.size.width.toDouble(),
+      height: _bannerAd!.size.height.toDouble(),
+      child: AdWidget(ad: _bannerAd!),
+    );
+  }
+}
