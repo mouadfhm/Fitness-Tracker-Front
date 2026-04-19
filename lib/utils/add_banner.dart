@@ -24,6 +24,7 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
       listener: BannerAdListener(
         onAdLoaded: (ad) => setState(() => _bannerAd = ad as BannerAd),
         onAdFailedToLoad: (ad, error) {
+          debugPrint('[AdBanner] Failed to load: ${error.code} – ${error.message}');
           ad.dispose();
           setState(() => _bannerAd = null);
         },
