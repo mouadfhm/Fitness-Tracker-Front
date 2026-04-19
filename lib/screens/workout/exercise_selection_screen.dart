@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/workout_provider.dart';
 import '../../models/workout.dart';
+import '../../utils/add_banner.dart';
+import '../../utils/ad_list_helper.dart';
 
 class ExerciseSelectionScreen extends StatefulWidget {
   const ExerciseSelectionScreen({super.key});
@@ -107,6 +109,7 @@ class _ExerciseSelectionScreenState extends State<ExerciseSelectionScreen> {
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
       ),
+      bottomNavigationBar: const AdBannerWidget(),
       body: workoutProvider.isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
@@ -152,24 +155,27 @@ class _ExerciseSelectionScreenState extends State<ExerciseSelectionScreen> {
                           child: Text('No exercises found'),
                         )
                       : ListView.builder(
-                          itemCount: filteredExercises.length,
-                          itemBuilder: (ctx, index) {
-                            final exercise = filteredExercises[index];
-                            return RadioListTile<Exercise>(
-                              title: Text(exercise.name),
-                              subtitle: Text(
-                                '${exercise.type} | ${exercise.bodyPart} | ${exercise.equipment}',
-                                style: Theme.of(context).textTheme.bodySmall,
-                              ),
-                              value: exercise,
-                              groupValue: _selectedExercise,
-                              onChanged: (Exercise? value) {
-                                setState(() {
-                                  _selectedExercise = value;
-                                });
-                              },
-                            );
-                          },
+                          itemCount: effectiveItemCount(filteredExercises.length),
+                          itemBuilder: (ctx, index) => adAwareItemBuilder(
+                            index,
+                            (realIndex) {
+                              final exercise = filteredExercises[realIndex];
+                              return RadioListTile<Exercise>(
+                                title: Text(exercise.name),
+                                subtitle: Text(
+                                  '${exercise.type} | ${exercise.bodyPart} | ${exercise.equipment}',
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                                value: exercise,
+                                groupValue: _selectedExercise,
+                                onChanged: (Exercise? value) {
+                                  setState(() {
+                                    _selectedExercise = value;
+                                  });
+                                },
+                              );
+                            },
+                          ),
                         ),
                 ),
                 if (_selectedExercise != null)
