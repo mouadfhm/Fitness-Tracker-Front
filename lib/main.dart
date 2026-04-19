@@ -23,7 +23,7 @@ Future<void> main() async {
   // TODO: replace with your real device ID from the debug log, then remove before release
   // Look for: I/Ads: Use RequestConfiguration.Builder.setTestDeviceIds(Arrays.asList("XXXX..."))
   await MobileAds.instance.updateRequestConfiguration(
-    RequestConfiguration(testDeviceIds: const []),
+    RequestConfiguration(testDeviceIds: const ['46D8C6F5BCE25D727A17714F6B082BE8']),
   );
 await dotenv.load(fileName: ".env.production");
   final token = await TokenService.getToken();
