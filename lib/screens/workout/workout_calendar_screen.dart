@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
 import './workout_detail_screen.dart';
 import '../widgets/bottom_nav_bar.dart';
+import '../../utils/add_banner.dart';
 
 class WorkoutCalendarScreen extends StatefulWidget {
   final VoidCallback? onModeToggle;
@@ -225,7 +226,13 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
           );
         },
       ),
-      bottomNavigationBar: CustomBottomNavBar(currentIndex: _currentIndex),
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const AdBannerWidget(),
+          CustomBottomNavBar(currentIndex: _currentIndex),
+        ],
+      ),
     );
   }
 
