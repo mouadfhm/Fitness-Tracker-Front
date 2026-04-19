@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../providers/exercise_provider.dart';
 import 'workout_details_screen.dart';
 import 'widgets/bottom_nav_bar.dart';
+import '../utils/add_banner.dart';
+import '../utils/ad_list_helper.dart';
 
 class WorkoutScreen extends StatefulWidget {
   final VoidCallback? onModeToggle;
@@ -553,8 +555,10 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                       sliver: SliverList(
                         delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            final workout = provider.filteredWorkouts[index];
+                          (context, index) => adAwareItemBuilder(
+                            index,
+                            (realIndex) {
+                            final workout = provider.filteredWorkouts[realIndex];
                             final description =
                                 workout['description'] ?? 'No Description';
                             final category = workout['name'] ?? 'Other';
@@ -699,8 +703,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                                 ),
                               ),
                             );
-                          },
-                          childCount: provider.filteredWorkouts.length,
+                            }),
+                          childCount: effectiveItemCount(provider.filteredWorkouts.length),
                         ),
                       ),
                     ),
@@ -710,7 +714,13 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
         ),
       ),
 
-      bottomNavigationBar: CustomBottomNavBar(currentIndex: _currentIndex),
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const AdBannerWidget(),
+          CustomBottomNavBar(currentIndex: _currentIndex),
+        ],
+      ),
     );
   }
 }
