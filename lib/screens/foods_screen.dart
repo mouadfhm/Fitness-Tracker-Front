@@ -7,6 +7,8 @@ import '../services/food_service.dart';
 import 'food_details_screen.dart';
 import 'new_food_screen.dart';
 import 'widgets/bottom_nav_bar.dart';
+import '../utils/add_banner.dart';
+import '../utils/ad_list_helper.dart';
 
 enum SortBy {
   default_,
@@ -385,78 +387,80 @@ class _FoodsScreenState extends State<FoodsScreen>
                                     key: const PageStorageKey<String>(
                                       'food_list',
                                     ),
-                                    itemCount: filteredFoods.length,
-                                    itemBuilder: (context, index) {
-                                      final food = filteredFoods[index];
-                                      return Card(
-                                        margin: const EdgeInsets.symmetric(
-                                          horizontal: 16,
-                                          vertical: 8,
-                                        ),
-                                        elevation: 2,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(14),
-                                          side: BorderSide(
-                                            color: colorScheme.primary.withValues(alpha: 0.15),
-                                            width: 1,
+                                    itemCount: effectiveItemCount(filteredFoods.length),
+                                    itemBuilder: (context, index) => adAwareItemBuilder(
+                                      index,
+                                      (realIndex) {
+                                        final food = filteredFoods[realIndex];
+                                        return Card(
+                                          margin: const EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                            vertical: 8,
                                           ),
-                                        ),
-                                        child: ListTile(
-                                          contentPadding:
-                                              const EdgeInsets.symmetric(
-                                                horizontal: 16,
-                                                vertical: 8,
-                                              ),
-                                          title: Text(
-                                            food.name,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16,
-                                              color: colorScheme.onSurface,
+                                          elevation: 2,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(14),
+                                            side: BorderSide(
+                                              color: colorScheme.primary.withValues(alpha: 0.15),
+                                              width: 1,
                                             ),
                                           ),
-                                          subtitle: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                'Calories: ${food.calories} kcal',
-                                                style: TextStyle(
-                                                  color: colorScheme.onSurfaceVariant,
+                                          child: ListTile(
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                  horizontal: 16,
+                                                  vertical: 8,
                                                 ),
+                                            title: Text(
+                                              food.name,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                                color: colorScheme.onSurface,
                                               ),
-                                              const SizedBox(height: 4),
-                                              // Always show relevant nutrition based on current sort
-                                              _buildNutritionInfo(food, proteinColor, carbsColor, fatsColor, caloriesColor),
-                                            ],
+                                            ),
+                                            subtitle: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'Calories: ${food.calories} kcal',
+                                                  style: TextStyle(
+                                                    color: colorScheme.onSurfaceVariant,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 4),
+                                                _buildNutritionInfo(food, proteinColor, carbsColor, fatsColor, caloriesColor),
+                                              ],
+                                            ),
+                                            leading: Icon(
+                                              food.isFavorite == 1
+                                                  ? Icons.favorite
+                                                  : Icons.favorite_border,
+                                              color:
+                                                  food.isFavorite == 1
+                                                      ? colorScheme.error
+                                                      : colorScheme.onSurfaceVariant,
+                                              size: 28,
+                                            ),
+                                            trailing: Icon(
+                                              Icons.arrow_forward_ios,
+                                              color: colorScheme.primary,
+                                            ),
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder:
+                                                      (_) => FoodDetailsScreen(
+                                                        food: food,
+                                                      ),
+                                                ),
+                                              );
+                                            },
                                           ),
-                                          leading: Icon(
-                                            food.isFavorite == 1
-                                                ? Icons.favorite
-                                                : Icons.favorite_border,
-                                            color:
-                                                food.isFavorite == 1
-                                                    ? colorScheme.error
-                                                    : colorScheme.onSurfaceVariant,
-                                            size: 28,
-                                          ),
-                                          trailing: Icon(
-                                            Icons.arrow_forward_ios,
-                                            color: colorScheme.primary,
-                                          ),
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder:
-                                                    (_) => FoodDetailsScreen(
-                                                      food: food,
-                                                    ),
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      );
-                                    },
+                                        );
+                                      },
+                                    ),
                                   ),
                         ),
                       ],
@@ -469,7 +473,13 @@ class _FoodsScreenState extends State<FoodsScreen>
             elevation: 4,
             child: const Icon(Icons.add),
           ),
-          bottomNavigationBar: CustomBottomNavBar(currentIndex: _currentIndex),
+          bottomNavigationBar: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const AdBannerWidget(),
+              CustomBottomNavBar(currentIndex: _currentIndex),
+            ],
+          ),
         );
       },
     );
