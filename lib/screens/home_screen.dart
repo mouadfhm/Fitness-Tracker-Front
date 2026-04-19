@@ -3,6 +3,7 @@ import 'login_screen.dart';
 import 'meal_detail_screen.dart';
 import '../services/api_service.dart';
 import 'widgets/bottom_nav_bar.dart';
+import '../utils/add_banner.dart';
 import 'package:intl/intl.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -717,7 +718,13 @@ void _logout() async {
                 ),
               ),
             ),
-      bottomNavigationBar: CustomBottomNavBar(currentIndex: _currentIndex),
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const AdBannerWidget(),
+          CustomBottomNavBar(currentIndex: _currentIndex),
+        ],
+      ),
     );
   }
 }
