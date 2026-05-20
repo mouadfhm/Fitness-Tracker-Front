@@ -19,7 +19,7 @@ android {
     namespace = "com.mouadfhm.fitness_tracker_front"
 
     // Compile/target SDK set to 35 per Play requirements
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = "27.0.12077973"
 
     compileOptions {
@@ -35,8 +35,8 @@ android {
         applicationId = "com.mouadfhm.fitness_tracker_front"
         minSdk = 23
         targetSdk = 35
-        versionCode = 7
-        versionName = "1.0.7"
+        versionCode = 10
+        versionName = "2.0"
     }
 
     signingConfigs {

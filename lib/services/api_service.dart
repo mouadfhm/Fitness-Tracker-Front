@@ -481,8 +481,8 @@ class ApiService {
 
     _checkUnauthorized(response);
     if (response.statusCode == 200) {
-      // Backend now returns a paginated response — extract the data array.
       final decoded = jsonDecode(response.body);
+      if (decoded is List) return decoded;
       return decoded['data'] as List<dynamic>;
     } else {
       throw Exception('Failed to load progress: ${response.body}');

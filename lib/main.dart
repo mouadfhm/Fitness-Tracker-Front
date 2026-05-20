@@ -20,12 +20,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await MobileAds.instance.initialize();
-  // TODO: replace with your real device ID from the debug log, then remove before release
-  // Look for: I/Ads: Use RequestConfiguration.Builder.setTestDeviceIds(Arrays.asList("XXXX..."))
-  await MobileAds.instance.updateRequestConfiguration(
-    RequestConfiguration(testDeviceIds: const ['46D8C6F5BCE25D727A17714F6B082BE8']),
-  );
-await dotenv.load(fileName: ".env.production");
+  await dotenv.load(fileName: ".env.production");
   final token = await TokenService.getToken();
   runApp(
     MultiProvider(
