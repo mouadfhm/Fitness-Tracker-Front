@@ -15,13 +15,19 @@ import 'screens/profile_screen.dart';
 import 'screens/workout_root_screen.dart';
 import 'services/token_service.dart';
 import 'services/navigation_service.dart';
+import 'services/api_service.dart';
+import 'services/firebase_service.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await MobileAds.instance.initialize();
   await dotenv.load(fileName: ".env.production");
+  await initializeFirebase();
   final token = await TokenService.getToken();
+  if (token != null) {
+    setupFCM(ApiService());
+  }
   runApp(
     MultiProvider(
       providers: [

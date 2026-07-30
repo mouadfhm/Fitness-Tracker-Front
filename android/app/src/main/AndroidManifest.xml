@@ -37,6 +37,12 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-4974791906266394~1619455967"/>
+        <!-- Channel used for notifications delivered while the app is in the
+             background. Must match the channel created in firebase_service.dart
+             and the channel_id sent by the backend. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="fitness_reminders"/>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

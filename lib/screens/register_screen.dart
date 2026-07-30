@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../services/firebase_service.dart';
 import 'onboarding_screen.dart';
 import 'widgets/app_text_field.dart';
 
@@ -32,6 +33,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         _passwordController.text.trim(),
         _confirmPasswordController.text.trim(),
       );
+      setupFCM(_apiService);
       if (!mounted) return;
       Navigator.pushReplacement(
         context,

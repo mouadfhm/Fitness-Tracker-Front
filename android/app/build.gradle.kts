@@ -13,16 +13,19 @@ plugins {
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+    id("com.google.gms.google-services")
 }
 
 android {
     namespace = "com.mouadfhm.fitness_tracker_front"
 
-    // Compile/target SDK set to 35 per Play requirements
+    // Compile/target SDK set to 36 (Android 16) per Play requirements
     compileSdk = 36
     ndkVersion = "27.0.12077973"
 
     compileOptions {
+        // Required by flutter_local_notifications.
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
@@ -33,10 +36,10 @@ android {
 
     defaultConfig {
         applicationId = "com.mouadfhm.fitness_tracker_front"
-        minSdk = 23
-        targetSdk = 35
-        versionCode = 10
-        versionName = "2.0"
+        minSdk = flutter.minSdkVersion
+        targetSdk = 36
+        versionCode = 13
+        versionName = "2.1"
     }
 
     signingConfigs {
@@ -66,6 +69,8 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+
     // Only include the specific Play libraries you actually need (do NOT include com.google.android.play:core)
     implementation("com.google.android.play:feature-delivery:2.1.0")
     implementation("com.google.android.play:asset-delivery:2.2.2")

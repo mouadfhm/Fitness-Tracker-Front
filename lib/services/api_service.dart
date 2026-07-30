@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -104,6 +105,29 @@ class ApiService {
   Future<void> logout() async {
     await TokenService.deleteToken();
   }
+
+  Future<void> registerFcmToken(String token) async {
+    try {
+      final authToken = await _requireToken();
+      final response = await http.post(
+        Uri.parse("$baseUrl/save-device-token"),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+        body: jsonEncode({"device_token": token}),
+      );
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        debugPrint(
+          'FCM token registration rejected (${response.statusCode}): ${response.body}',
+        );
+      }
+    } catch (e) {
+      debugPrint('FCM token registration failed: $e');
+    }
+  }
+
 // delete account
   Future<void> deleteAccount() async {
     final token = await _requireToken();

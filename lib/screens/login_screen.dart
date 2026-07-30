@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../services/firebase_service.dart';
 import 'home_screen.dart';
 import 'register_screen.dart';
 import 'widgets/app_text_field.dart';
@@ -32,6 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
         _emailController.text.trim(),
         _passwordController.text.trim(),
       );
+      setupFCM(_apiService);
       if (!mounted) return;
       Navigator.pushReplacement(
         context,

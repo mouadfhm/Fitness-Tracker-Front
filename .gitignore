@@ -48,6 +48,10 @@ app.*.map.json
 .env
 .env.*
 
+# Firebase admin service account private keys - these must never be committed.
+# The backend reads its copy from the server, not from this repo.
+**/*-firebase-adminsdk-*.json
+
 # Tool/IDE metadata not needed in repo
 .claude/
 .superpowers/
