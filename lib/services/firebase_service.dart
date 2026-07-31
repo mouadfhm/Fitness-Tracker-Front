@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'api_service.dart';
+import 'navigation_service.dart';
 
 /// Must stay in sync with the `channel_id` the backend sets on its Android
 /// payloads (app/Services/NotificationService.php) and with the
@@ -94,13 +97,59 @@ Future<void> setupFCM(ApiService api) async {
 }
 
 void _onRemoteNotificationTapped(RemoteMessage message) {
-  _reportOpen(message.data['log_id']?.toString());
+  _onNotificationTapped(
+    message.data['log_id']?.toString(),
+    message.data['route']?.toString(),
+  );
 }
 
 void _onLocalNotificationTapped(NotificationResponse response) {
   // Foreground Android notifications are re-posted locally (see
-  // _showForegroundNotification), so their taps arrive here instead.
-  _reportOpen(response.payload);
+  // _showForegroundNotification), so their taps arrive here instead. The
+  // RemoteMessage is not available in this callback, which is why the data
+  // block travels on the payload.
+  final data = _decodePayload(response.payload);
+  _onNotificationTapped(
+    data['log_id']?.toString(),
+    data['route']?.toString(),
+  );
+}
+
+void _onNotificationTapped(String? logId, String? route) {
+  _reportOpen(logId);
+  _openRoute(route);
+}
+
+/// The local plugin carries a single string, so [_showForegroundNotification]
+/// packs the data block into it as JSON.
+Map<String, dynamic> _decodePayload(String? payload) {
+  if (payload == null || payload.isEmpty) return const {};
+
+  try {
+    final decoded = jsonDecode(payload);
+    if (decoded is Map<String, dynamic>) return decoded;
+  } catch (e) {
+    debugPrint('FCM: unreadable notification payload: $e');
+  }
+  return const {};
+}
+
+/// Opens the screen the notification is about. A null target means the
+/// notification names no particular screen, so the app opens where it was —
+/// on a cold start that is the home screen already.
+void _openRoute(String? route) {
+  final target = NavigationService.deepLinkTarget(route);
+  if (target == null) return;
+
+  // On a cold start the launching message is handled before the first frame,
+  // when navigatorKey has no state yet and the navigation would be silently
+  // dropped. Deferring costs nothing in the other two cases.
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    // Cleared down to the target so the back button behaves the same as it
+    // does on the bottom-nav tabs, which are all roots.
+    NavigationService.navigatorKey.currentState
+        ?.pushNamedAndRemoveUntil(target, (_) => false);
+  });
 }
 
 /// [logId] is the `notification_logs` row id the backend puts in the FCM data
@@ -130,8 +179,11 @@ void _showForegroundNotification(RemoteMessage message) {
     title: notification.title,
     body: notification.body,
     // Carried through so the tap can be reported against the same log row the
-    // backend created for this send.
-    payload: message.data['log_id']?.toString(),
+    // backend created for this send, and land on the screen it is about.
+    payload: jsonEncode({
+      'log_id': message.data['log_id']?.toString(),
+      'route': message.data['route']?.toString(),
+    }),
     notificationDetails: NotificationDetails(
       android: AndroidNotificationDetails(
         _channel.id,
