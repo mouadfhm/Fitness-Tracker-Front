@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -16,6 +18,10 @@ const AndroidNotificationChannel _channel = AndroidNotificationChannel(
 
 final FlutterLocalNotificationsPlugin _localNotifications =
     FlutterLocalNotificationsPlugin();
+
+/// Set by [setupFCM] so the tap handlers can report opens. Null until the user
+/// is signed in, which is also when there is no token to authenticate with.
+ApiService? _api;
 
 @pragma('vm:entry-point')
 Future<void> _onBackgroundMessage(RemoteMessage message) async {
@@ -36,6 +42,7 @@ Future<void> _initLocalNotifications() async {
       android: AndroidInitializationSettings('@mipmap/ic_launcher'),
       iOS: DarwinInitializationSettings(),
     ),
+    onDidReceiveNotificationResponse: _onLocalNotificationTapped,
   );
 
   await _localNotifications
@@ -45,6 +52,8 @@ Future<void> _initLocalNotifications() async {
 }
 
 Future<void> setupFCM(ApiService api) async {
+  _api = api;
+
   try {
     await _requestNotificationPermission();
 
@@ -69,9 +78,41 @@ Future<void> setupFCM(ApiService api) async {
     });
 
     FirebaseMessaging.onMessage.listen(_showForegroundNotification);
+
+    // Tapped while the app was backgrounded.
+    FirebaseMessaging.onMessageOpenedApp.listen(_onRemoteNotificationTapped);
+
+    // Tapped while the app was terminated: the notification that launched the
+    // process is only ever available here, not from the stream above.
+    final launchMessage = await messaging.getInitialMessage();
+    if (launchMessage != null) {
+      _onRemoteNotificationTapped(launchMessage);
+    }
   } catch (e) {
     debugPrint('FCM setup failed: $e');
   }
+}
+
+void _onRemoteNotificationTapped(RemoteMessage message) {
+  _reportOpen(message.data['log_id']?.toString());
+}
+
+void _onLocalNotificationTapped(NotificationResponse response) {
+  // Foreground Android notifications are re-posted locally (see
+  // _showForegroundNotification), so their taps arrive here instead.
+  _reportOpen(response.payload);
+}
+
+/// [logId] is the `notification_logs` row id the backend puts in the FCM data
+/// block. Fire-and-forget: reporting an open must never delay or block the UI,
+/// and markNotificationOpened swallows its own errors.
+void _reportOpen(String? logId) {
+  if (logId == null || logId.isEmpty) return;
+
+  final api = _api;
+  if (api == null) return;
+
+  unawaited(api.markNotificationOpened(logId));
 }
 
 void _showForegroundNotification(RemoteMessage message) {
@@ -88,6 +129,9 @@ void _showForegroundNotification(RemoteMessage message) {
     id: notification.hashCode,
     title: notification.title,
     body: notification.body,
+    // Carried through so the tap can be reported against the same log row the
+    // backend created for this send.
+    payload: message.data['log_id']?.toString(),
     notificationDetails: NotificationDetails(
       android: AndroidNotificationDetails(
         _channel.id,

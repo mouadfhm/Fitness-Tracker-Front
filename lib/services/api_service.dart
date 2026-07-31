@@ -128,6 +128,30 @@ class ApiService {
     }
   }
 
+  /// Reports that the user tapped the notification logged as [logId].
+  ///
+  /// Fire-and-forget: open tracking is analytics, so a failure here must never
+  /// surface to the user or block the screen the tap is opening.
+  Future<void> markNotificationOpened(String logId) async {
+    try {
+      final authToken = await _requireToken();
+      final response = await http.post(
+        Uri.parse("$baseUrl/notifications/$logId/opened"),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        debugPrint(
+          'Notification open report rejected (${response.statusCode}): ${response.body}',
+        );
+      }
+    } catch (e) {
+      debugPrint('Notification open report failed: $e');
+    }
+  }
+
 // delete account
   Future<void> deleteAccount() async {
     final token = await _requireToken();
