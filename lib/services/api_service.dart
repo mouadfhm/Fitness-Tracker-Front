@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'token_service.dart';
 import 'navigation_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -109,6 +110,7 @@ class ApiService {
   Future<void> registerFcmToken(String token) async {
     try {
       final authToken = await _requireToken();
+      final timezone = await _deviceTimezone();
       final response = await http.post(
         Uri.parse("$baseUrl/save-device-token"),
         headers: {
@@ -116,7 +118,15 @@ class ApiService {
           'Accept': 'application/json',
           'Authorization': 'Bearer $authToken',
         },
-        body: jsonEncode({"device_token": token}),
+        body: jsonEncode({
+          "device_token": token,
+          // Rides along on token registration rather than getting an endpoint
+          // of its own: this call already happens on login and on every token
+          // refresh, which are exactly the moments the timezone can have
+          // changed. The backend validates it and ignores anything it does not
+          // recognise, so a bad value costs the reminder schedule nothing.
+          if (timezone != null) "timezone": timezone,
+        }),
       );
       if (response.statusCode < 200 || response.statusCode >= 300) {
         debugPrint(
@@ -125,6 +135,24 @@ class ApiService {
       }
     } catch (e) {
       debugPrint('FCM token registration failed: $e');
+    }
+  }
+
+  /// The device's IANA timezone, e.g. `Europe/Paris`, or null if the platform
+  /// will not say.
+  ///
+  /// Null is a normal answer here, not an error: the backend falls back to
+  /// Africa/Casablanca for users it has no timezone for, which is exactly what
+  /// every user got before this existed. Failing to read it must never cost the
+  /// device its push token, so it is caught here rather than left to abort the
+  /// registration above.
+  Future<String?> _deviceTimezone() async {
+    try {
+      final info = await FlutterTimezone.getLocalTimezone();
+      return info.identifier;
+    } catch (e) {
+      debugPrint('Could not read device timezone: $e');
+      return null;
     }
   }
 
