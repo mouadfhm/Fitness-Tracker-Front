@@ -180,6 +180,63 @@ class ApiService {
     }
   }
 
+  /// The user's notification settings as the server holds them.
+  ///
+  /// Server-side rather than in shared_preferences, and not only so the choices
+  /// survive a logout or a reinstall: the sender is the backend, so a toggle it
+  /// cannot see stops nothing. A local-only switch would look like it worked
+  /// and change no behaviour at all.
+  ///
+  /// A user who has never saved gets the defaults back rather than a 404, so
+  /// there is no empty state to handle here.
+  Future<Map<String, dynamic>> getNotificationPreferences() async {
+    final token = await _requireToken();
+    final response = await http.get(
+      Uri.parse('$baseUrl/notification-preferences'),
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    _checkUnauthorized(response);
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as Map<String, dynamic>;
+    } else {
+      throw Exception('Failed to load notification settings: ${response.body}');
+    }
+  }
+
+  /// Saves only the keys present in [changes]; anything omitted is left alone.
+  ///
+  /// Partial on purpose — flipping one switch should not resend, and so risk
+  /// overwriting, the five settings the user did not touch. Sending
+  /// `quiet_from` and `quiet_to` as null is how quiet hours are switched off.
+  ///
+  /// Returns the full saved settings, so the caller can adopt the server's
+  /// version of the truth rather than assume its own optimistic one stuck.
+  Future<Map<String, dynamic>> updateNotificationPreferences(
+    Map<String, dynamic> changes,
+  ) async {
+    final token = await _requireToken();
+    final response = await http.put(
+      Uri.parse('$baseUrl/notification-preferences'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(changes),
+    );
+
+    _checkUnauthorized(response);
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as Map<String, dynamic>;
+    } else {
+      throw Exception('Failed to save notification settings: ${response.body}');
+    }
+  }
+
 // delete account
   Future<void> deleteAccount() async {
     final token = await _requireToken();
