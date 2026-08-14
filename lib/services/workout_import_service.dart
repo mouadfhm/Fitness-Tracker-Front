@@ -79,4 +79,14 @@ class WorkoutImportService {
 
     return ExerciseMatchResult(matchedGymExercises: matched, unmatchedNames: unmatched);
   }
+
+  static Map<String, int?> remapDaysPatternToIds(
+    Map<String, dynamic> daysPatternByName,
+    Map<String, int> nameToNewId,
+  ) {
+    return {
+      for (final entry in daysPatternByName.entries)
+        entry.key: entry.value == null ? null : nameToNewId[entry.value as String],
+    };
+  }
 }
