@@ -7,6 +7,8 @@ import '../../services/api_service.dart';
 import './workout_detail_screen.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../../utils/add_banner.dart';
+import '../../services/workout_export_service.dart';
+import '../../services/workout_file_io.dart';
 
 class WorkoutCalendarScreen extends StatefulWidget {
   final VoidCallback? onModeToggle;
@@ -62,6 +64,53 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
         _weeklyPlanFuture = _apiService.fetchWeeklyWorkouts();
       });
     }
+  }
+
+  Future<void> _exportCycle() async {
+    try {
+      final weeklyPlan = await _weeklyPlanFuture;
+      final weeksList = weeklyPlan['weeks'] as List<dynamic>?;
+      if (weeksList == null || weeksList.isEmpty) {
+        if (!mounted) return;
+        _showSnack('No workout plan to export');
+        return;
+      }
+
+      final pattern = WorkoutExportService.extractCyclePattern(weeklyPlan);
+      final uniqueIds = pattern.daysPattern.values.whereType<int>().toSet();
+
+      final detailsById = <int, Map<String, dynamic>>{};
+      for (final id in uniqueIds) {
+        detailsById[id] = await _apiService.fetchCustomWorkout(id);
+      }
+
+      final json = WorkoutExportService.cycleExportJson(
+        weeks: pattern.weeks,
+        daysPatternByWorkoutId: pattern.daysPattern,
+        workoutDetailsById: detailsById,
+      );
+
+      final saved = await WorkoutFileIO.saveJsonFile(
+        suggestedFileName: 'workout_cycle.json',
+        contents: json,
+      );
+
+      if (!mounted || !saved) return;
+      _showSnack('Workout cycle exported successfully');
+    } catch (e) {
+      if (!mounted) return;
+      _showSnack('Failed to export workout cycle: $e', isError: true);
+    }
+  }
+
+  void _showSnack(String message, {bool isError = false}) {
+    final colorScheme = Theme.of(context).colorScheme;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? colorScheme.error : colorScheme.primary,
+      ),
+    );
   }
 
   void _deleteScheduleWorkout(int scheduleWorkoutId) async {
@@ -164,6 +213,11 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
               padding: const EdgeInsets.only(right: 4),
               child: _buildModeToggle(context, isSimple: false),
             ),
+          IconButton(
+            icon: const Icon(Icons.ios_share),
+            onPressed: _exportCycle,
+            tooltip: 'Export workout cycle',
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _fetchWeeklyPlan,
