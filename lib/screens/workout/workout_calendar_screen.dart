@@ -53,6 +53,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
   bool _isLoading = false;
   String? _errorMessage;
   List<Map<String, dynamic>> _workouts = [];
+  bool _hasCycle = false;
 
   @override
   void initState() {
@@ -65,6 +66,18 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
     if (mounted) {
       setState(() {
         _weeklyPlanFuture = _apiService.fetchWeeklyWorkouts();
+      });
+      _weeklyPlanFuture.then((plan) {
+        if (!mounted) return;
+        final weeksList = plan['weeks'] as List<dynamic>?;
+        setState(() {
+          _hasCycle = weeksList != null && weeksList.isNotEmpty;
+        });
+      }).catchError((_) {
+        if (!mounted) return;
+        setState(() {
+          _hasCycle = false;
+        });
       });
     }
   }
@@ -327,20 +340,39 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
               padding: const EdgeInsets.only(right: 4),
               child: _buildModeToggle(context, isSimple: false),
             ),
-          IconButton(
-            icon: const Icon(Icons.ios_share),
-            onPressed: _exportCycle,
-            tooltip: 'Export workout cycle',
-          ),
-          IconButton(
-            icon: const Icon(Icons.file_upload_outlined),
-            onPressed: _importWorkoutProgram,
-            tooltip: 'Import workout program',
-          ),
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _fetchWeeklyPlan,
-            tooltip: 'Refresh workout plan',
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert),
+            tooltip: 'Workout program options',
+            onSelected: (value) {
+              if (value == 'export') {
+                _exportCycle();
+              } else if (value == 'import') {
+                _importWorkoutProgram();
+              }
+            },
+            itemBuilder: (context) => [
+              if (_hasCycle)
+                const PopupMenuItem(
+                  value: 'export',
+                  child: Row(
+                    children: [
+                      Icon(Icons.ios_share, size: 20),
+                      SizedBox(width: 12),
+                      Text('Export workout cycle'),
+                    ],
+                  ),
+                ),
+              const PopupMenuItem(
+                value: 'import',
+                child: Row(
+                  children: [
+                    Icon(Icons.file_upload_outlined, size: 20),
+                    SizedBox(width: 12),
+                    Text('Import workout program'),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
