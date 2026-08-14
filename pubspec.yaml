@@ -53,6 +53,7 @@ dependencies:
   # flutter_local_notifications, but that is the tz *database* — it cannot say
   # which zone this device is in, which is the only thing needed here.
   flutter_timezone: ^5.1.0
+  file_picker: ^8.1.3  # For export/import of workout program JSON files
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
