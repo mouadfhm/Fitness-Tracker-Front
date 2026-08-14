@@ -3,12 +3,15 @@
 import 'package:fitness_tracker_app/screens/workout/new_workout_cycle_screen.dart';
 import 'package:fitness_tracker_app/screens/workout/new_workout_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
 import './workout_detail_screen.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../../utils/add_banner.dart';
 import '../../services/workout_export_service.dart';
 import '../../services/workout_file_io.dart';
+import '../../services/workout_import_service.dart';
+import 'import_confirmation_dialog.dart';
 
 class WorkoutCalendarScreen extends StatefulWidget {
   final VoidCallback? onModeToggle;
@@ -110,6 +113,117 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
         content: Text(message),
         backgroundColor: isError ? colorScheme.error : colorScheme.primary,
       ),
+    );
+  }
+
+  Future<void> _importWorkoutProgram() async {
+    try {
+      final contents = await WorkoutFileIO.pickJsonFileContents();
+      if (contents == null) return;
+
+      final decoded = WorkoutImportService.parseWorkoutImportJson(contents);
+      final catalog =
+          (await _apiService.getGymExercises()).cast<Map<String, dynamic>>();
+
+      if (decoded['type'] == 'workout') {
+        await _importSingleWorkout(decoded, catalog);
+      } else {
+        await _importWorkoutCycle(decoded, catalog);
+      }
+    } on WorkoutImportFormatException catch (e) {
+      if (!mounted) return;
+      _showSnack(e.message, isError: true);
+    } catch (e) {
+      if (!mounted) return;
+      _showSnack('Failed to import workout program: $e', isError: true);
+    }
+  }
+
+  Future<void> _importSingleWorkout(
+    Map<String, dynamic> workoutJson,
+    List<Map<String, dynamic>> catalog,
+  ) async {
+    final match = WorkoutImportService.matchWorkoutExercises(workoutJson, catalog);
+
+    if (!mounted) return;
+    final confirmed = await ImportConfirmationDialog.show(
+      context,
+      workoutNames: [workoutJson['name'] as String],
+      unmatchedExerciseNames: match.unmatchedNames,
+    );
+    if (!confirmed) return;
+
+    await _apiService.storeCustomWorkout(
+      workoutJson['name'] as String,
+      workoutJson['description'] as String? ?? '',
+      match.matchedGymExercises,
+    );
+
+    if (!mounted) return;
+    _showSnack('Workout "${workoutJson['name']}" imported successfully');
+    await _fetchWorkouts();
+  }
+
+  Future<void> _importWorkoutCycle(
+    Map<String, dynamic> cycleJson,
+    List<Map<String, dynamic>> catalog,
+  ) async {
+    final workoutsJson =
+        (cycleJson['workouts'] as List<dynamic>).cast<Map<String, dynamic>>();
+
+    final matches = <String, ExerciseMatchResult>{};
+    final allUnmatched = <String>{};
+    for (final workoutJson in workoutsJson) {
+      final match = WorkoutImportService.matchWorkoutExercises(workoutJson, catalog);
+      matches[workoutJson['name'] as String] = match;
+      allUnmatched.addAll(match.unmatchedNames);
+    }
+
+    if (!mounted) return;
+    final confirmed = await ImportConfirmationDialog.show(
+      context,
+      workoutNames: workoutsJson.map((w) => w['name'] as String).toList(),
+      unmatchedExerciseNames: allUnmatched.toList(),
+    );
+    if (!confirmed) return;
+
+    if (!mounted) return;
+    final startDate = await _pickCycleStartDate();
+    if (startDate == null) return;
+
+    final nameToNewId = <String, int>{};
+    for (final workoutJson in workoutsJson) {
+      final name = workoutJson['name'] as String;
+      final created = await _apiService.storeCustomWorkout(
+        name,
+        workoutJson['description'] as String? ?? '',
+        matches[name]!.matchedGymExercises,
+      );
+      nameToNewId[name] = created['id'] as int;
+    }
+
+    final daysPatternByName = cycleJson['days_pattern'] as Map<String, dynamic>;
+    final daysPatternByNewId =
+        WorkoutImportService.remapDaysPatternToIds(daysPatternByName, nameToNewId);
+
+    await _apiService.storeWeeklyWorkouts(
+      DateFormat('yyyy-MM-dd').format(startDate),
+      cycleJson['weeks'] as int,
+      daysPatternByNewId,
+    );
+
+    if (!mounted) return;
+    _showSnack('Workout cycle imported successfully');
+    await _fetchWorkouts();
+    _fetchWeeklyPlan();
+  }
+
+  Future<DateTime?> _pickCycleStartDate() {
+    return showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
     );
   }
 
@@ -217,6 +331,11 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
             icon: const Icon(Icons.ios_share),
             onPressed: _exportCycle,
             tooltip: 'Export workout cycle',
+          ),
+          IconButton(
+            icon: const Icon(Icons.file_upload_outlined),
+            onPressed: _importWorkoutProgram,
+            tooltip: 'Import workout program',
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
