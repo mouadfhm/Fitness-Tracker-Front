@@ -67,8 +67,10 @@ class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
       }
     } on WorkoutImportFormatException catch (e) {
       _showSnack(e.message, isError: true);
+      _fetchWorkouts();
     } catch (e) {
       _showSnack('Failed to import workout program: $e', isError: true);
+      _fetchWorkouts();
     }
   }
 
