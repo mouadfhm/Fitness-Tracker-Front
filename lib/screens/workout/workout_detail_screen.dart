@@ -3,6 +3,8 @@
 import 'package:fitness_tracker_app/screens/workout/edit_workout_screen.dart';
 import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
+import '../../services/workout_export_service.dart';
+import '../../services/workout_file_io.dart';
 
 class WorkoutDetailScreen extends StatefulWidget {
   final int workoutId;
@@ -29,6 +31,36 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
       _workoutFuture = _apiService.fetchCustomWorkout(widget.workoutId);
       _isLoadingWorkouts = false;
     });
+  }
+
+  Future<void> _exportWorkout() async {
+    try {
+      final workout = await _workoutFuture;
+      final json = WorkoutExportService.workoutExportJson(workout);
+      final filename = WorkoutExportService.suggestExportFilename(workout['name'] as String);
+      final saved = await WorkoutFileIO.saveJsonFile(
+        suggestedFileName: filename,
+        contents: json,
+      );
+      if (!mounted || !saved) return;
+      _showSnack('Workout exported successfully');
+    } catch (e) {
+      if (!mounted) return;
+      _showSnack('Failed to export workout: $e', isError: true);
+    }
+  }
+
+  void _showSnack(String message, {bool isError = false}) {
+    final colorScheme = Theme.of(context).colorScheme;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: TextStyle(color: isError ? colorScheme.onError : colorScheme.onPrimary),
+        ),
+        backgroundColor: isError ? colorScheme.error : colorScheme.primary,
+      ),
+    );
   }
 
   @override
@@ -133,6 +165,11 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                                 color: colorScheme.onSurface,
                               ),
                             ),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.ios_share, color: colorScheme.primary),
+                            tooltip: 'Export workout',
+                            onPressed: _exportWorkout,
                           ),
                           IconButton(
                             icon: Icon(Icons.edit, color: colorScheme.primary),
