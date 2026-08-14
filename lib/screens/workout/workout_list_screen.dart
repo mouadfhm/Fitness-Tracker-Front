@@ -66,9 +66,11 @@ class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
         await _importWorkoutCycle(decoded, catalog);
       }
     } on WorkoutImportFormatException catch (e) {
+      if (!mounted) return;
       _showSnack(e.message, isError: true);
       _fetchWorkouts();
     } catch (e) {
+      if (!mounted) return;
       _showSnack('Failed to import workout program: $e', isError: true);
       _fetchWorkouts();
     }
@@ -122,6 +124,10 @@ class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
     );
     if (!confirmed) return;
 
+    if (!mounted) return;
+    final startDate = await _pickCycleStartDate();
+    if (startDate == null) return;
+
     final nameToNewId = <String, int>{};
     for (final workoutJson in workoutsJson) {
       final name = workoutJson['name'] as String;
@@ -132,10 +138,6 @@ class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
       );
       nameToNewId[name] = created['id'] as int;
     }
-
-    if (!mounted) return;
-    final startDate = await _pickCycleStartDate();
-    if (startDate == null) return;
 
     final daysPatternByName = cycleJson['days_pattern'] as Map<String, dynamic>;
     final daysPatternByNewId =

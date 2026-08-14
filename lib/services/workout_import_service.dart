@@ -44,6 +44,25 @@ class WorkoutImportService {
       );
     }
 
+    if (type == 'workout') {
+      if (decoded['name'] is! String) {
+        throw WorkoutImportFormatException('That workout file is missing a name.');
+      }
+      if (decoded['exercises'] is! List) {
+        throw WorkoutImportFormatException('That workout file is missing its exercise list.');
+      }
+    } else {
+      if (decoded['weeks'] is! int) {
+        throw WorkoutImportFormatException('That workout cycle file is missing the number of weeks.');
+      }
+      if (decoded['days_pattern'] is! Map) {
+        throw WorkoutImportFormatException('That workout cycle file has an invalid days pattern.');
+      }
+      if (decoded['workouts'] is! List) {
+        throw WorkoutImportFormatException('That workout cycle file is missing its workouts list.');
+      }
+    }
+
     return decoded;
   }
 

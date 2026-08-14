@@ -45,5 +45,32 @@ void main() {
         throwsA(isA<WorkoutImportFormatException>()),
       );
     });
+
+    test('rejects a workout missing a name', () {
+      expect(
+        () => WorkoutImportService.parseWorkoutImportJson(
+          '{"type": "workout", "version": 1, "exercises": []}',
+        ),
+        throwsA(isA<WorkoutImportFormatException>()),
+      );
+    });
+
+    test('rejects a workout cycle missing weeks', () {
+      expect(
+        () => WorkoutImportService.parseWorkoutImportJson(
+          '{"type": "workout_cycle", "version": 1, "days_pattern": {}, "workouts": []}',
+        ),
+        throwsA(isA<WorkoutImportFormatException>()),
+      );
+    });
+
+    test('rejects a workout cycle with days_pattern as the wrong type', () {
+      expect(
+        () => WorkoutImportService.parseWorkoutImportJson(
+          '{"type": "workout_cycle", "version": 1, "weeks": 4, "days_pattern": [], "workouts": []}',
+        ),
+        throwsA(isA<WorkoutImportFormatException>()),
+      );
+    });
   });
 }
