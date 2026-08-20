@@ -22,7 +22,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await MobileAds.instance.initialize();
-  await dotenv.load(fileName: ".env.production");
+  await dotenv.load(fileName: ".env.development");
   await initializeFirebase();
   final token = await TokenService.getToken();
   if (token != null) {

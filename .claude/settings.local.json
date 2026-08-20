@@ -23,7 +23,23 @@
       "Bash(grep -v \"firebase_service\\\\|//.*debugPrint\\\\|//.*print\")",
       "Bash(flutter test *)",
       "Bash(flutter pub *)",
-      "Bash(powershell -c \"Get-Item 'lib/assets/kling_20260418_VIDEO_Image1make_1770_0.mp4' | Select-Object Length\")"
+      "Bash(powershell -c \"Get-Item 'lib/assets/kling_20260418_VIDEO_Image1make_1770_0.mp4' | Select-Object Length\")",
+      "Bash(flutter clean *)",
+      "Bash(./android/gradlew --stop)",
+      "Bash(taskkill /F /IM java.exe)",
+      "Bash(Start-Sleep -Seconds 3)",
+      "Bash(taskkill //F //IM java.exe)",
+      "Bash(C:/Users/fahim/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.7/scripts/start-server.sh *)",
+      "Bash(C:/Users/fahim/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.7/skills/brainstorming/scripts/start-server.sh *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git commit *)",
+      "Bash(git checkout *)",
+      "Bash(git merge-base *)",
+      "Bash(findstr /ri \"test\\\\|debug\\\\|TODO\\\\|FIXME\\\\|print\\(\" lib\\\\main.dart lib\\\\utils\\\\ad_config.dart lib\\\\services\\\\api_service.dart)",
+      "Bash(Get-Content *)",
+      "Bash(git push *)",
+      "Bash(git remote *)"
     ]
   }
 }

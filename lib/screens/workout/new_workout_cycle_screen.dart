@@ -6,7 +6,18 @@ import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
 
 class NewWorkoutCycleScreen extends StatefulWidget {
-  const NewWorkoutCycleScreen({super.key});
+  final String? initialName;
+  final String? initialDescription;
+  final int? initialWeeks;
+  final Set<String>? initialActiveDayKeys;
+
+  const NewWorkoutCycleScreen({
+    super.key,
+    this.initialName,
+    this.initialDescription,
+    this.initialWeeks,
+    this.initialActiveDayKeys,
+  });
 
   @override
   _NewWorkoutCycleScreenState createState() => _NewWorkoutCycleScreenState();
@@ -14,6 +25,9 @@ class NewWorkoutCycleScreen extends StatefulWidget {
 
 class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
   final ApiService _apiService = ApiService();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _descriptionController =
+      TextEditingController();
   DateTime _startDate = DateTime.now();
   int _weeks = 4;
   final Map<String, int?> _daysPattern = {
@@ -25,6 +39,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
     'sat': null,
     'sun': null,
   };
+  Set<String> _recommendedDayKeys = {};
   final List<String> _dayNames = [
     'Monday',
     'Tuesday',
@@ -53,7 +68,18 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
   @override
   void initState() {
     super.initState();
+    _nameController.text = widget.initialName ?? '';
+    _descriptionController.text = widget.initialDescription ?? '';
+    _weeks = widget.initialWeeks ?? 4;
+    _recommendedDayKeys = widget.initialActiveDayKeys ?? {};
     _fetchCustomWorkouts();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
   }
 
   Future<void> _fetchCustomWorkouts() async {
@@ -139,6 +165,10 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          _buildNameSection(theme, colorScheme),
+          const SizedBox(height: 24),
+          _buildDescriptionSection(theme, colorScheme),
+          const SizedBox(height: 24),
           _buildStartDateSection(theme, colorScheme),
           const SizedBox(height: 24),
           _buildWeeksSection(theme, colorScheme),
@@ -146,6 +176,73 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
           _buildDaysPatternSection(theme, colorScheme),
         ],
       ),
+    );
+  }
+
+  Widget _buildNameSection(ThemeData theme, ColorScheme colorScheme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Cycle Name',
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: colorScheme.onSurface,
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: _nameController,
+          decoration: InputDecoration(
+            hintText: 'e.g. Push Pull Legs',
+            filled: true,
+            fillColor: colorScheme.surfaceContainerHighest,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          ),
+          onChanged: (_) => setState(() {}),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Give it a name so you can save and reuse this cycle later',
+          style: theme.textTheme.bodySmall,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDescriptionSection(ThemeData theme, ColorScheme colorScheme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Description (optional)',
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: colorScheme.onSurface,
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: _descriptionController,
+          maxLines: 3,
+          decoration: InputDecoration(
+            hintText: 'e.g. A 6-day split focused on strength and hypertrophy',
+            filled: true,
+            fillColor: colorScheme.surfaceContainerHighest,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          ),
+        ),
+      ],
     );
   }
 
@@ -410,7 +507,13 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
                             ),
                             const SizedBox(height: 8),
                             _buildWorkoutDropdown(
-                                theme, dayKey, selectedWorkoutId, colorScheme),
+                              theme,
+                              dayKey,
+                              selectedWorkoutId,
+                              colorScheme,
+                              isRecommended:
+                                  _recommendedDayKeys.contains(dayKey),
+                            ),
                           ],
                         ),
                       ),
@@ -428,8 +531,12 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
     ThemeData theme,
     String dayKey,
     int? selectedWorkoutId,
-    ColorScheme colorScheme,
-  ) {
+    ColorScheme colorScheme, {
+    bool isRecommended = false,
+  }) {
+    final bool showRecommendedHint =
+        isRecommended && selectedWorkoutId == null;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -439,14 +546,22 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
             color: colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-                color: colorScheme.primary.withValues(alpha: 0.15)),
+              color: showRecommendedHint
+                  ? colorScheme.primary.withValues(alpha: 0.6)
+                  : colorScheme.primary.withValues(alpha: 0.15),
+              width: showRecommendedHint ? 1.5 : 1,
+            ),
           ),
           child: DropdownButton<int?>(
             value: selectedWorkoutId,
             hint: Text(
-              'Rest day',
+              showRecommendedHint ? 'Choose a workout' : 'Rest day',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
+                color: showRecommendedHint
+                    ? colorScheme.primary
+                    : colorScheme.onSurfaceVariant,
+                fontWeight:
+                    showRecommendedHint ? FontWeight.w600 : FontWeight.normal,
               ),
             ),
             underline: const SizedBox(),
@@ -543,7 +658,8 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
   }
 
   Widget _buildBottomBar(ColorScheme colorScheme) {
-    final bool hasWorkouts = _customWorkouts.isNotEmpty;
+    final bool hasWorkouts =
+        _customWorkouts.isNotEmpty && _nameController.text.trim().isNotEmpty;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -693,9 +809,11 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
       final formattedDate = DateFormat('yyyy-MM-dd').format(_startDate);
 
       await _apiService.storeWeeklyWorkouts(
+        _nameController.text.trim(),
         formattedDate,
         _weeks,
         _daysPattern,
+        description: _descriptionController.text.trim(),
       );
 
       if (mounted) {

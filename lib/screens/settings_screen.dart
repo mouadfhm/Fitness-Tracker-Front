@@ -23,7 +23,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _loadingPreferences = true;
   String? _preferencesError;
 
-  /// The four toggles, in the order they are shown. Keys have to match the API's.
+  /// The toggles, in the order they are shown. Keys have to match the API's.
   static const _notificationToggles = <_NotificationToggle>[
     _NotificationToggle(
       key: 'meal_reminders',
@@ -48,6 +48,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
       icon: Icons.waving_hand,
       title: 'Check-ins',
       subtitle: 'If you have been away for a while',
+    ),
+    // Its own switch rather than sharing the meal or workout one. Someone who
+    // turned those off said they did not want to be told to eat or to train;
+    // they did not say they wanted to lose a streak without hearing about it.
+    _NotificationToggle(
+      key: 'streaks',
+      icon: Icons.local_fire_department,
+      title: 'Streak saves',
+      subtitle: 'In the evening, if your streak is about to break',
     ),
   ];
 

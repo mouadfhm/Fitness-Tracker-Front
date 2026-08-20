@@ -2,6 +2,7 @@
 
 import 'package:fitness_tracker_app/screens/workout/new_workout_cycle_screen.dart';
 import 'package:fitness_tracker_app/screens/workout/new_workout_screen.dart';
+import 'package:fitness_tracker_app/screens/workout/saved_workout_cycles_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
@@ -60,6 +61,18 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
     super.initState();
     _fetchWeeklyPlan();
     _fetchWorkouts(); // Fetch available workouts when the screen loads
+  }
+
+  void _openSavedCycles() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SavedWorkoutCyclesScreen(),
+      ),
+    );
+    if (result == true) {
+      _fetchWeeklyPlan();
+    }
   }
 
   void _fetchWeeklyPlan() {
@@ -220,6 +233,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
         WorkoutImportService.remapDaysPatternToIds(daysPatternByName, nameToNewId);
 
     await _apiService.storeWeeklyWorkouts(
+      (cycleJson['name'] as String?) ?? 'Imported Cycle',
       DateFormat('yyyy-MM-dd').format(startDate),
       cycleJson['weeks'] as int,
       daysPatternByNewId,
@@ -348,9 +362,21 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                 _exportCycle();
               } else if (value == 'import') {
                 _importWorkoutProgram();
+              } else if (value == 'saved') {
+                _openSavedCycles();
               }
             },
             itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'saved',
+                child: Row(
+                  children: [
+                    Icon(Icons.bookmark_border, size: 20),
+                    SizedBox(width: 12),
+                    Text('Saved workout cycles'),
+                  ],
+                ),
+              ),
               if (_hasCycle)
                 const PopupMenuItem(
                   value: 'export',
@@ -1270,6 +1296,16 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: colorScheme.primary,
               foregroundColor: colorScheme.onPrimary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: _openSavedCycles,
+            icon: Icon(Icons.replay, color: colorScheme.primary),
+            label: const Text('Reuse a Saved Cycle'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: colorScheme.primary,
+              side: BorderSide(color: colorScheme.primary),
             ),
           ),
         ],

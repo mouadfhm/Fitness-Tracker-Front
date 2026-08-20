@@ -1,3 +1,4 @@
+import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -6,6 +7,20 @@ val keystoreProperties = Properties().apply {
     if (keystorePropertiesFile.exists()) {
         load(FileInputStream(keystorePropertiesFile))
     }
+}
+
+// versionCode = total git commit count, so it always increases with each commit
+// without needing a manual bump. Falls back to 1 if git isn't available (e.g. CI
+// checkout without history, or building outside a git repo).
+val gitVersionCode: Int = try {
+    val stdout = ByteArrayOutputStream()
+    exec {
+        commandLine("git", "rev-list", "--count", "HEAD")
+        standardOutput = stdout
+    }
+    stdout.toString().trim().toInt()
+} catch (e: Exception) {
+    1
 }
 
 plugins {
@@ -38,7 +53,7 @@ android {
         applicationId = "com.mouadfhm.fitness_tracker_front"
         minSdk = flutter.minSdkVersion
         targetSdk = 36
-        versionCode = 13
+        versionCode = gitVersionCode
         versionName = "2.1"
     }
 

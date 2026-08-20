@@ -950,10 +950,12 @@ Future<Map<String, dynamic>> storeCustomWorkout(
 
   //store weekly workouts
   Future<Map<String, dynamic>> storeWeeklyWorkouts(
+    String name,
     String startDate,
     int weeks,
-    Map<String, int?> daysPattern,
-  ) async {
+    Map<String, int?> daysPattern, {
+    String? description,
+  }) async {
     final token = await _requireToken();
     final response = await http.post(
       Uri.parse('$baseUrl/v2/workouts/weekly-cycle-plans'),
@@ -962,6 +964,9 @@ Future<Map<String, dynamic>> storeCustomWorkout(
         'Authorization': 'Bearer $token',
       },
       body: jsonEncode({
+        'name': name,
+        if (description != null && description.isNotEmpty)
+          'description': description,
         'start_date': startDate,
         'weeks': weeks,
         'days_pattern': daysPattern,
@@ -1224,6 +1229,72 @@ Future<Map<String, dynamic>> storeCustomWorkout(
       return jsonDecode(response.body);
     } else {
       throw Exception('Failed to fetch weekly workouts: ${response.body}');
+    }
+  }
+
+  // fetch saved cycle plans (reusable templates), separate from the
+  // derived calendar view returned by fetchWeeklyWorkouts
+  Future<List<dynamic>> fetchSavedCyclePlans() async {
+    final token = await _requireToken();
+    final response = await http.get(
+      Uri.parse('$baseUrl/v2/workouts/weekly-cycle-plans/saved'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    _checkUnauthorized(response);
+    if (response.statusCode == 200) {
+      final decoded = jsonDecode(response.body);
+      return decoded['cycle_plans'] as List<dynamic>;
+    } else {
+      throw Exception('Failed to fetch saved cycle plans: ${response.body}');
+    }
+  }
+
+  // delete a saved cycle plan
+  Future<void> deleteCyclePlan(int id) async {
+    final token = await _requireToken();
+    final response = await http.delete(
+      Uri.parse('$baseUrl/v2/workouts/weekly-cycle-plans/$id'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    _checkUnauthorized(response);
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete cycle plan: ${response.body}');
+    }
+  }
+
+  // reuse a saved cycle plan starting on a new date, without rebuilding
+  // the day-by-day pattern
+  Future<Map<String, dynamic>> reuseCyclePlan(
+    int id,
+    String startDate, {
+    int? weeks,
+  }) async {
+    final token = await _requireToken();
+    final response = await http.post(
+      Uri.parse('$baseUrl/v2/workouts/weekly-cycle-plans/$id/reuse'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'start_date': startDate,
+        if (weeks != null) 'weeks': weeks,
+      }),
+    );
+
+    _checkUnauthorized(response);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to reuse cycle plan: ${response.body}');
     }
   }
 }
