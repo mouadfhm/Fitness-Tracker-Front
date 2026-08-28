@@ -1,4 +1,5 @@
 // lib/main.dart
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +23,9 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await MobileAds.instance.initialize();
-  await dotenv.load(fileName: ".env.development");
+  await dotenv.load(
+    fileName: kReleaseMode ? ".env.production" : ".env.development",
+  );
   await initializeFirebase();
   final token = await TokenService.getToken();
   if (token != null) {

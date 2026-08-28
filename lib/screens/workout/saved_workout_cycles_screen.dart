@@ -5,17 +5,122 @@ import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
 import 'new_workout_cycle_screen.dart';
 
+/// One exercise this template needs, described by muscle group rather than
+/// an exact exercise name. The seeded exercise library's naming is not
+/// standardized (it comes from a large public dataset with inconsistent
+/// titles), so matching by `body_part` — a fixed, always-populated field —
+/// is far more reliable than hoping a specific string like "Barbell Squat"
+/// exists verbatim.
+class _ExerciseSlot {
+  final String bodyPart;
+  final int sets;
+  final int reps;
+  final int rest;
+
+  const _ExerciseSlot(
+    this.bodyPart, {
+    required this.sets,
+    required this.reps,
+    required this.rest,
+  });
+}
+
+/// A named workout used by one or more days of a suggested cycle.
+class _SuggestedWorkoutTemplate {
+  final String name;
+  final String description;
+  final List<_ExerciseSlot> slots;
+
+  const _SuggestedWorkoutTemplate({
+    required this.name,
+    required this.description,
+    required this.slots,
+  });
+}
+
+const _pushDay = _SuggestedWorkoutTemplate(
+  name: 'Push Day',
+  description: 'Chest, shoulders and triceps.',
+  slots: [
+    _ExerciseSlot('Chest', sets: 4, reps: 8, rest: 90),
+    _ExerciseSlot('Chest', sets: 3, reps: 10, rest: 75),
+    _ExerciseSlot('Shoulders', sets: 3, reps: 8, rest: 90),
+    _ExerciseSlot('Triceps', sets: 3, reps: 12, rest: 60),
+  ],
+);
+
+const _pullDay = _SuggestedWorkoutTemplate(
+  name: 'Pull Day',
+  description: 'Back and biceps.',
+  slots: [
+    _ExerciseSlot('Lats', sets: 4, reps: 8, rest: 90),
+    _ExerciseSlot('Middle Back', sets: 4, reps: 8, rest: 90),
+    _ExerciseSlot('Biceps', sets: 3, reps: 10, rest: 60),
+    _ExerciseSlot('Biceps', sets: 3, reps: 12, rest: 60),
+  ],
+);
+
+const _legsDay = _SuggestedWorkoutTemplate(
+  name: 'Legs Day',
+  description: 'Quads, hamstrings, glutes and calves.',
+  slots: [
+    _ExerciseSlot('Quadriceps', sets: 4, reps: 8, rest: 120),
+    _ExerciseSlot('Hamstrings', sets: 3, reps: 10, rest: 90),
+    _ExerciseSlot('Quadriceps', sets: 3, reps: 12, rest: 90),
+    _ExerciseSlot('Glutes', sets: 3, reps: 12, rest: 60),
+    _ExerciseSlot('Calves', sets: 3, reps: 12, rest: 60),
+  ],
+);
+
+const _upperDay = _SuggestedWorkoutTemplate(
+  name: 'Upper Day',
+  description: 'Chest, back, shoulders and arms.',
+  slots: [
+    _ExerciseSlot('Chest', sets: 4, reps: 8, rest: 90),
+    _ExerciseSlot('Middle Back', sets: 4, reps: 8, rest: 90),
+    _ExerciseSlot('Shoulders', sets: 3, reps: 8, rest: 90),
+    _ExerciseSlot('Biceps', sets: 3, reps: 10, rest: 60),
+    _ExerciseSlot('Triceps', sets: 3, reps: 12, rest: 60),
+  ],
+);
+
+const _lowerDay = _SuggestedWorkoutTemplate(
+  name: 'Lower Day',
+  description: 'Quads, hamstrings and glutes.',
+  slots: [
+    _ExerciseSlot('Quadriceps', sets: 4, reps: 8, rest: 120),
+    _ExerciseSlot('Hamstrings', sets: 3, reps: 10, rest: 90),
+    _ExerciseSlot('Quadriceps', sets: 3, reps: 12, rest: 90),
+    _ExerciseSlot('Glutes', sets: 3, reps: 12, rest: 60),
+  ],
+);
+
+const _fullBodyDay = _SuggestedWorkoutTemplate(
+  name: 'Full Body Day',
+  description: 'A compound-lift session covering the whole body.',
+  slots: [
+    _ExerciseSlot('Quadriceps', sets: 3, reps: 8, rest: 90),
+    _ExerciseSlot('Chest', sets: 3, reps: 8, rest: 90),
+    _ExerciseSlot('Middle Back', sets: 3, reps: 8, rest: 90),
+    _ExerciseSlot('Shoulders', sets: 3, reps: 8, rest: 90),
+  ],
+);
+
 class _SuggestedCycle {
   final String name;
   final String description;
   final int weeks;
-  final Set<String> activeDayKeys;
+
+  /// Day key -> the workout template for that day. Days absent from this map
+  /// are rest days. Multiple keys may point at the same template instance
+  /// (e.g. every "Legs" day) so only one workout gets created for it.
+  final Map<String, _SuggestedWorkoutTemplate> dayTemplates;
 
   const _SuggestedCycle({
     required this.name,
     required this.description,
     required this.weeks,
-    required this.activeDayKeys,
+    required this.dayTemplates,
   });
 }
 
@@ -25,21 +130,37 @@ const List<_SuggestedCycle> _suggestedCycles = [
     description:
         'A classic 6-day split hitting push, pull, and leg muscle groups twice per week.',
     weeks: 6,
-    activeDayKeys: {'mon', 'tue', 'wed', 'thu', 'fri', 'sat'},
+    dayTemplates: {
+      'mon': _pushDay,
+      'tue': _pullDay,
+      'wed': _legsDay,
+      'thu': _pushDay,
+      'fri': _pullDay,
+      'sat': _legsDay,
+    },
   ),
   _SuggestedCycle(
     name: 'Upper / Lower Split',
     description:
         'A balanced 4-day split alternating upper and lower body sessions, great for strength.',
     weeks: 6,
-    activeDayKeys: {'mon', 'tue', 'thu', 'fri'},
+    dayTemplates: {
+      'mon': _upperDay,
+      'tue': _lowerDay,
+      'thu': _upperDay,
+      'fri': _lowerDay,
+    },
   ),
   _SuggestedCycle(
     name: 'Full Body',
     description:
         'Train your whole body 3 times a week with a day of rest in between — ideal for beginners.',
     weeks: 8,
-    activeDayKeys: {'mon', 'wed', 'fri'},
+    dayTemplates: {
+      'mon': _fullBodyDay,
+      'wed': _fullBodyDay,
+      'fri': _fullBodyDay,
+    },
   ),
 ];
 
@@ -54,6 +175,7 @@ class SavedWorkoutCyclesScreen extends StatefulWidget {
 class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
   final ApiService _apiService = ApiService();
   late Future<List<dynamic>> _plansFuture;
+  String? _creatingSuggestionName;
 
   final List<String> _dayLabels = const [
     'mon',
@@ -154,7 +276,144 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
     }
   }
 
+  /// Fills each of the template's slots with a real, unused exercise from
+  /// the catalog whose body_part matches, preferring shorter/plainer names
+  /// (the catalog's naming is inconsistent — e.g. "Barbell Squat" vs
+  /// "Squat Jumps On BOSU Ball" — and a shorter name is more likely to be
+  /// the plain, foundational version of the lift). Slots with no matching
+  /// exercise left are simply dropped rather than failing the whole
+  /// workout.
+  List<Map<String, dynamic>> _pickExercisesForTemplate(
+    _SuggestedWorkoutTemplate template,
+    List<Map<String, dynamic>> catalog,
+  ) {
+    final byBodyPart = <String, List<Map<String, dynamic>>>{};
+    for (final exercise in catalog) {
+      final bodyPart = (exercise['body_part'] as String?)?.trim();
+      final type = (exercise['type'] as String?)?.trim();
+      if (bodyPart == null || bodyPart.isEmpty) continue;
+      if (type != null && type != 'Strength') continue;
+      byBodyPart.putIfAbsent(bodyPart, () => []).add(exercise);
+    }
+    for (final list in byBodyPart.values) {
+      list.sort((a, b) =>
+          ((a['name'] as String?)?.length ?? 999)
+              .compareTo((b['name'] as String?)?.length ?? 999));
+    }
+
+    final usedIds = <dynamic>{};
+    final picked = <Map<String, dynamic>>[];
+
+    for (final slot in template.slots) {
+      final candidates = byBodyPart[slot.bodyPart] ?? const [];
+      final chosen = candidates.firstWhere(
+        (exercise) => !usedIds.contains(exercise['id']),
+        orElse: () => const {},
+      );
+
+      if (chosen.isEmpty) continue;
+
+      usedIds.add(chosen['id']);
+      picked.add({
+        'gym_exercise_id': chosen['id'],
+        'sets': slot.sets,
+        'reps': slot.reps,
+        'duration': null,
+        'rest': slot.rest,
+      });
+    }
+
+    return picked;
+  }
+
   Future<void> _useSuggestion(_SuggestedCycle suggestion) async {
+    setState(() {
+      _creatingSuggestionName = suggestion.name;
+    });
+
+    Map<String, int?> daysPattern = {};
+    Set<String> stillNeedsWorkout = {};
+
+    try {
+      final catalog = (await _apiService.getGymExercises())
+          .cast<Map<String, dynamic>>();
+
+      // A user who already applied this suggestion before has "Push Day"
+      // etc. sitting in their custom workouts already; reuse those instead
+      // of creating identically-named duplicates on every re-click.
+      final existingWorkouts =
+          (await _apiService.fetchWorkout()).cast<Map<String, dynamic>>();
+      final existingIdByName = <String, int>{
+        for (final workout in existingWorkouts)
+          if (workout['name'] is String && workout['id'] is int)
+            (workout['name'] as String).trim().toLowerCase():
+                workout['id'] as int,
+      };
+
+      // Every distinct template this cycle uses, in a stable order, so we
+      // create one workout per template rather than one per day.
+      final templates = <_SuggestedWorkoutTemplate>[];
+      for (final template in suggestion.dayTemplates.values) {
+        if (!templates.any((t) => identical(t, template))) {
+          templates.add(template);
+        }
+      }
+
+      final workoutIdByTemplate = <_SuggestedWorkoutTemplate, int>{};
+
+      for (final template in templates) {
+        final existingId = existingIdByName[template.name.toLowerCase()];
+        if (existingId != null) {
+          workoutIdByTemplate[template] = existingId;
+          continue;
+        }
+
+        final exercises = _pickExercisesForTemplate(template, catalog);
+
+        // A template we could not fill a single slot for is skipped rather
+        // than saved as an empty workout; its days fall back to
+        // "recommended, pick your own" below.
+        if (exercises.isEmpty) {
+          continue;
+        }
+
+        final createdWorkout = await _apiService.storeCustomWorkout(
+          template.name,
+          template.description,
+          exercises,
+        );
+        workoutIdByTemplate[template] = createdWorkout['id'] as int;
+      }
+
+      for (final entry in suggestion.dayTemplates.entries) {
+        final workoutId = workoutIdByTemplate[entry.value];
+        daysPattern[entry.key] = workoutId;
+        if (workoutId == null) {
+          stillNeedsWorkout.add(entry.key);
+        }
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Could not set up workouts automatically (${e.toString()}). '
+            'Pick a workout for each highlighted day instead.',
+          ),
+        ),
+      );
+      // Fall back to the old behaviour: every day is just marked
+      // recommended, and the user assigns their own workouts.
+      daysPattern = {};
+      stillNeedsWorkout = suggestion.dayTemplates.keys.toSet();
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      _creatingSuggestionName = null;
+    });
+
     final created = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
@@ -162,7 +421,8 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
           initialName: suggestion.name,
           initialDescription: suggestion.description,
           initialWeeks: suggestion.weeks,
-          initialActiveDayKeys: suggestion.activeDayKeys,
+          initialDaysPattern: daysPattern,
+          initialActiveDayKeys: stillNeedsWorkout,
         ),
       ),
     );
@@ -187,7 +447,7 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-            'Quick-start templates — pick one and choose your own workouts for each day.',
+            'Quick-start templates — pick one and we\'ll set up real workouts for each training day.',
             style: theme.textTheme.bodySmall,
           ),
           const SizedBox(height: 12),
@@ -199,6 +459,9 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
               separatorBuilder: (context, index) => const SizedBox(width: 12),
               itemBuilder: (context, index) {
                 final suggestion = _suggestedCycles[index];
+                final isCreating = _creatingSuggestionName == suggestion.name;
+                final isBusy = _creatingSuggestionName != null;
+
                 return SizedBox(
                   width: 220,
                   child: Card(
@@ -209,41 +472,76 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
                       side: BorderSide(
                           color: colorScheme.primary.withValues(alpha: 0.2)),
                     ),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(14),
-                      onTap: () => _useSuggestion(suggestion),
-                      child: Padding(
-                        padding: const EdgeInsets.all(14),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              suggestion.name,
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                    child: Stack(
+                      children: [
+                        InkWell(
+                          borderRadius: BorderRadius.circular(14),
+                          onTap:
+                              isBusy ? null : () => _useSuggestion(suggestion),
+                          child: Padding(
+                            padding: const EdgeInsets.all(14),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  suggestion.name,
+                                  style: theme.textTheme.titleSmall?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 4),
+                                Expanded(
+                                  child: Text(
+                                    suggestion.description,
+                                    style: theme.textTheme.bodySmall,
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Text(
+                                  '${suggestion.weeks} weeks · ${suggestion.dayTemplates.length} days/week',
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.primary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 4),
-                            Expanded(
-                              child: Text(
-                                suggestion.description,
-                                style: theme.textTheme.bodySmall,
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            Text(
-                              '${suggestion.weeks} weeks · ${suggestion.activeDayKeys.length} days/week',
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: colorScheme.primary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
+                        if (isCreating)
+                          Positioned.fill(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: colorScheme.surface
+                                    .withValues(alpha: 0.85),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              alignment: Alignment.center,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  SizedBox(
+                                    width: 22,
+                                    height: 22,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: colorScheme.primary,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Setting up workouts…',
+                                    style: theme.textTheme.bodySmall,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                 );

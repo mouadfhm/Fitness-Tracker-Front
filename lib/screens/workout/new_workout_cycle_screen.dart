@@ -5,11 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
 
+/// Distinguishes "the workout picker was dismissed with no choice made"
+/// (bare null) from "Rest day was explicitly chosen" (a wrapped null).
+class _WorkoutPick {
+  final int? workoutId;
+  const _WorkoutPick(this.workoutId);
+}
+
 class NewWorkoutCycleScreen extends StatefulWidget {
   final String? initialName;
   final String? initialDescription;
   final int? initialWeeks;
   final Set<String>? initialActiveDayKeys;
+  final Map<String, int?>? initialDaysPattern;
 
   const NewWorkoutCycleScreen({
     super.key,
@@ -17,6 +25,7 @@ class NewWorkoutCycleScreen extends StatefulWidget {
     this.initialDescription,
     this.initialWeeks,
     this.initialActiveDayKeys,
+    this.initialDaysPattern,
   });
 
   @override
@@ -72,6 +81,9 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
     _descriptionController.text = widget.initialDescription ?? '';
     _weeks = widget.initialWeeks ?? 4;
     _recommendedDayKeys = widget.initialActiveDayKeys ?? {};
+    if (widget.initialDaysPattern != null) {
+      _daysPattern.addAll(widget.initialDaysPattern!);
+    }
     _fetchCustomWorkouts();
   }
 
@@ -353,6 +365,10 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
     );
   }
 
+  int get _pendingRecommendedDaysCount => _recommendedDayKeys
+      .where((dayKey) => _daysPattern[dayKey] == null)
+      .length;
+
   Widget _buildDaysPatternSection(ThemeData theme, ColorScheme colorScheme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -387,6 +403,37 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
               ),
           ],
         ),
+        if (_recommendedDayKeys.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: colorScheme.primary.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(10),
+              border:
+                  Border.all(color: colorScheme.primary.withValues(alpha: 0.3)),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.info_outline, size: 18, color: colorScheme.primary),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    _pendingRecommendedDaysCount > 0
+                        ? 'This template suggests ${_recommendedDayKeys.length} training day(s), marked below. Pick a workout for the $_pendingRecommendedDaysCount day(s) still highlighted in orange — everything else stays a rest day unless you change it.'
+                        : 'All suggested training days have a workout assigned.',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
         const SizedBox(height: 16),
 
         if (_isLoadingWorkouts)
@@ -527,6 +574,199 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
     );
   }
 
+  String? _workoutNameFor(int? workoutId) {
+    if (workoutId == null) return null;
+    final match = _customWorkouts.firstWhere(
+      (workout) => workout['id'] == workoutId,
+      orElse: () => const {},
+    );
+    return match['name'] as String?;
+  }
+
+  /// Removes a deleted workout from every day it was assigned to, so the
+  /// pattern never points at a workout that no longer exists.
+  void _clearWorkoutFromAllDays(int workoutId) {
+    for (final key in _daysPattern.keys.toList()) {
+      if (_daysPattern[key] == workoutId) {
+        _daysPattern[key] = null;
+      }
+    }
+  }
+
+  Future<void> _deleteWorkoutFromPicker(
+    Map<String, dynamic> workout,
+    void Function(void Function()) setSheetState,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Workout'),
+        content: Text(
+            'Delete "${workout['name']}"? Any day using it will become a rest day.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    try {
+      await _apiService.deleteCustomWorkout(workout['id'] as int);
+      setState(() {
+        _customWorkouts.removeWhere((w) => w['id'] == workout['id']);
+        _clearWorkoutFromAllDays(workout['id'] as int);
+      });
+      setSheetState(() {});
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete workout: ${e.toString()}')),
+      );
+    }
+  }
+
+  Future<void> _openWorkoutPicker(String dayKey, int? currentWorkoutId) async {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final searchController = TextEditingController();
+    String query = '';
+
+    // showModalBottomSheet<T> returns null both when the sheet is dismissed
+    // without a choice and when "Rest day" (id: null) is explicitly picked,
+    // so a picked value is wrapped in _WorkoutPick to tell the two apart —
+    // a bare null here always means "cancelled, leave the day as it was".
+    final result = await showModalBottomSheet<_WorkoutPick>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            final filtered = _customWorkouts
+                .where((workout) => (workout['name'] as String? ?? '')
+                    .toLowerCase()
+                    .contains(query.trim().toLowerCase()))
+                .toList();
+
+            return SafeArea(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                ),
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.75,
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 12),
+                      Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: colorScheme.onSurfaceVariant
+                              .withValues(alpha: 0.3),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                        child: TextField(
+                          controller: searchController,
+                          autofocus: false,
+                          decoration: InputDecoration(
+                            hintText: 'Search workouts',
+                            prefixIcon: const Icon(Icons.search),
+                            filled: true,
+                            fillColor: colorScheme.surfaceContainerHighest,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 0),
+                          ),
+                          onChanged: (value) =>
+                              setSheetState(() => query = value),
+                        ),
+                      ),
+                      Expanded(
+                        child: ListView(
+                          children: [
+                            ListTile(
+                              leading: const Icon(Icons.hotel),
+                              title: const Text('Rest day'),
+                              selected: currentWorkoutId == null,
+                              onTap: () => Navigator.pop(
+                                  context, const _WorkoutPick(null)),
+                            ),
+                            if (filtered.isEmpty)
+                              Padding(
+                                padding: const EdgeInsets.all(24),
+                                child: Text(
+                                  _customWorkouts.isEmpty
+                                      ? 'No custom workouts yet'
+                                      : 'No workouts match "$query"',
+                                  textAlign: TextAlign.center,
+                                  style: theme.textTheme.bodyMedium,
+                                ),
+                              )
+                            else
+                              ...filtered.map((workout) {
+                                return ListTile(
+                                  leading: const Icon(Icons.fitness_center),
+                                  title: Text(workout['name'] ?? ''),
+                                  subtitle: (workout['description'] as String?)
+                                              ?.isNotEmpty ==
+                                          true
+                                      ? Text(
+                                          workout['description'],
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        )
+                                      : null,
+                                  selected: currentWorkoutId == workout['id'],
+                                  onTap: () => Navigator.pop(context,
+                                      _WorkoutPick(workout['id'] as int?)),
+                                  trailing: IconButton(
+                                    icon: Icon(Icons.delete_outline,
+                                        color: colorScheme.error),
+                                    tooltip: 'Delete workout',
+                                    onPressed: () => _deleteWorkoutFromPicker(
+                                        workout, setSheetState),
+                                  ),
+                                );
+                              }),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+
+    searchController.dispose();
+
+    if (!mounted || result == null) return;
+    setState(() {
+      _daysPattern[dayKey] = result.workoutId;
+    });
+  }
+
   Widget _buildWorkoutDropdown(
     ThemeData theme,
     String dayKey,
@@ -536,87 +776,72 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
   }) {
     final bool showRecommendedHint =
         isRecommended && selectedWorkoutId == null;
+    final Color recommendedColor = Colors.orange.shade700;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (showRecommendedHint)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.star, size: 14, color: recommendedColor),
+                const SizedBox(width: 4),
+                Text(
+                  'Recommended training day',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: recommendedColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerHighest,
+            color: showRecommendedHint
+                ? recommendedColor.withValues(alpha: 0.1)
+                : colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: showRecommendedHint
-                  ? colorScheme.primary.withValues(alpha: 0.6)
+                  ? recommendedColor
                   : colorScheme.primary.withValues(alpha: 0.15),
               width: showRecommendedHint ? 1.5 : 1,
             ),
           ),
-          child: DropdownButton<int?>(
-            value: selectedWorkoutId,
-            hint: Text(
-              showRecommendedHint ? 'Choose a workout' : 'Rest day',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: showRecommendedHint
-                    ? colorScheme.primary
-                    : colorScheme.onSurfaceVariant,
-                fontWeight:
-                    showRecommendedHint ? FontWeight.w600 : FontWeight.normal,
-              ),
-            ),
-            underline: const SizedBox(),
-            isExpanded: true,
-            dropdownColor: colorScheme.surface,
-            icon: Icon(Icons.arrow_drop_down, color: colorScheme.primary),
-            items: [
-              DropdownMenuItem<int?>(
-                value: null,
-                child: Text('Rest day',
-                    style: TextStyle(color: colorScheme.onSurface)),
-              ),
-              ..._customWorkouts.map((workout) {
-                return DropdownMenuItem<int?>(
-                  value: workout['id'],
-                  child: Text(
-                    workout['name'],
-                    style: TextStyle(color: colorScheme.onSurface),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                );
-              }),
-            ],
-            selectedItemBuilder: (BuildContext context) {
-              return [
-                DropdownMenuItem<String>(
-                  value: 'Rest day',
-                  child: Text(
-                    'Rest day',
-                    style: TextStyle(
-                      color: colorScheme.onSurface,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                ..._customWorkouts.map((workout) {
-                  return DropdownMenuItem<String>(
-                    value: workout['name'],
+          child: InkWell(
+            borderRadius: BorderRadius.circular(8),
+            onTap: () => _openWorkoutPicker(dayKey, selectedWorkoutId),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Row(
+                children: [
+                  Expanded(
                     child: Text(
-                      workout['name'],
-                      style: TextStyle(
-                        color: colorScheme.onSurface,
-                        fontWeight: FontWeight.w500,
+                      _workoutNameFor(selectedWorkoutId) ??
+                          (showRecommendedHint ? 'Choose a workout' : 'Rest day'),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: selectedWorkoutId != null
+                            ? colorScheme.onSurface
+                            : (showRecommendedHint
+                                ? recommendedColor
+                                : colorScheme.onSurfaceVariant),
+                        fontWeight: selectedWorkoutId != null ||
+                                showRecommendedHint
+                            ? FontWeight.w600
+                            : FontWeight.normal,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
-                  );
-                }),
-              ];
-            },
-            onChanged: (newValue) {
-              setState(() {
-                _daysPattern[dayKey] = newValue;
-              });
-            },
+                  ),
+                  Icon(Icons.arrow_drop_down, color: colorScheme.primary),
+                ],
+              ),
+            ),
           ),
         ),
         const SizedBox(height: 8),
@@ -658,8 +883,9 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
   }
 
   Widget _buildBottomBar(ColorScheme colorScheme) {
-    final bool hasWorkouts =
-        _customWorkouts.isNotEmpty && _nameController.text.trim().isNotEmpty;
+    final bool hasWorkouts = _customWorkouts.isNotEmpty &&
+        _nameController.text.trim().isNotEmpty &&
+        _pendingRecommendedDaysCount == 0;
 
     return Container(
       padding: const EdgeInsets.all(16),
