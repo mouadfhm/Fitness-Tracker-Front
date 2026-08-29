@@ -1,5 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api
 
+import 'dart:convert';
+
 import 'package:fitness_tracker_app/screens/workout/new_workout_cycle_screen.dart';
 import 'package:fitness_tracker_app/screens/workout/new_workout_screen.dart';
 import 'package:fitness_tracker_app/screens/workout/saved_workout_cycles_screen.dart';
@@ -1039,6 +1041,11 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
     final colorScheme = theme.colorScheme;
     final workoutData = workout['workout'];
 
+    if (workoutData is! Map || workoutData['name'] is! String) {
+      debugPrint('MALFORMED_WORKOUT_ENTRY: ${jsonEncode(workout)}');
+      return _buildMalformedWorkoutCard(theme, workout);
+    }
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 2,
@@ -1153,6 +1160,42 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMalformedWorkoutCard(ThemeData theme, dynamic workout) {
+    final colorScheme = theme.colorScheme;
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      elevation: 0,
+      color: colorScheme.errorContainer.withValues(alpha: 0.3),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+        side: BorderSide(color: colorScheme.error.withValues(alpha: 0.3)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Icon(Icons.error_outline, color: colorScheme.error),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'This workout entry couldn\'t be loaded.',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.error,
+                ),
+              ),
+            ),
+            IconButton(
+              icon: Icon(Icons.delete_outline, color: colorScheme.error),
+              onPressed: () => _deleteScheduleWorkout(workout['id']),
+              tooltip: 'Remove entry',
+            ),
+          ],
         ),
       ),
     );
