@@ -176,6 +176,7 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
   final ApiService _apiService = ApiService();
   late Future<List<dynamic>> _plansFuture;
   String? _creatingSuggestionName;
+  Object? _reusingPlanId;
 
   final List<String> _dayLabels = const [
     'mon',
@@ -204,6 +205,8 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
   }
 
   Future<void> _reusePlan(Map<String, dynamic> plan) async {
+    if (_reusingPlanId != null) return;
+
     final colorScheme = Theme.of(context).colorScheme;
 
     final DateTime? picked = await showDatePicker(
@@ -226,6 +229,10 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
 
     if (picked == null || !mounted) return;
 
+    setState(() {
+      _reusingPlanId = plan['id'];
+    });
+
     try {
       final formattedDate = DateFormat('yyyy-MM-dd').format(picked);
       await _apiService.reuseCyclePlan(plan['id'], formattedDate);
@@ -237,6 +244,9 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
       Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
+      setState(() {
+        _reusingPlanId = null;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to reuse cycle: ${e.toString()}')),
       );
@@ -710,8 +720,19 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
                                   SizedBox(
                                     width: double.infinity,
                                     child: FilledButton.icon(
-                                      onPressed: () => _reusePlan(plan),
-                                      icon: const Icon(Icons.replay),
+                                      onPressed: _reusingPlanId == null
+                                          ? () => _reusePlan(plan)
+                                          : null,
+                                      icon: _reusingPlanId == plan['id']
+                                          ? SizedBox(
+                                              width: 16,
+                                              height: 16,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                                color: colorScheme.onPrimary,
+                                              ),
+                                            )
+                                          : const Icon(Icons.replay),
                                       label: const Text('Reuse'),
                                       style: FilledButton.styleFrom(
                                         backgroundColor: colorScheme.primary,
