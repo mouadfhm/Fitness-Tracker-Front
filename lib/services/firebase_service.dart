@@ -6,6 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import '../firebase_options.dart';
 import 'api_service.dart';
 import 'navigation_service.dart';
 
@@ -30,13 +31,27 @@ ApiService? _api;
 Future<void> _onBackgroundMessage(RemoteMessage message) async {
   // Android renders `notification` payloads into the tray on its own. This
   // handler only has to exist so the isolate can start for data-only messages.
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: _firebaseOptionsForPlatform());
+}
+
+/// Native config files (google-services.json / GoogleService-Info.plist)
+/// cover Android/iOS implicitly, so only platforms configured via
+/// `firebase_options.dart` (currently just Windows) need explicit options.
+FirebaseOptions? _firebaseOptionsForPlatform() {
+  if (!kIsWeb && defaultTargetPlatform == TargetPlatform.windows) {
+    return DefaultFirebaseOptions.windows;
+  }
+  return null;
 }
 
 Future<void> initializeFirebase() async {
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: _firebaseOptionsForPlatform());
   FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
-  await _initLocalNotifications();
+  try {
+    await _initLocalNotifications();
+  } catch (e) {
+    debugPrint('Local notifications setup failed: $e');
+  }
 }
 
 Future<void> _initLocalNotifications() async {

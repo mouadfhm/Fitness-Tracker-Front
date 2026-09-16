@@ -1,9 +1,12 @@
 // lib/main.dart
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
+import 'l10n/app_localizations.dart';
 import 'providers/theme_provider.dart';
+import 'providers/locale_provider.dart';
 import 'providers/profile_provider.dart';
 import 'providers/food_provider.dart';
 import 'providers/exercise_provider.dart';
@@ -22,7 +25,9 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await MobileAds.instance.initialize();
+  try {
+    await MobileAds.instance.initialize();
+  } catch (_) {}
   await dotenv.load(
     fileName: kReleaseMode ? ".env.production" : ".env.development",
   );
@@ -39,6 +44,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => ExercisesProvider()),
         ChangeNotifierProvider(create: (_) => AchievementsProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => LocaleProvider()),
       ],
       child: MyApp(isLoggedIn: token != null),
     ),
@@ -54,11 +60,20 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // Use the ThemeProvider from Provider to get the current theme mode
     final themeProvider = Provider.of<ThemeProvider>(context);
-    
+    final localeProvider = Provider.of<LocaleProvider>(context);
+
     return MaterialApp(
       navigatorKey: NavigationService.navigatorKey,
       title: 'Fitness Tracker',
       debugShowCheckedModeBanner: false,
+      locale: localeProvider.locale,
+      supportedLocales: LocaleProvider.supportedLocales,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(

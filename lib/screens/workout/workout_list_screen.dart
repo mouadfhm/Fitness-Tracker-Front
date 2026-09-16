@@ -10,6 +10,7 @@ import '../../services/workout_import_service.dart';
 import '../../utils/add_banner.dart';
 import '../../utils/ad_list_helper.dart';
 import 'import_confirmation_dialog.dart';
+import '../../l10n/app_localizations.dart';
 
 class WorkoutManagementScreen extends StatefulWidget {
   const WorkoutManagementScreen({super.key});
@@ -45,7 +46,7 @@ class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
       });
     } catch (e) {
       setState(() {
-        _errorMessage = 'Failed to load workouts: ${e.toString()}';
+        _errorMessage = AppLocalizations.of(context)!.workoutListLoadFailed(e.toString());
         _isLoading = false;
       });
     }
@@ -71,7 +72,7 @@ class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
       _fetchWorkouts();
     } catch (e) {
       if (!mounted) return;
-      _showSnack('Failed to import workout program: $e', isError: true);
+      _showSnack(AppLocalizations.of(context)!.workoutListImportFailed(e.toString()), isError: true);
       _fetchWorkouts();
     }
   }
@@ -97,7 +98,7 @@ class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
     );
 
     if (!mounted) return;
-    _showSnack('Workout "${workoutJson['name']}" imported successfully');
+    _showSnack(AppLocalizations.of(context)!.workoutListSingleImportedSuccess(workoutJson['name'].toString()));
     _fetchWorkouts();
   }
 
@@ -143,14 +144,17 @@ class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
     final daysPatternByNewId =
         WorkoutImportService.remapDaysPatternToIds(daysPatternByName, nameToNewId);
 
+    final cycleName = workoutsJson.map((w) => w['name'] as String).join(' + ');
+
     await _apiService.storeWeeklyWorkouts(
+      cycleName,
       DateFormat('yyyy-MM-dd').format(startDate),
       cycleJson['weeks'] as int,
       daysPatternByNewId,
     );
 
     if (!mounted) return;
-    _showSnack('Workout cycle imported successfully');
+    _showSnack(AppLocalizations.of(context)!.workoutListCycleImportedSuccess);
     _fetchWorkouts();
   }
 
@@ -182,7 +186,7 @@ class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Workout deleted successfully',
+            content: Text(AppLocalizations.of(context)!.workoutListDeletedSuccess,
                 style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
             backgroundColor: Theme.of(context).colorScheme.primary,
           ),
@@ -193,7 +197,7 @@ class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to delete workout: ${e.toString()}',
+            content: Text(AppLocalizations.of(context)!.workoutListDeleteFailed(e.toString()),
                 style: TextStyle(color: Theme.of(context).colorScheme.onError)),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
@@ -225,11 +229,12 @@ class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Workout Management', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(l10n.workoutListTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
@@ -239,12 +244,12 @@ class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
           IconButton(
             icon: const Icon(Icons.file_upload_outlined),
             onPressed: _importWorkoutProgram,
-            tooltip: 'Import workout program',
+            tooltip: l10n.workoutListImportTooltip,
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _fetchWorkouts,
-            tooltip: 'Refresh workouts',
+            tooltip: l10n.workoutListRefreshTooltip,
           ),
         ],
       ),
@@ -319,14 +324,14 @@ class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      workout['name'] ?? 'Unnamed Workout',
+                      workout['name'] ?? AppLocalizations.of(context)!.workoutListUnnamedWorkout,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      workout['description'] ?? 'No description',
+                      workout['description'] ?? AppLocalizations.of(context)!.workoutListNoDescription,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.bodySmall?.copyWith(
@@ -339,7 +344,7 @@ class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
               IconButton(
                 icon: Icon(Icons.delete_outline, color: colorScheme.error),
                 onPressed: () => _deleteWorkout(workout['id']),
-                tooltip: 'Delete workout',
+                tooltip: AppLocalizations.of(context)!.workoutListDeleteTooltip,
               ),
             ],
           ),
@@ -360,7 +365,7 @@ class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'No Workouts Yet',
+            AppLocalizations.of(context)!.workoutListNoWorkoutsYet,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: colorScheme.primary,
@@ -368,7 +373,7 @@ class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Create your first workout to get started',
+            AppLocalizations.of(context)!.workoutListCreateFirstWorkout,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),
@@ -377,7 +382,7 @@ class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
           FilledButton.icon(
             onPressed: _navigateToCreateWorkout,
             icon: Icon(Icons.add, color: colorScheme.onPrimary),
-            label: const Text('Create New Workout'),
+            label: Text(AppLocalizations.of(context)!.workoutListCreateNewWorkout),
             style: FilledButton.styleFrom(
               backgroundColor: colorScheme.primary,
               foregroundColor: colorScheme.onPrimary,
@@ -397,7 +402,7 @@ class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
           CircularProgressIndicator(color: colorScheme.primary),
           const SizedBox(height: 16),
           Text(
-            'Loading workouts...',
+            AppLocalizations.of(context)!.workoutLoading,
             style: TextStyle(color: colorScheme.primary),
           ),
         ],
@@ -413,7 +418,7 @@ class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
           Icon(Icons.error_outline, size: 64, color: colorScheme.error),
           const SizedBox(height: 16),
           Text(
-            'Error Loading Workouts',
+            AppLocalizations.of(context)!.workoutListErrorLoading,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -424,7 +429,7 @@ class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Text(
-              _errorMessage ?? 'An unknown error occurred',
+              _errorMessage ?? AppLocalizations.of(context)!.workoutListUnknownError,
               style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
@@ -433,7 +438,7 @@ class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
           ElevatedButton.icon(
             onPressed: _fetchWorkouts,
             icon: const Icon(Icons.refresh),
-            label: const Text('Try Again'),
+            label: Text(AppLocalizations.of(context)!.workoutTryAgain),
             style: ElevatedButton.styleFrom(
               backgroundColor: colorScheme.primary,
               foregroundColor: colorScheme.onPrimary,
