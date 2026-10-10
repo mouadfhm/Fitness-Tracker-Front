@@ -65,13 +65,6 @@ class CustomBottomNavBar extends StatelessWidget {
             color: isLight ? Colors.white : scheme.surfaceContainerHigh,
             borderRadius: BorderRadius.circular(24),
             border: Border.all(color: AppTheme.cardBorderColor(scheme)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: isLight ? 0.08 : 0.3),
-                blurRadius: 20,
-                offset: const Offset(0, 6),
-              ),
-            ],
           ),
           child: LayoutBuilder(
             builder: (context, constraints) {
@@ -92,13 +85,6 @@ class CustomBottomNavBar extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: scheme.primary,
                         shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: scheme.primary.withValues(alpha: 0.35),
-                            blurRadius: 10,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
                       ),
                     ),
                   ),

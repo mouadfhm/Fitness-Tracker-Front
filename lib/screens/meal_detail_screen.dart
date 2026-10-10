@@ -102,13 +102,6 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
             decoration: BoxDecoration(
               color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
               border:
                   isDark
                       ? Border.all(
@@ -258,13 +251,6 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                             decoration: BoxDecoration(
                               color: theme.colorScheme.surface,
                               borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.05),
-                                  blurRadius: 6,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
                               border:
                                   isDark
                                       ? Border.all(

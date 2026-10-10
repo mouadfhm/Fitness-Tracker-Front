@@ -76,13 +76,6 @@ class _NewFoodScreenState extends State<NewFoodScreen> {
         borderRadius: BorderRadius.circular(12),
         border:
             Border.all(color: colorScheme.primary.withValues(alpha: 0.15)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
       child: TextFormField(
         controller: controller,
@@ -154,13 +147,6 @@ class _NewFoodScreenState extends State<NewFoodScreen> {
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                           color: colorScheme.primary.withValues(alpha: 0.15)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.04),
-                          blurRadius: 6,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
                     ),
                     child: TextFormField(
                       controller: _nameController,
@@ -253,7 +239,7 @@ class _NewFoodScreenState extends State<NewFoodScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      elevation: 3,
+                      elevation: 0,
                     ),
                     child: _isLoading
                         ? SizedBox(

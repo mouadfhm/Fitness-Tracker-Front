@@ -511,7 +511,7 @@ class _FoodsScreenState extends State<FoodsScreen>
             onPressed: _goToNewFood,
             backgroundColor: colorScheme.primary,
             foregroundColor: colorScheme.onPrimary,
-            elevation: 4,
+            elevation: 0,
             icon: const Icon(Icons.add),
             label: const Text('New food'),
           ),
@@ -688,7 +688,7 @@ class _FoodsScreenState extends State<FoodsScreen>
                   borderRadius: BorderRadius.circular(12),
                 ),
                 padding: const EdgeInsets.symmetric(vertical: 12),
-                elevation: 2,
+                elevation: 0,
               ),
               child: Semantics(
                 label: 'Scan a barcode',

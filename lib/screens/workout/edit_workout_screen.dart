@@ -686,13 +686,6 @@ class _EditWorkoutScreenState extends State<EditWorkoutScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: colorScheme.surface,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 5,
-            offset: const Offset(0, -1),
-          ),
-        ],
       ),
       child: Row(
         children: [

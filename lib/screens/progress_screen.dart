@@ -400,7 +400,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 padding: const EdgeInsets.symmetric(vertical: 12),
-                elevation: 2,
+                elevation: 0,
               ),
               onPressed: _addProgress,
               child: const Text(

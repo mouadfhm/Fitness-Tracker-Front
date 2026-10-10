@@ -387,13 +387,6 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                     decoration: BoxDecoration(
                       color: colorScheme.surface,
                       borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
-                          blurRadius: 8,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(20.0),
@@ -514,13 +507,6 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                     decoration: BoxDecoration(
                       color: colorScheme.surface,
                       borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
-                          blurRadius: 8,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(20.0),
