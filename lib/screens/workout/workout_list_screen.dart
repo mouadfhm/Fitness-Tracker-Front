@@ -11,6 +11,7 @@ import '../../utils/add_banner.dart';
 import '../../utils/ad_list_helper.dart';
 import 'import_confirmation_dialog.dart';
 import '../../l10n/app_localizations.dart';
+import '../../utils/friendly_error.dart';
 
 class WorkoutManagementScreen extends StatefulWidget {
   const WorkoutManagementScreen({super.key});
@@ -46,7 +47,7 @@ class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
       });
     } catch (e) {
       setState(() {
-        _errorMessage = AppLocalizations.of(context)!.workoutListLoadFailed(e.toString());
+        _errorMessage = AppLocalizations.of(context)!.workoutListLoadFailed(friendlyError(e));
         _isLoading = false;
       });
     }
@@ -72,7 +73,7 @@ class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
       _fetchWorkouts();
     } catch (e) {
       if (!mounted) return;
-      _showSnack(AppLocalizations.of(context)!.workoutListImportFailed(e.toString()), isError: true);
+      _showSnack(AppLocalizations.of(context)!.workoutListImportFailed(friendlyError(e)), isError: true);
       _fetchWorkouts();
     }
   }
@@ -197,7 +198,7 @@ class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.workoutListDeleteFailed(e.toString()),
+            content: Text(AppLocalizations.of(context)!.workoutListDeleteFailed(friendlyError(e)),
                 style: TextStyle(color: Theme.of(context).colorScheme.onError)),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),

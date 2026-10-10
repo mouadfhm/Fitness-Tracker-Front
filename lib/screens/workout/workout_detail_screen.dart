@@ -1,6 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'package:fitness_tracker_app/screens/workout/edit_workout_screen.dart';
+import 'package:fitness_tracker_app/utils/friendly_error.dart';
 import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
 import '../../services/workout_export_service.dart';
@@ -46,7 +47,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
       _showSnack('Workout exported successfully');
     } catch (e) {
       if (!mounted) return;
-      _showSnack('Failed to export workout: $e', isError: true);
+      _showSnack("Couldn't export this workout. ${friendlyError(e)}", isError: true);
     }
   }
 
@@ -109,7 +110,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Error: ${snapshot.error}'),
+                  Text("Couldn't load this workout. ${friendlyError(snapshot.error!)}"),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: _fetchWorkoutDetails,

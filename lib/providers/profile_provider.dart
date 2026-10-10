@@ -1,5 +1,6 @@
 // lib/providers/profile_provider.dart
 import 'dart:io';
+import '../utils/friendly_error.dart';
 import 'package:flutter/material.dart';
 import 'package:fitness_tracker_app/services/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -35,7 +36,7 @@ class ProfileProvider extends ChangeNotifier {
       
       _profileData = data;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = "We couldn't load your profile. ${friendlyError(e)}";
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -64,7 +65,7 @@ class ProfileProvider extends ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      _errorMessage = 'Failed to update profile picture: ${e.toString()}';
+      _errorMessage = "Couldn't update your photo. ${friendlyError(e)}";
       notifyListeners();
     }
   }
@@ -86,7 +87,7 @@ class ProfileProvider extends ChangeNotifier {
       
       _profileData = updatedProfile;
     } catch (e) {
-      _errorMessage = 'Failed to update profile: ${e.toString()}';
+      _errorMessage = "Couldn't update your profile. ${friendlyError(e)}";
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -130,7 +131,7 @@ Future<Map<String, dynamic>> fetchHealthStats() async {
       // 'weightTrend': await _apiService.getWeightTrend(),
     };
   } catch (e) {
-    _errorMessage = 'Failed to fetch health stats: ${e.toString()}';
+    _errorMessage = "Couldn't load your stats. ${friendlyError(e)}";
     notifyListeners();
     rethrow;
   }

@@ -1,6 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
+import '../utils/friendly_error.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../services/api_service.dart';
 import 'package:intl/intl.dart';
@@ -39,7 +40,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
     } catch (error) {
       if (mounted) {
         setState(() {
-          _errorMessage = error.toString();
+          _errorMessage = "Couldn't load your weight log. ${friendlyError(error)}";
           _isLoading = false;
         });
       }
@@ -68,7 +69,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
       await _fetchProgress();
       _showSnackBar("Progress added successfully!");
     } catch (error) {
-      _showSnackBar("Error adding progress: $error");
+      _showSnackBar("Couldn't save this entry. ${friendlyError(error)}");
     }
   }
 
@@ -153,7 +154,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Text(
                       formattedDate,
-                      style: TextStyle(fontSize: 10, color: textColor),
+                      style: TextStyle(fontSize: 12, color: textColor),
                     ),
                   );
                 }
@@ -169,7 +170,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
               getTitlesWidget:
                   (value, meta) => Text(
                     value.toStringAsFixed(0),
-                    style: TextStyle(fontSize: 10, color: textColor),
+                    style: TextStyle(fontSize: 12, color: textColor),
                   ),
             ),
           ),

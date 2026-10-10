@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'ad_config.dart';
@@ -16,7 +17,7 @@ class _InlineAdCardState extends State<InlineAdCard> {
   @override
   void initState() {
     super.initState();
-    if (!Platform.isAndroid && !Platform.isIOS) return;
+    if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) return;
     _ad = BannerAd(
       adUnitId: AdConfig.adUnitId,
       size: AdSize.mediumRectangle,

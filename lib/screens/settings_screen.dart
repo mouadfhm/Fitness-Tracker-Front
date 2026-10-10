@@ -1,5 +1,6 @@
 // lib/screens/settings_screen.dart
 import 'package:flutter/material.dart';
+import '../utils/friendly_error.dart';
 import 'package:provider/provider.dart';
 import '../services/api_service.dart';
 import 'package:fitness_tracker_app/providers/theme_provider.dart';
@@ -119,7 +120,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Could not save: $e',
+            "Couldn't save. ${friendlyError(e)}",
             style: TextStyle(color: Theme.of(context).colorScheme.onError),
           ),
           backgroundColor: Theme.of(context).colorScheme.error,
@@ -381,7 +382,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to delete account: $e', style: TextStyle(color: Theme.of(context).colorScheme.onError)),
+          content: Text("Couldn't delete your account. ${friendlyError(e)}", style: TextStyle(color: Theme.of(context).colorScheme.onError)),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );

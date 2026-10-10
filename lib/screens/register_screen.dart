@@ -3,6 +3,7 @@ import '../services/api_service.dart';
 import '../services/firebase_service.dart';
 import 'onboarding_screen.dart';
 import 'widgets/app_text_field.dart';
+import '../utils/friendly_error.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -41,11 +42,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
           builder: (_) => const OnboardingScreen(),
         ),
       );
-    } catch (_) {
+    } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Registration failed. Please try again.',
+          content: Text(friendlyError(e, fallback: "Couldn't create your account. Please try again."),
               style: TextStyle(color: Theme.of(context).colorScheme.onError)),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
@@ -177,14 +178,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         'Already have an account? ',
                         style: TextStyle(color: colorScheme.onSurfaceVariant),
                       ),
-                      GestureDetector(
-                        onTap: () => Navigator.pop(context),
-                        child: Text(
-                          'Login',
-                          style: TextStyle(
-                            color: colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text(
+                          'Log in',
+                          style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],

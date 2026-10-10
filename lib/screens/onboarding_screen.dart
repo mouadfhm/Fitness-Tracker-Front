@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../utils/friendly_error.dart';
 import 'home_screen.dart';
 import 'profile_screen.dart';
 
@@ -24,6 +25,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final _ageController = TextEditingController();
   final _weightController = TextEditingController();
   final _heightController = TextEditingController();
+  // Used instead of _heightController when entering feet and inches.
+  final _heightFtController = TextEditingController();
+  final _heightInController = TextEditingController();
+
+  /// Lets people enter lb / ft-in. Values are always saved as kg / cm.
+  bool _imperial = false;
 
   String _gender = 'male';
   String _activityLevel = 'Moderate';
@@ -54,20 +61,57 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     _ageController.dispose();
     _weightController.dispose();
     _heightController.dispose();
+    _heightFtController.dispose();
+    _heightInController.dispose();
     _pageController.dispose();
     super.dispose();
   }
 
+  double? _parse(TextEditingController c) =>
+      double.tryParse(c.text.trim().replaceAll(',', '.'));
+
+  /// Weight in kg, whatever unit was typed.
+  double get _weightKg {
+    final w = _parse(_weightController) ?? 0;
+    return _imperial ? w * 0.45359237 : w;
+  }
+
+  /// Height in cm, whatever unit was typed.
+  double get _heightCm {
+    if (!_imperial) return _parse(_heightController) ?? 0;
+    final ft = _parse(_heightFtController) ?? 0;
+    final inches = _parse(_heightInController) ?? 0;
+    return (ft * 12 + inches) * 2.54;
+  }
+
+  void _setUnits(bool imperial) {
+    if (imperial == _imperial) return;
+    final kg = _weightKg;
+    final cm = _heightCm;
+    setState(() {
+      _imperial = imperial;
+      if (imperial) {
+        _weightController.text = kg > 0 ? (kg / 0.45359237).round().toString() : '';
+        final totalIn = cm / 2.54;
+        _heightFtController.text = cm > 0 ? (totalIn ~/ 12).toString() : '';
+        _heightInController.text = cm > 0 ? (totalIn % 12).round().toString() : '';
+      } else {
+        _weightController.text = kg > 0 ? kg.toStringAsFixed(1).replaceAll('.0', '') : '';
+        _heightController.text = cm > 0 ? cm.round().toString() : '';
+      }
+    });
+  }
+
   double get _bmi {
-    final w = double.tryParse(_weightController.text) ?? 0;
-    final h = double.tryParse(_heightController.text) ?? 0;
+    final w = _weightKg;
+    final h = _heightCm;
     if (h <= 0 || w <= 0) return 0;
     return w / ((h / 100) * (h / 100));
   }
 
   double get _bmr {
-    final w = double.tryParse(_weightController.text) ?? 0;
-    final h = double.tryParse(_heightController.text) ?? 0;
+    final w = _weightKg;
+    final h = _heightCm;
     final a = double.tryParse(_ageController.text) ?? 0;
     if (w <= 0 || h <= 0 || a <= 0) return 0;
     return _gender == 'male'
@@ -114,8 +158,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     try {
       await ApiService().updateProfile({
         'age': int.tryParse(_ageController.text.trim()),
-        'weight': double.tryParse(_weightController.text.trim()),
-        'height': double.tryParse(_heightController.text.trim()),
+        'weight': double.parse(_weightKg.toStringAsFixed(1)),
+        'height': double.parse(_heightCm.toStringAsFixed(1)),
         'gender': _gender,
         'activity_level': _activityLevel,
         'fitness_goal': _fitnessGoal,
@@ -133,12 +177,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           (route) => false,
         );
       }
-    } catch (_) {
+    } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Failed to save profile. Please try again.',
+            "Couldn't save your details. ${friendlyError(e)}",
             style: TextStyle(color: Theme.of(context).colorScheme.onError),
           ),
           backgroundColor: Theme.of(context).colorScheme.error,
@@ -200,10 +244,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget _buildStep1() {
     return _buildStepShell(
       title: 'Your body stats',
-      subtitle: 'We use these to calculate your daily calorie needs',
+      subtitle:
+          'We only use these to work out how much you should eat each day. You can change them any time.',
       infoCard: _buildBmiCard(),
       content: Column(
         children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: SegmentedButton<bool>(
+              segments: const [
+                ButtonSegment(value: false, label: Text('kg / cm')),
+                ButtonSegment(value: true, label: Text('lb / ft')),
+              ],
+              selected: {_imperial},
+              onSelectionChanged: (v) => _setUnits(v.first),
+            ),
+          ),
+          const SizedBox(height: 12),
           _buildNumberField(
             key: const Key('age_field'),
             controller: _ageController,
@@ -215,30 +272,55 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           _buildNumberField(
             key: const Key('weight_field'),
             controller: _weightController,
-            label: 'Weight (kg)',
-            hint: 'e.g. 70',
+            label: _imperial ? 'Weight (lb)' : 'Weight (kg)',
+            hint: _imperial ? 'e.g. 155' : 'e.g. 70',
             icon: Icons.monitor_weight_outlined,
           ),
           const SizedBox(height: 12),
-          _buildNumberField(
-            key: const Key('height_field'),
-            controller: _heightController,
-            label: 'Height (cm)',
-            hint: 'e.g. 175',
-            icon: Icons.height,
-          ),
+          if (_imperial)
+            Row(
+              children: [
+                Expanded(
+                  child: _buildNumberField(
+                    key: const Key('height_ft_field'),
+                    controller: _heightFtController,
+                    label: 'Height (ft)',
+                    hint: 'e.g. 5',
+                    icon: Icons.height,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildNumberField(
+                    key: const Key('height_in_field'),
+                    controller: _heightInController,
+                    label: '(in)',
+                    hint: 'e.g. 9',
+                    icon: Icons.straighten,
+                  ),
+                ),
+              ],
+            )
+          else
+            _buildNumberField(
+              key: const Key('height_field'),
+              controller: _heightController,
+              label: 'Height (cm)',
+              hint: 'e.g. 175',
+              icon: Icons.height,
+            ),
         ],
       ),
       onNext: () {
         final age = int.tryParse(_ageController.text.trim());
-        final weight = double.tryParse(_weightController.text.trim());
-        final height = double.tryParse(_heightController.text.trim());
+        final weight = _weightKg;
+        final height = _heightCm;
         if (age == null || age <= 0 || age > 120 ||
-            weight == null || weight <= 0 || weight > 500 ||
-            height == null || height <= 0 || height > 300) {
+            weight <= 0 || weight > 500 ||
+            height <= 0 || height > 300) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Please enter valid age, weight, and height'),
+              content: Text('Please fill in your age, weight and height'),
             ),
           );
           return;
@@ -277,9 +359,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         children: [
           Text(
-            'BMI',
+            'BMI (your weight compared to your height)',
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 13,
               fontWeight: FontWeight.w600,
               color: Theme.of(context).colorScheme.onPrimaryContainer,
             ),
@@ -302,7 +384,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
             child: Text(
               label,
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: color),
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: color),
             ),
           ),
         ],
@@ -314,13 +396,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final bmr = _bmr;
     return _buildStepShell(
       title: "What's your gender?",
-      subtitle: 'Affects your metabolic rate calculation',
+      subtitle: 'Men and women burn calories at slightly different rates',
       infoCard: _buildInfoCard(
         gradient: [const Color(0xFFFEF3C7), const Color(0xFFFDE68A)],
         child: Column(children: [
           const Text(
-            'Estimated Daily Calories at Rest',
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF92400E)),
+            'Calories your body burns resting',
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF92400E)),
           ),
           const SizedBox(height: 4),
           Text(
@@ -328,8 +410,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFF78350F)),
           ),
           const Text(
-            'Basal Metabolic Rate',
-            style: TextStyle(fontSize: 11, color: Color(0xFF92400E)),
+            'Even if you stayed in bed all day',
+            style: TextStyle(fontSize: 13, color: Color(0xFF92400E)),
           ),
         ]),
       ),
@@ -338,7 +420,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           value: 'male',
           currentValue: _gender,
           label: 'Male',
-          description: 'Higher BMR on average',
+          description: '',
           emoji: '👨',
           onTap: () => setState(() => _gender = 'male'),
         ),
@@ -346,7 +428,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           value: 'female',
           currentValue: _gender,
           label: 'Female',
-          description: 'Lower BMR on average',
+          description: '',
           emoji: '👩',
           onTap: () => setState(() => _gender = 'female'),
         ),
@@ -359,11 +441,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget _buildStep3() {
     final tdee = _tdee;
     final activities = [
-      ('sedentary', '🛋️', 'Sedentary', 'Desk job, little to no exercise'),
-      ('light', '🚶', 'Light', 'Light exercise 1–3 days/week'),
-      ('Moderate', '🏃', 'Moderate', 'Exercise 3–5 days/week'),
-      ('active', '⚡', 'Active', 'Hard exercise 6–7 days/week'),
-      ('very_active', '🔥', 'Very Active', 'Physical job or 2× daily training'),
+      ('sedentary', '🛋️', 'Mostly sitting', 'Desk job, little or no exercise'),
+      ('light', '🚶', 'Lightly active', 'Walks or light exercise 1–3 days a week'),
+      ('Moderate', '🏃', 'Moderately active', 'Exercise 3–5 days a week'),
+      ('active', '⚡', 'Active', 'Hard exercise 6–7 days a week'),
+      ('very_active', '🔥', 'Very active', 'Physical job or training twice a day'),
     ];
     return _buildStepShell(
       title: 'How active are you?',
@@ -372,17 +454,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         gradient: [const Color(0xFFDCFCE7), const Color(0xFFBBF7D0)],
         child: Column(children: [
           const Text(
-            'Total Daily Energy Expenditure',
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF166534)),
+            'Calories you burn on a typical day',
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF166534)),
           ),
           const SizedBox(height: 4),
           Text(
             tdee > 0 ? '${tdee.toStringAsFixed(0)} kcal/day' : '—',
             style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFF15803D)),
           ),
-          Text(
-            '×${_activityMultiplier.toStringAsFixed(2)} activity multiplier',
-            style: const TextStyle(fontSize: 11, color: Color(0xFF166534)),
+          const Text(
+            'Including your daily activity',
+            style: TextStyle(fontSize: 13, color: Color(0xFF166534)),
           ),
         ]),
       ),
@@ -407,15 +489,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final target = _dailyTarget;
     final tdee = _tdee;
     final goals = [
-      ('weight_loss', '🔥', 'Lose Weight', '500 kcal daily deficit'),
-      ('muscle_gain', '💪', 'Build Muscle', '+300 kcal daily surplus'),
-      ('maintenance', '⚖️', 'Stay Fit', 'Maintain current weight'),
+      ('weight_loss', '🔥', 'Lose weight', 'Eat a bit less than you burn (about 0.5 kg a week)'),
+      ('muscle_gain', '💪', 'Build muscle', 'Eat a bit more than you burn, and do strength training'),
+      ('maintenance', '⚖️', 'Stay at my weight', 'Eat about what you burn'),
     ];
     final offset = _fitnessGoal == 'weight_loss'
-        ? '−500'
+        ? '500 kcal less than you burn on a typical day'
         : _fitnessGoal == 'muscle_gain'
-            ? '+300'
-            : '±0';
+            ? '300 kcal more than you burn on a typical day'
+            : 'The same as you burn on a typical day';
     return _buildStepShell(
       title: "What's your goal?",
       subtitle: "We'll adjust your daily target accordingly",
@@ -423,8 +505,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         gradient: [const Color(0xFFFEE2E2), const Color(0xFFFECACA)],
         child: Column(children: [
           const Text(
-            'Your Daily Calorie Target',
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF991B1B)),
+            'Your daily calorie goal',
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF991B1B)),
           ),
           const SizedBox(height: 4),
           Text(
@@ -433,8 +515,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           if (tdee > 0)
             Text(
-              '$offset kcal from your TDEE',
-              style: const TextStyle(fontSize: 11, color: Color(0xFF991B1B)),
+              offset,
+              style: const TextStyle(fontSize: 13, color: Color(0xFF991B1B)),
+              textAlign: TextAlign.center,
             ),
         ]),
       ),
@@ -574,7 +657,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }) {
     final isSelected = value == currentValue;
     final colorScheme = Theme.of(context).colorScheme;
-    return GestureDetector(
+    return Semantics(
+      button: true,
+      selected: isSelected,
+      label: description.isEmpty ? label : '$label. $description',
+      excludeSemantics: true,
+      child: GestureDetector(
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
@@ -598,21 +686,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   Text(
                     label,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: isSelected ? colorScheme.primary : colorScheme.onSurface,
                     ),
                   ),
-                  Text(
-                    description,
-                    style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant),
-                  ),
+                  if (description.isNotEmpty)
+                    Text(
+                      description,
+                      style: TextStyle(fontSize: 14, color: colorScheme.onSurfaceVariant),
+                    ),
                 ],
               ),
             ),
             if (isSelected) Icon(Icons.check_circle, color: colorScheme.primary, size: 20),
           ],
         ),
+      ),
       ),
     );
   }

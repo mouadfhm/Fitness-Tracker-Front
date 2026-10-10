@@ -4,6 +4,7 @@ import '../services/firebase_service.dart';
 import 'home_screen.dart';
 import 'register_screen.dart';
 import 'widgets/app_text_field.dart';
+import '../utils/friendly_error.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -39,11 +40,11 @@ class _LoginScreenState extends State<LoginScreen> {
         context,
         MaterialPageRoute(builder: (_) => const HomeScreen()),
       );
-    } catch (_) {
+    } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Login failed. Please try again.'),
+          content: Text(friendlyError(e, fallback: "Couldn't log you in. Please try again.")),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -135,7 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: _isLoading
                         ? CircularProgressIndicator(color: colorScheme.onPrimary)
                         : const Text(
-                            'Login',
+                            'Log in',
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                   ),
@@ -147,14 +148,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         "Don't have an account? ",
                         style: TextStyle(color: colorScheme.onSurfaceVariant),
                       ),
-                      GestureDetector(
-                        onTap: _goToRegister,
-                        child: Text(
-                          'Register',
-                          style: TextStyle(
-                            color: colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      TextButton(
+                        onPressed: _goToRegister,
+                        child: const Text(
+                          'Create one',
+                          style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],

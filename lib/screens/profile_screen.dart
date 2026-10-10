@@ -14,6 +14,7 @@ import 'widgets/bottom_nav_bar.dart';
 import 'settings_screen.dart';
 import 'help_support_screen.dart';
 import 'achievements_screen.dart';
+import '../utils/labels.dart';
 import 'login_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -125,7 +126,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Confirm Logout'),
+          title: const Text('Log out?'),
           content: const Text(
             'Are you sure you want to log out of your account?',
           ),
@@ -137,7 +138,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
             ),
             TextButton(
-              child: Text('Logout', style: TextStyle(color: Theme.of(context).colorScheme.error)),
+              child: Text('Log out', style: TextStyle(color: Theme.of(context).colorScheme.error)),
               onPressed: () {
                 Navigator.of(context).pop();
                 _logout();
@@ -156,7 +157,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Profile',
+          'Me',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         elevation: 0,
@@ -250,6 +251,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           size: 20,
                         ),
                         onPressed: _selectProfileImage,
+                        tooltip: 'Change profile photo',
                       ),
                     ),
                   ],
@@ -269,29 +271,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   style: TextStyle(
                     fontSize: 16, 
                     color: colorScheme.onSurface.withValues(alpha: 0.7),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                // Membership badge
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: colorScheme.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: colorScheme.primary,
-                      width: 1,
-                    ),
-                  ),
-                  child: Text(
-                    profileData['membership_type'] ?? 'Free Member',
-                    style: TextStyle(
-                      color: colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -324,26 +303,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         "${profileData['height']} cm",
                       ),
                       _buildProfileTile(
-                        Icons.fitness_center,
-                        "Activity Level",
-                        profileData['activity_level'],
+                        Icons.directions_walk,
+                        "How active you are",
+                        activityLabel(profileData['activity_level']?.toString()),
                       ),
                       _buildProfileTile(
                         Icons.emoji_events,
-                        "Fitness Goal",
-                        profileData['fitness_goal'],
+                        "Your goal",
+                        goalLabel(profileData['fitness_goal']?.toString()),
                       ),
                       _buildProfileTile(
                         profileData['gender'] == "male"
                             ? Icons.male
                             : Icons.female,
                         "Gender",
-                        profileData['gender'],
+                        genderLabel(profileData['gender']?.toString()),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton.icon(
+                    onPressed: () => _goToProfileEdit(profileData),
+                    icon: const Icon(Icons.edit),
+                    label: const Text('Edit my details'),
+                  ),
+                ),
+                const SizedBox(height: 12),
                 // Quick Action Buttons
                 GridView.count(
                   shrinkWrap: true,
@@ -353,8 +341,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   mainAxisSpacing: 10,
                   children: [
                     _buildQuickActionButton(
-                      Icons.fitness_center,
-                      "Progress",
+                      Icons.show_chart,
+                      "Weight log",
                       _goToProgressScreen,
                     ),
                     _buildQuickActionButton(
@@ -374,21 +362,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     _buildQuickActionButton(
                       Icons.logout,
-                      "Logout",
+                      "Log out",
                       _showLogoutConfirmation,
                       isLogout: true,
                     ),
                   ],
                 ),
                 const SizedBox(height: 10),
-                // App Version
-                Text(
-                  "App version: 1.2.3",
-                  style: TextStyle(
-                    color: colorScheme.onSurface.withValues(alpha: 0.5),
-                    fontSize: 12,
-                  ),
-                ),
               ],
             ),
           );
@@ -397,11 +377,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  "Error: ${provider.errorMessage}",
-                  style: TextStyle(
-                    color: colorScheme.error,
-                    fontSize: 16,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Text(
+                    provider.errorMessage,
+                    style: TextStyle(
+                      color: colorScheme.onSurface,
+                      fontSize: 16,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -416,7 +400,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     backgroundColor: colorScheme.primary,
                     foregroundColor: colorScheme.onPrimary,
                   ),
-                  child: const Text("Retry"),
+                  child: const Text("Try again"),
                 ),
               ],
             ),

@@ -1,5 +1,6 @@
 // lib/providers/workout_provider.dart
 import 'package:flutter/foundation.dart';
+import '../utils/friendly_error.dart';
 import '../models/workout.dart';
 import '../services/workout_service.dart';
 
@@ -47,7 +48,7 @@ class WorkoutProvider with ChangeNotifier {
       _exercises = await _workoutService.getGymExercises();
       notifyListeners();
     } catch (e) {
-      _setError('Failed to load exercises: $e');
+      _setError("Couldn't load exercises. ${friendlyError(e)}");
     } finally {
       _setLoading(false);
     }
@@ -75,7 +76,7 @@ class WorkoutProvider with ChangeNotifier {
       notifyListeners();
       return workout;
     } catch (e) {
-      _setError('Failed to create workout: $e');
+      _setError("Couldn't create workout. ${friendlyError(e)}");
       return null;
     } finally {
       _setLoading(false);
@@ -106,7 +107,7 @@ class WorkoutProvider with ChangeNotifier {
       notifyListeners();
       return workout;
     } catch (e) {
-      _setError('Failed to update workout: $e');
+      _setError("Couldn't update workout. ${friendlyError(e)}");
       return null;
     } finally {
       _setLoading(false);
@@ -121,7 +122,7 @@ class WorkoutProvider with ChangeNotifier {
       notifyListeners();
       return workout;
     } catch (e) {
-      _setError('Failed to fetch workout: $e');
+      _setError("Couldn't load workout. ${friendlyError(e)}");
       return null;
     } finally {
       _setLoading(false);
@@ -148,7 +149,7 @@ class WorkoutProvider with ChangeNotifier {
       notifyListeners();
       return scheduledWorkout;
     } catch (e) {
-      _setError('Failed to schedule workout: $e');
+      _setError("Couldn't schedule workout. ${friendlyError(e)}");
       return null;
     } finally {
       _setLoading(false);
@@ -175,7 +176,7 @@ class WorkoutProvider with ChangeNotifier {
       notifyListeners();
       return scheduledWorkout;
     } catch (e) {
-      _setError('Failed to update scheduled workout: $e');
+      _setError("Couldn't update scheduled workout. ${friendlyError(e)}");
       return null;
     } finally {
       _setLoading(false);
@@ -198,7 +199,7 @@ class WorkoutProvider with ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      _setError('Failed to create weekly plan: $e');
+      _setError("Couldn't create weekly plan. ${friendlyError(e)}");
       return false;
     } finally {
       _setLoading(false);
@@ -212,7 +213,7 @@ class WorkoutProvider with ChangeNotifier {
       _weeklyPlan = await _workoutService.fetchWeeklyWorkouts();
       notifyListeners();
     } catch (e) {
-      _setError('Failed to fetch weekly workouts: $e');
+      _setError("Couldn't load weekly workouts. ${friendlyError(e)}");
     } finally {
       _setLoading(false);
     }

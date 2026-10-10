@@ -30,6 +30,8 @@ void main() {
       await tester.enterText(find.byKey(const Key('weight_field')), '70');
       await tester.enterText(find.byKey(const Key('height_field')), '175');
       await tester.pump();
+      // Step 1 now has a units switch, so Next can sit below the fold.
+      await tester.ensureVisible(find.text('Next'));
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
       expect(find.text("What's your gender?"), findsOneWidget);
@@ -43,6 +45,8 @@ void main() {
       await tester.enterText(find.byKey(const Key('weight_field')), '70');
       await tester.enterText(find.byKey(const Key('height_field')), '175');
       await tester.pump();
+      // Step 1 now has a units switch, so Next can sit below the fold.
+      await tester.ensureVisible(find.text('Next'));
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
     }
@@ -66,8 +70,8 @@ void main() {
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
       expect(find.text('How active are you?'), findsOneWidget);
-      expect(find.text('Sedentary'), findsOneWidget);
-      expect(find.text('Moderate'), findsOneWidget);
+      expect(find.text('Mostly sitting'), findsOneWidget);
+      expect(find.text('Moderately active'), findsOneWidget);
     });
 
     testWidgets('Step 4 shows goal options', (tester) async {
@@ -80,9 +84,26 @@ void main() {
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
       expect(find.text("What's your goal?"), findsOneWidget);
-      expect(find.text('Lose Weight'), findsOneWidget);
-      expect(find.text('Build Muscle'), findsOneWidget);
-      expect(find.text('Stay Fit'), findsOneWidget);
+      expect(find.text('Lose weight'), findsOneWidget);
+      expect(find.text('Build muscle'), findsOneWidget);
+      expect(find.text('Stay at my weight'), findsOneWidget);
+    });
+  });
+
+  group('OnboardingScreen units', () {
+    testWidgets('switching to lb / ft keeps the same BMI', (tester) async {
+      await tester.pumpWidget(_wrap(const OnboardingScreen()));
+      await tester.enterText(find.byKey(const Key('weight_field')), '70');
+      await tester.enterText(find.byKey(const Key('height_field')), '175');
+      await tester.pump();
+      expect(find.text('22.9'), findsOneWidget);
+
+      await tester.tap(find.text('lb / ft'));
+      await tester.pump();
+      expect(find.byKey(const Key('height_ft_field')), findsOneWidget);
+      expect(find.byKey(const Key('height_field')), findsNothing);
+      // 70 kg -> 154 lb, 175 cm -> 5 ft 9 in: BMI stays about the same.
+      expect(find.textContaining('22.'), findsOneWidget);
     });
   });
 }
