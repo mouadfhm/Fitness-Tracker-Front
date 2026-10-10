@@ -1,6 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'dart:convert';
+import 'package:fitness_tracker_app/utils/friendly_error.dart';
 
 import 'package:fitness_tracker_app/screens/workout/new_workout_cycle_screen.dart';
 import 'package:fitness_tracker_app/screens/workout/new_workout_screen.dart';
@@ -66,15 +67,15 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
   }
 
   void _openSavedCycles() async {
-    final result = await Navigator.push(
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => const SavedWorkoutCyclesScreen(),
       ),
     );
-    if (result == true) {
-      _fetchWeeklyPlan();
-    }
+    // Starting a ready-made plan happens inside that screen and doesn't
+    // always report back, so refresh whenever we return.
+    if (mounted) _fetchWeeklyPlan();
   }
 
   void _fetchWeeklyPlan() {
@@ -127,10 +128,10 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
       );
 
       if (!mounted || !saved) return;
-      _showSnack('Workout cycle exported successfully');
+      _showSnack('Workout plan exported');
     } catch (e) {
       if (!mounted) return;
-      _showSnack('Failed to export workout cycle: $e', isError: true);
+      _showSnack("Couldn't export your plan. ${friendlyError(e)}", isError: true);
     }
   }
 
@@ -163,7 +164,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
       _showSnack(e.message, isError: true);
     } catch (e) {
       if (!mounted) return;
-      _showSnack('Failed to import workout program: $e', isError: true);
+      _showSnack("Couldn't import that plan. ${friendlyError(e, fallback: 'Check that the file is a workout plan exported from this app.')}", isError: true);
     }
   }
 
@@ -242,7 +243,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
     );
 
     if (!mounted) return;
-    _showSnack('Workout cycle imported successfully');
+    _showSnack('Workout plan imported');
     await _fetchWorkouts();
     _fetchWeeklyPlan();
   }
@@ -285,7 +286,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _errorMessage = 'Failed to load workouts: ${e.toString()}';
+          _errorMessage = "Couldn't load your workouts. ${friendlyError(e)}";
           _isLoading = false;
         });
       }
@@ -316,10 +317,18 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
     required VoidCallback? onTap,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
-    return GestureDetector(
+    return Semantics(
+      button: true,
+      selected: active,
+      label: label == 'Simple'
+          ? 'Simple mode: log activities you did'
+          : 'Advanced mode: weekly gym plans',
+      excludeSemantics: true,
+      child: GestureDetector(
       onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
           color: active ? colorScheme.primary : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
@@ -327,11 +336,12 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
         child: Text(
           label,
           style: TextStyle(
-            fontSize: 12,
+            fontSize: 14,
             fontWeight: active ? FontWeight.bold : FontWeight.normal,
             color: active ? colorScheme.onPrimary : colorScheme.onSurfaceVariant,
           ),
         ),
+      ),
       ),
     );
   }
@@ -375,7 +385,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                   children: [
                     Icon(Icons.bookmark_border, size: 20),
                     SizedBox(width: 12),
-                    Text('Saved workout cycles'),
+                    Text('Ready-made and saved plans'),
                   ],
                 ),
               ),
@@ -386,7 +396,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                     children: [
                       Icon(Icons.ios_share, size: 20),
                       SizedBox(width: 12),
-                      Text('Export workout cycle'),
+                      Text('Export my plan'),
                     ],
                   ),
                 ),
@@ -396,7 +406,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                   children: [
                     Icon(Icons.file_upload_outlined, size: 20),
                     SizedBox(width: 12),
-                    Text('Import workout program'),
+                    Text('Import a plan'),
                   ],
                 ),
               ),
@@ -413,21 +423,21 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
               child: CircularProgressIndicator(color: colorScheme.primary),
             );
           } else if (snapshot.hasError) {
-            return _buildErrorState(snapshot.error.toString());
+            return _buildErrorState("Couldn't load your plan. ${friendlyError(snapshot.error!)}");
           } else if (!snapshot.hasData || snapshot.data == null) {
-            return _buildEmptyState('No workout plan available');
+            return _buildEmptyState("You don't have a workout plan yet");
           }
 
           final weeklyPlan = snapshot.data!;
 
           if (!weeklyPlan.containsKey('weeks') || weeklyPlan['weeks'] == null) {
-            return _buildEmptyState('No workout plan available');
+            return _buildEmptyState("You don't have a workout plan yet");
           }
 
           final weeksList = weeklyPlan['weeks'] as List<dynamic>?;
 
           if (weeksList == null || weeksList.isEmpty) {
-            return _buildEmptyState('No workout plan available');
+            return _buildEmptyState("You don't have a workout plan yet");
           }
 
           Map<String, dynamic>? currentWeekData;
@@ -441,8 +451,21 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
           }
 
           if (currentWeekData == null) {
+            // The plan exists but not this week (e.g. it starts next
+            // Monday): point to the nearest planned week instead of
+            // suggesting a brand-new plan.
+            DateTime? nextWeekStart;
+            for (final week in weeksList) {
+              final start = DateTime.parse(week['week_start']);
+              if (start.isAfter(_shownMonday) &&
+                  (nextWeekStart == null || start.isBefore(nextWeekStart))) {
+                nextWeekStart = start;
+              }
+            }
             return _buildEmptyState(
-              'No workout plan for week $_currentWeekNumber',
+              'Nothing planned for this week',
+              showWeekNavigation: true,
+              nextPlannedWeek: nextWeekStart,
             );
           }
 
@@ -503,16 +526,16 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
           Column(
             children: [
               Text(
-                'Week $_currentWeekNumber',
+                _weekRangeLabel(),
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: colorScheme.primary,
                 ),
               ),
               Text(
-                DateTime.now().year.toString(),
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.primary.withValues(alpha: 0.7),
+                _relativeWeekLabel(),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
@@ -540,6 +563,31 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
         ],
       ),
     );
+  }
+
+  /// Monday of the week being shown. Week numbers come from [weekOfYear], so
+  /// step from this week's Monday rather than re-deriving ISO dates.
+  DateTime get _shownMonday {
+    final now = DateTime.now();
+    final thisMonday = DateTime(now.year, now.month, now.day - (now.weekday - 1));
+    final offset = _currentWeekNumber - now.weekOfYear;
+    return DateTime(thisMonday.year, thisMonday.month, thisMonday.day + 7 * offset);
+  }
+
+  /// "Oct 5 – Oct 11" — people think in dates, not week numbers.
+  String _weekRangeLabel() {
+    final monday = _shownMonday;
+    final sunday = DateTime(monday.year, monday.month, monday.day + 6);
+    final fmt = DateFormat('MMM d');
+    return '${fmt.format(monday)} – ${fmt.format(sunday)}';
+  }
+
+  String _relativeWeekLabel() {
+    final offset = _currentWeekNumber - DateTime.now().weekOfYear;
+    if (offset == 0) return 'This week';
+    if (offset == 1) return 'Next week';
+    if (offset == -1) return 'Last week';
+    return _shownMonday.year.toString();
   }
 
   Widget _buildDaysSelector(ThemeData theme, Map<String, dynamic> weekData) {
@@ -1024,7 +1072,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to add workout: ${e.toString()}'),
+            content: Text("Couldn't add this workout. ${friendlyError(e)}"),
             backgroundColor: Colors.red,
           ),
         );
@@ -1268,91 +1316,106 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
     );
   }
 
-  Widget _buildEmptyState(String message) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.calendar_today_outlined,
-            size: 64,
-            color: colorScheme.primary.withValues(alpha: 0.4),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            message,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: colorScheme.primary.withValues(alpha: 0.7),
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 24),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+  Widget _buildEmptyState(
+    String message, {
+    bool showWeekNavigation = false,
+    DateTime? nextPlannedWeek,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    return ListView(
+      padding: EdgeInsets.zero,
+      children: [
+        if (showWeekNavigation) _buildWeekNavigation(theme),
+        Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
             children: [
-              ElevatedButton.icon(
-                onPressed: () {
-                  setState(() {
-                    _currentWeekNumber--;
-                  });
-                },
-                icon: Icon(Icons.arrow_back, color: colorScheme.onPrimary),
-                label: const Text('Previous Week'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colorScheme.primary,
-                  foregroundColor: colorScheme.onPrimary,
-                  visualDensity: VisualDensity.compact,
+              Icon(
+                Icons.calendar_today_outlined,
+                size: 56,
+                color: colorScheme.primary.withValues(alpha: 0.5),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                message,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurface,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              if (nextPlannedWeek != null) ...[
+                Text(
+                  'Your plan starts the week of ${DateFormat('MMMM d').format(nextPlannedWeek)}.',
+                  style: TextStyle(fontSize: 16, color: colorScheme.onSurfaceVariant),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 12),
+                FilledButton.icon(
+                  onPressed: () => setState(() => _currentWeekNumber = nextPlannedWeek.weekOfYear),
+                  icon: const Icon(Icons.arrow_forward),
+                  label: const Text('Show that week'),
+                ),
+              ] else ...[
+              // One clear starting point for beginners instead of a wall of
+              // equally weighted buttons.
+              Card(
+                elevation: 0,
+                color: colorScheme.primaryContainer,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'New to working out?',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onPrimaryContainer,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Start with a ready-made plan. Full Body is 3 days a week '
+                        'and we fill in the exercises for you.',
+                        style: TextStyle(fontSize: 15, color: colorScheme.onPrimaryContainer),
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton.icon(
+                          onPressed: _openSavedCycles,
+                          icon: const Icon(Icons.play_arrow),
+                          label: const Text('Choose a ready-made plan'),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              const SizedBox(width: 12),
-              ElevatedButton.icon(
+              const SizedBox(height: 12),
+              TextButton.icon(
                 onPressed: () {
-                  setState(() {
-                    _currentWeekNumber++;
-                  });
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const NewWorkoutCycleScreen(),
+                    ),
+                  ).then((_) => _fetchWeeklyPlan());
                 },
-                icon: Icon(Icons.arrow_forward, color: colorScheme.onPrimary),
-                label: const Text('Next Week'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colorScheme.primary,
-                  foregroundColor: colorScheme.onPrimary,
-                  visualDensity: VisualDensity.compact,
-                ),
+                icon: const Icon(Icons.edit_calendar),
+                label: const Text('Build my own plan'),
               ),
+              ],
             ],
           ),
-          const SizedBox(height: 24),
-          ElevatedButton.icon(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const NewWorkoutCycleScreen(),
-                ),
-              );
-            },
-            icon: Icon(Icons.add, color: colorScheme.onPrimary),
-            label: const Text('Create Workout Plan'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: colorScheme.primary,
-              foregroundColor: colorScheme.onPrimary,
-            ),
-          ),
-          const SizedBox(height: 12),
-          OutlinedButton.icon(
-            onPressed: _openSavedCycles,
-            icon: Icon(Icons.replay, color: colorScheme.primary),
-            label: const Text('Reuse a Saved Cycle'),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: colorScheme.primary,
-              side: BorderSide(color: colorScheme.primary),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

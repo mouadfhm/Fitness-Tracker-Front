@@ -1,6 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'package:fitness_tracker_app/screens/workout/new_workout_screen.dart';
+import 'package:fitness_tracker_app/utils/friendly_error.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
@@ -116,7 +117,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _errorMessage = 'Failed to load custom workouts: ${e.toString()}';
+        _errorMessage = "Couldn't load your workouts. ${friendlyError(e)}";
         _isLoadingWorkouts = false;
       });
     }
@@ -130,7 +131,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Create Workout Cycle',
+          'Create Workout Plan',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         elevation: 0,
@@ -196,7 +197,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Cycle Name',
+          'Plan Name',
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
             color: colorScheme.onSurface,
@@ -220,7 +221,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
         ),
         const SizedBox(height: 8),
         Text(
-          'Give it a name so you can save and reuse this cycle later',
+          'Give it a name so you can save and reuse this plan later',
           style: theme.textTheme.bodySmall,
         ),
       ],
@@ -243,7 +244,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
           controller: _descriptionController,
           maxLines: 3,
           decoration: InputDecoration(
-            hintText: 'e.g. A 6-day split focused on strength and hypertrophy',
+            hintText: 'e.g. 3 days a week to get stronger',
             filled: true,
             fillColor: colorScheme.surfaceContainerHighest,
             border: OutlineInputBorder(
@@ -296,7 +297,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
         ),
         const SizedBox(height: 8),
         Text(
-          'Your workout cycle will begin on this date',
+          'Your plan will start on this date',
           style: theme.textTheme.bodySmall,
         ),
       ],
@@ -358,7 +359,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
           ],
         ),
         Text(
-          'Your workout cycle will repeat for $_weeks weeks',
+          'Your plan will repeat every week for $_weeks weeks',
           style: theme.textTheme.bodySmall,
         ),
       ],
@@ -475,7 +476,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Create custom workouts first before setting up a workout cycle',
+                    'Create a workout first, then add it to your plan',
                     style: theme.textTheme.bodyMedium,
                     textAlign: TextAlign.center,
                   ),
@@ -628,7 +629,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to delete workout: ${e.toString()}')),
+        SnackBar(content: Text("Couldn't delete this workout. ${friendlyError(e)}")),
       );
     }
   }
@@ -930,7 +931,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
                 disabledBackgroundColor:
                     colorScheme.primary.withValues(alpha: 0.3),
               ),
-              child: const Text('Create Cycle'),
+              child: const Text('Create Plan'),
             ),
           ),
         ],
@@ -946,7 +947,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
           CircularProgressIndicator(color: colorScheme.primary),
           const SizedBox(height: 16),
           Text(
-            'Creating your workout cycle...',
+            'Creating your workout plan...',
             style: TextStyle(color: colorScheme.onSurface),
           ),
         ],
@@ -962,7 +963,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
           Icon(Icons.error_outline, size: 64, color: colorScheme.error),
           const SizedBox(height: 16),
           Text(
-            'Error Creating Workout Cycle',
+            "Couldn't create your plan",
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,

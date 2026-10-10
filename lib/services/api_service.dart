@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../utils/friendly_error.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:http/http.dart' as http;
@@ -61,7 +62,9 @@ class ApiService {
   ) async {
     final response = await http.post(
       Uri.parse("$baseUrl/register"),
-      headers: {'Content-Type': 'application/json'},
+      // Accept: JSON makes Laravel answer validation errors with a 422 instead
+      // of redirecting, so we can tell people what went wrong.
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
       body: jsonEncode({
         "name": name,
         "email": email,
@@ -77,6 +80,10 @@ class ApiService {
         await TokenService.saveToken(data['access_token']);
       }
       return data;
+    } else if (response.statusCode == 422) {
+      throw UserFacingException(
+        _serverMessage(response) ?? 'Please check your details and try again.',
+      );
     } else {
       throw Exception("Failed to register: ${response.body}");
     }
@@ -86,7 +93,7 @@ class ApiService {
   Future<Map<String, dynamic>> login(String email, String password) async {
     final response = await http.post(
       Uri.parse("$baseUrl/login"),
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
       body: jsonEncode({"email": email, "password": password}),
     );
 
@@ -97,9 +104,24 @@ class ApiService {
         await TokenService.saveToken(data['access_token']);
       }
       return data;
+    } else if (response.statusCode == 422) {
+      throw const UserFacingException('Wrong email or password. Please try again.');
+    } else if (response.statusCode == 403) {
+      throw UserFacingException(
+        _serverMessage(response) ?? 'This account has been deactivated.',
+      );
     } else {
       throw Exception("Failed to login: ${response.body}");
     }
+  }
+
+  /// The "message" field Laravel puts in error responses, if any.
+  String? _serverMessage(http.Response response) {
+    try {
+      final data = jsonDecode(response.body);
+      if (data is Map && data['message'] is String) return data['message'];
+    } catch (_) {}
+    return null;
   }
 
   /// Optional: clear token on logout

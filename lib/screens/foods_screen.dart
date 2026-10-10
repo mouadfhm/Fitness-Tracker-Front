@@ -9,6 +9,8 @@ import 'new_food_screen.dart';
 import 'widgets/bottom_nav_bar.dart';
 import '../utils/add_banner.dart';
 import '../utils/ad_list_helper.dart';
+import '../utils/friendly_error.dart';
+import '../utils/labels.dart';
 
 enum SortBy {
   default_,
@@ -19,7 +21,11 @@ enum SortBy {
 }
 
 class FoodsScreen extends StatefulWidget {
-  const FoodsScreen({super.key});
+  /// When set, the screen is a picker opened from Home: choosing a food logs
+  /// it to this meal and returns to Home with a confirmation message.
+  final String? addToMeal;
+
+  const FoodsScreen({super.key, this.addToMeal});
 
   @override
   State<FoodsScreen> createState() => _FoodsScreenState();
@@ -33,10 +39,43 @@ class _FoodsScreenState extends State<FoodsScreen>
   bool _sortAscending = false;  // false = high to low (descending), true = low to high (ascending)
 
   Food? _scannedFood;
-  final int _currentIndex = 2; // 0: Home, 1: Progress, 2: Foods, 3: Profile
+  final int _currentIndex = 2; // 0: Today, 1: Workouts, 2: Foods, 3: Me
+
+  bool get _isPicker => widget.addToMeal != null;
+
+  /// Opens a food. If it gets logged and we're picking for Home, go straight
+  /// back to Home with the confirmation; otherwise just show it here.
+  Future<void> _openFood(Food food) async {
+    final added = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => FoodDetailsScreen(food: food, initialMealTime: widget.addToMeal),
+      ),
+    );
+    if (!mounted || added == null) return;
+    if (_isPicker) {
+      Navigator.pop(context, added);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(added)));
+    }
+  }
 
   @override
   bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    super.initState();
+    // The provider first loads at app start, which fails if the person
+    // wasn't logged in yet. Retry when the screen opens.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final provider = Provider.of<FoodProvider>(context, listen: false);
+      if (!provider.isLoading && (provider.foods.isEmpty || provider.errorMessage.isNotEmpty)) {
+        provider.refreshFoods();
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -64,20 +103,13 @@ class _FoodsScreenState extends State<FoodsScreen>
           listen: false,
         ).addFood(scannedFood);
         if (!mounted) return;
-        // ignore: use_build_context_synchronously
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => FoodDetailsScreen(food: scannedFood),
-          ),
-        ).then((_) {
-          if (mounted) setState(() => _scannedFood = null);
-        });
+        await _openFood(scannedFood);
+        if (mounted) setState(() => _scannedFood = null);
       } else {
-        _showSnackBar('Food not found for barcode: $barcode');
+        _showSnackBar("We couldn't find that product. Try searching by name, or add it yourself with the + button.");
       }
     } catch (e) {
-      _showSnackBar('Error scanning barcode: $e');
+      _showSnackBar("Couldn't scan the barcode. ${friendlyError(e)}");
     }
   }
 
@@ -292,9 +324,9 @@ class _FoodsScreenState extends State<FoodsScreen>
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text(
-              'Foods',
-              style: TextStyle(fontWeight: FontWeight.bold),
+            title: Text(
+              _isPicker ? 'Add to ${mealTimeLabel(widget.addToMeal!)}' : 'Foods',
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             actions: [
               IconButton(
@@ -311,9 +343,24 @@ class _FoodsScreenState extends State<FoodsScreen>
                     ? const Center(child: CircularProgressIndicator())
                     : foodProvider.errorMessage.isNotEmpty
                     ? Center(
-                      child: Text(
-                        foodProvider.errorMessage,
-                        style: TextStyle(color: colorScheme.error),
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              foodProvider.errorMessage,
+                              style: TextStyle(fontSize: 16, color: colorScheme.onSurface),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 16),
+                            FilledButton.icon(
+                              onPressed: foodProvider.refreshFoods,
+                              icon: const Icon(Icons.refresh),
+                              label: const Text('Try again'),
+                            ),
+                          ],
+                        ),
                       ),
                     )
                     : Column(
@@ -356,21 +403,11 @@ class _FoodsScreenState extends State<FoodsScreen>
                             child: ListTile(
                               title: Text(_scannedFood!.name),
                               subtitle: Text(
-                                'Calories: ${_scannedFood!.calories}',
+                                '${_scannedFood!.calories.round()} kcal per 100 g',
                               ),
                               trailing: Icon(Icons.arrow_forward_ios,
                                 color: colorScheme.primary),
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder:
-                                        (_) => FoodDetailsScreen(
-                                          food: _scannedFood!,
-                                        ),
-                                  ),
-                                );
-                              },
+                              onTap: () => _openFood(_scannedFood!),
                             ),
                           ),
                         const SizedBox(height: 10),
@@ -378,9 +415,24 @@ class _FoodsScreenState extends State<FoodsScreen>
                           child:
                               filteredFoods.isEmpty
                                   ? Center(
-                                    child: Text(
-                                      'No foods found.',
-                                      style: TextStyle(color: colorScheme.onSurfaceVariant),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(24),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            'No foods match your search.',
+                                            style: TextStyle(fontSize: 16, color: colorScheme.onSurfaceVariant),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          const SizedBox(height: 12),
+                                          OutlinedButton.icon(
+                                            onPressed: _goToNewFood,
+                                            icon: const Icon(Icons.add),
+                                            label: const Text('Add your own food'),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   )
                                   : ListView.builder(
@@ -423,7 +475,7 @@ class _FoodsScreenState extends State<FoodsScreen>
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  'Calories: ${food.calories} kcal',
+                                                  '${food.calories.round()} kcal per 100 g',
                                                   style: TextStyle(
                                                     color: colorScheme.onSurfaceVariant,
                                                   ),
@@ -446,17 +498,7 @@ class _FoodsScreenState extends State<FoodsScreen>
                                               Icons.arrow_forward_ios,
                                               color: colorScheme.primary,
                                             ),
-                                            onTap: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder:
-                                                      (_) => FoodDetailsScreen(
-                                                        food: food,
-                                                      ),
-                                                ),
-                                              );
-                                            },
+                                            onTap: () => _openFood(food),
                                           ),
                                         );
                                       },
@@ -466,20 +508,23 @@ class _FoodsScreenState extends State<FoodsScreen>
                       ],
                     ),
           ),
-          floatingActionButton: FloatingActionButton(
+          floatingActionButton: FloatingActionButton.extended(
             onPressed: _goToNewFood,
             backgroundColor: colorScheme.primary,
             foregroundColor: colorScheme.onPrimary,
             elevation: 4,
-            child: const Icon(Icons.add),
+            icon: const Icon(Icons.add),
+            label: const Text('New food'),
           ),
-          bottomNavigationBar: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const AdBannerWidget(),
-              CustomBottomNavBar(currentIndex: _currentIndex),
-            ],
-          ),
+          bottomNavigationBar: _isPicker
+              ? null
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const AdBannerWidget(),
+                    CustomBottomNavBar(currentIndex: _currentIndex),
+                  ],
+                ),
         );
       },
     );
@@ -496,7 +541,7 @@ class _FoodsScreenState extends State<FoodsScreen>
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
-            'Protein: ${food.protein}g',
+            'Protein: ${_grams(food.protein)} per 100 g',
             style: TextStyle(
               color: proteinColor,
               fontWeight: FontWeight.bold,
@@ -511,7 +556,7 @@ class _FoodsScreenState extends State<FoodsScreen>
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
-            'Carbs: ${food.carbs}g',
+            'Carbs: ${_grams(food.carbs)} per 100 g',
             style: TextStyle(
               color: carbsColor,
               fontWeight: FontWeight.bold,
@@ -526,7 +571,7 @@ class _FoodsScreenState extends State<FoodsScreen>
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
-            'Fat: ${food.fats}g',
+            'Fat: ${_grams(food.fats)} per 100 g',
             style: TextStyle(
               color: fatsColor,
               fontWeight: FontWeight.bold,
@@ -541,7 +586,7 @@ class _FoodsScreenState extends State<FoodsScreen>
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
-            'Calories: ${food.calories} kcal',
+            '${food.calories.round()} kcal per 100 g',
             style: TextStyle(
               color: caloriesColor,
               fontWeight: FontWeight.bold,
@@ -560,7 +605,7 @@ class _FoodsScreenState extends State<FoodsScreen>
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
-                'P: ${food.protein}g',
+                'Protein ${_grams(food.protein)}',
                 style: TextStyle(color: proteinColor, fontWeight: FontWeight.w500),
               ),
             ),
@@ -571,7 +616,7 @@ class _FoodsScreenState extends State<FoodsScreen>
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
-                'C: ${food.carbs}g',
+                'Carbs ${_grams(food.carbs)}',
                 style: TextStyle(color: carbsColor, fontWeight: FontWeight.w500),
               ),
             ),
@@ -582,7 +627,7 @@ class _FoodsScreenState extends State<FoodsScreen>
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
-                'F: ${food.fats}g',
+                'Fat ${_grams(food.fats)}',
                 style: TextStyle(color: fatsColor, fontWeight: FontWeight.w500),
               ),
             ),
@@ -590,6 +635,10 @@ class _FoodsScreenState extends State<FoodsScreen>
         );
     }
   }
+
+  /// 3.0 -> "3 g", 2.5 -> "2.5 g".
+  String _grams(double value) =>
+      '${value == value.roundToDouble() ? value.round() : value.toStringAsFixed(1)} g';
 
   // Helper method to get readable sort title
   String _getSortTitle() {
@@ -618,7 +667,7 @@ class _FoodsScreenState extends State<FoodsScreen>
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Search Foods...',
+                hintText: 'Search foods',
                 hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                 prefixIcon: Icon(Icons.search, color: colorScheme.primary),
                 border: OutlineInputBorder(
@@ -643,18 +692,24 @@ class _FoodsScreenState extends State<FoodsScreen>
             ),
           ),
           const SizedBox(width: 8),
-          ElevatedButton(
-            onPressed: _scanBarcode,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: colorScheme.primaryContainer,
-              foregroundColor: colorScheme.onPrimaryContainer,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+          Tooltip(
+            message: 'Scan a barcode',
+            child: ElevatedButton(
+              onPressed: _scanBarcode,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: colorScheme.primaryContainer,
+                foregroundColor: colorScheme.onPrimaryContainer,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                elevation: 2,
               ),
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              elevation: 2,
+              child: Semantics(
+                label: 'Scan a barcode',
+                child: const Icon(Icons.qr_code_scanner, size: 28),
+              ),
             ),
-            child: const Icon(Icons.qr_code, size: 28),
           ),
         ],
       ),

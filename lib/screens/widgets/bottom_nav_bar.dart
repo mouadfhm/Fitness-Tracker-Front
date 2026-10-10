@@ -9,35 +9,40 @@ class CustomBottomNavBar extends StatelessWidget {
   });
 
   static const _routes = ['/home', '/workouts', '/foods', '/profile'];
-  static const _icons = [
-    Icons.home,
-    Icons.fitness_center,
-    Icons.restaurant,
-    Icons.person,
-  ];
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return BottomAppBar(
-      color: colorScheme.surface,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: List.generate(4, (i) {
-          final isSelected = i == currentIndex;
-          return IconButton(
-            icon: Icon(
-              _icons[i],
-              color: isSelected
-                  ? colorScheme.primary
-                  : colorScheme.onSurfaceVariant,
-            ),
-            onPressed: isSelected
-                ? null
-                : () => Navigator.of(context).pushReplacementNamed(_routes[i]),
-          );
-        }),
-      ),
+    // Labels are always visible: icon-only tabs are guesswork for people who
+    // don't use many apps.
+    return NavigationBar(
+      selectedIndex: currentIndex,
+      labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+      onDestinationSelected: (i) {
+        if (i == currentIndex) return;
+        Navigator.of(context).pushReplacementNamed(_routes[i]);
+      },
+      destinations: const [
+        NavigationDestination(
+          icon: Icon(Icons.today_outlined),
+          selectedIcon: Icon(Icons.today),
+          label: 'Today',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.fitness_center_outlined),
+          selectedIcon: Icon(Icons.fitness_center),
+          label: 'Workouts',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.restaurant_outlined),
+          selectedIcon: Icon(Icons.restaurant),
+          label: 'Foods',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.person_outline),
+          selectedIcon: Icon(Icons.person),
+          label: 'Me',
+        ),
+      ],
     );
   }
 }

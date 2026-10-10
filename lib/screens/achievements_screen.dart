@@ -128,7 +128,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                                         ? colorScheme.primary
                                         : colorScheme.onSurfaceVariant,
                                     fontWeight: FontWeight.w500,
-                                    fontSize: 10,
+                                    fontSize: 12,
                                   ),
                                 ),
                               ),
@@ -137,7 +137,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                                 achievement['type'].toUpperCase(),
                                 style: TextStyle(
                                   color: colorScheme.onSurfaceVariant,
-                                  fontSize: 10,
+                                  fontSize: 12,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -333,7 +333,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                         size: 48, color: colorScheme.error),
                     const SizedBox(height: 16),
                     Text(
-                        'Error loading achievements: ${achievementsProvider.error}'),
+                        "Couldn't load achievements. ${achievementsProvider.error}"),
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () =>
@@ -476,7 +476,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                             child: Text(
                               'COMPLETED',
                               style: TextStyle(
-                                fontSize: 10,
+                                fontSize: 12,
                                 fontWeight: FontWeight.bold,
                                 color: achievementColor,
                               ),

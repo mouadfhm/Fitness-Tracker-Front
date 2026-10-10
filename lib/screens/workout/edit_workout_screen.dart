@@ -1,6 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
+import 'package:fitness_tracker_app/utils/friendly_error.dart';
 import '../../services/api_service.dart';
 
 class EditWorkoutScreen extends StatefulWidget {
@@ -92,7 +93,7 @@ class _EditWorkoutScreenState extends State<EditWorkoutScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _errorMessage = 'Failed to load exercises: ${e.toString()}';
+        _errorMessage = "Couldn't load exercises. ${friendlyError(e)}";
         _isLoadingExercises = false;
       });
     }

@@ -53,7 +53,7 @@ void main() {
       await tester.pumpWidget(_wrap(const WorkoutRootScreen()));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
-      expect(find.text('Search Exercises...'), findsOneWidget);
+      expect(find.text('Search activities (e.g. walking)'), findsOneWidget);
     });
 
     testWidgets('shows Advanced mode when preference is saved', (tester) async {
@@ -63,7 +63,7 @@ void main() {
       // API futures so we cannot pumpAndSettle; a few pumps are sufficient.
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
-      expect(find.text('Search Exercises...'), findsNothing);
+      expect(find.text('Search activities (e.g. walking)'), findsNothing);
     });
   });
 }

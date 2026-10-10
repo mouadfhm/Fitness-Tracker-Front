@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/friendly_error.dart';
 import '../services/api_service.dart';
 
 class AchievementsProvider with ChangeNotifier {
@@ -30,7 +31,7 @@ class AchievementsProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     } catch (e) {
-      _error = e.toString();
+      _error = friendlyError(e);
       _isLoading = false;
       notifyListeners();
     }

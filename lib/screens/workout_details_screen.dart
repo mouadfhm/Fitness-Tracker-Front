@@ -3,6 +3,7 @@ import '../services/api_service.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:fitness_tracker_app/providers/profile_provider.dart';
+import 'package:fitness_tracker_app/utils/friendly_error.dart';
 
 class WorkoutDetailsScreen extends StatefulWidget {
   final dynamic workout;
@@ -184,16 +185,19 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
     int level;
 
     switch (difficulty.toLowerCase()) {
+      case 'light':
       case 'easy':
       case 'beginner':
         color = Colors.green;
         level = 1;
         break;
+      case 'moderate':
       case 'medium':
       case 'intermediate':
         color = Colors.orange;
         level = 2;
         break;
+      case 'vigorous':
       case 'hard':
       case 'advanced':
       case 'expert':
@@ -249,17 +253,10 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
     final workoutName = widget.workout['description'] ?? 'Unknown Workout';
     final durationText = _durationController.text.trim();
 
-    if (durationText.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Please enter a duration")));
-      return;
-    }
-
     final int? duration = int.tryParse(durationText);
     if (duration == null || duration <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter a valid duration")),
+        const SnackBar(content: Text("Please enter how many minutes you exercised")),
       );
       return;
     }
@@ -273,8 +270,9 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
 
     try {
       await _apiService.storeWorkout(workoutName, duration, workoutDate);
+      if (!mounted) return;
       setState(() {
-        _addWorkoutMessage = "Workout added successfully!";
+        _addWorkoutMessage = "Nice work! Logged $duration min. You'll see it on the Today tab.";
       });
 
       Future.delayed(const Duration(seconds: 2), () {
@@ -283,13 +281,16 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
         }
       });
     } catch (error) {
+      if (!mounted) return;
       setState(() {
-        _addWorkoutMessage = "Error: ${error.toString()}";
+        _addWorkoutMessage = "Error: couldn't log this activity. ${friendlyError(error)}";
       });
     } finally {
-      setState(() {
-        _isAddingWorkout = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isAddingWorkout = false;
+        });
+      }
     }
   }
 
@@ -306,10 +307,10 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
     final category = widget.workout['name'] ?? 'Uncategorized';
     final difficulty =
         widget.workout['caloriesPerKg'] > 2
-            ? 'Hard'
+            ? 'Vigorous'
             : widget.workout['caloriesPerKg'] > 1
-            ? 'Medium'
-            : 'Easy';
+            ? 'Moderate'
+            : 'Light';
 
     final Color categoryColor = _getCategoryColor(category);
     final IconData categoryIcon = _getCategoryIcon(category);
@@ -410,7 +411,7 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                               ),
                               const SizedBox(width: 10),
                               Text(
-                                "About This Workout",
+                                "About this activity",
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -486,16 +487,18 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                                   Icons.local_fire_department,
                                   "Intensity",
                                   difficulty,
-                                  difficulty == 'Easy'
-                                      ? Colors.green
-                                      : difficulty == 'Medium'
-                                      ? Colors.orange
-                                      : Colors.red,
+                                  difficulty == 'Light'
+                                      ? Colors.green.shade700
+                                      : difficulty == 'Moderate'
+                                      ? Colors.orange.shade800
+                                      : Colors.red.shade700,
                                 ),
                                 _buildStatItem(
                                   Icons.flash_on,
-                                  "Calories",
-                                  "${(widget.workout['caloriesPerKg'] * weight).toStringAsFixed(0) }/hr",
+                                  "Burns about",
+                                  weight > 0
+                                      ? "${(widget.workout['caloriesPerKg'] * weight).toStringAsFixed(0)} kcal/hour"
+                                      : "—",
                                   colorScheme.primary,
                                 ),
                               ],
@@ -535,7 +538,7 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                               ),
                               const SizedBox(width: 10),
                               Text(
-                                "Schedule Workout",
+                                "Log this activity",
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -568,7 +571,7 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        "Date",
+                                        "When (tap to change)",
                                         style: TextStyle(
                                           fontSize: 14,
                                           color: colorScheme.onSurfaceVariant,
@@ -576,9 +579,9 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        DateFormat(
-                                          'EEE, MMM d, yyyy',
-                                        ).format(_selectedDate),
+                                        DateUtils.isSameDay(_selectedDate, DateTime.now())
+                                            ? 'Today'
+                                            : DateFormat('EEE, MMM d, yyyy').format(_selectedDate),
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
@@ -619,6 +622,7 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                                   child: TextField(
                                     controller: _durationController,
                                     keyboardType: TextInputType.number,
+                                    onChanged: (_) => setState(() {}),
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -626,7 +630,7 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                                     ),
                                     decoration: InputDecoration(
                                       border: InputBorder.none,
-                                      hintText: "Duration in minutes",
+                                      hintText: "How many minutes?",
                                       hintStyle: TextStyle(
                                         color: colorScheme.onSurfaceVariant,
                                         fontWeight: FontWeight.normal,
@@ -643,9 +647,33 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                             ),
                           ),
 
+                          const SizedBox(height: 8),
+                          Wrap(
+                            spacing: 8,
+                            children: [15, 30, 45, 60].map((m) {
+                              return ChoiceChip(
+                                showCheckmark: false,
+                                label: Text('$m min'),
+                                selected: _durationController.text.trim() == '$m',
+                                onSelected: (_) => setState(() => _durationController.text = '$m'),
+                              );
+                            }).toList(),
+                          ),
+                          if (weight > 0 && (int.tryParse(_durationController.text.trim()) ?? 0) > 0)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: Text(
+                                'About ${((widget.workout['caloriesPerKg'] as num) * weight * (int.parse(_durationController.text.trim())) / 60).round()} kcal burned',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  color: colorScheme.onSurface,
+                                ),
+                              ),
+                            ),
                           const SizedBox(height: 24),
 
-                          // Add to Plan Button
+                          // "I did this" button
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
@@ -675,7 +703,7 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                                         ),
                                       )
                                       : const Text(
-                                        "Add to My Plan",
+                                        "I did this",
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/food.dart';
 import '../services/api_service.dart';
+import '../utils/friendly_error.dart';
 
 class FoodProvider extends ChangeNotifier {
   final ApiService _apiService = ApiService();
@@ -24,7 +25,7 @@ class FoodProvider extends ChangeNotifier {
       _foods = data.map((json) => Food.fromJson(json)).toList();
       _errorMessage = '';
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = "Couldn't load foods. ${friendlyError(e)}";
     }
     _isLoading = false;
     notifyListeners();

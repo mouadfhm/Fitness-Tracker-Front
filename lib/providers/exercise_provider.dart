@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/friendly_error.dart';
 import '../services/api_service.dart';
 
 class ExercisesProvider extends ChangeNotifier {
@@ -49,7 +50,7 @@ class ExercisesProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     } catch (error) {
-      _errorMessage = error.toString();
+      _errorMessage = friendlyError(error);
       _isLoading = false;
       notifyListeners();
     }

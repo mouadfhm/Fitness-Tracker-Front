@@ -3,131 +3,102 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/food.dart';
 import '../services/api_service.dart';
+import '../utils/friendly_error.dart';
+import '../utils/labels.dart';
 import 'package:intl/intl.dart';
 
 class FoodDetailsScreen extends StatefulWidget {
   final Food food;
-  const FoodDetailsScreen({super.key, required this.food});
+
+  /// Meal to log into (e.g. "lunch"). Defaults to the meal that fits the
+  /// current time of day.
+  final String? initialMealTime;
+
+  const FoodDetailsScreen({super.key, required this.food, this.initialMealTime});
 
   @override
   State<FoodDetailsScreen> createState() => _FoodDetailsScreenState();
 }
 
 class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
+  static const _quickAmounts = [50, 100, 150, 200];
+
   final TextEditingController _quantityController = TextEditingController();
-  final TextEditingController _customMealTimeController =
-      TextEditingController();
+  final TextEditingController _customMealTimeController = TextEditingController();
   final ApiService _apiService = ApiService();
   bool _isStoringMeal = false;
   bool _isTogglingFavorite = false;
-  String? _storeMealMessage;
-  String? _selectedTime;
+  String? _errorMessage;
+  late String _mealTime;
   bool _isCustomMealTime = false;
   DateTime _selectedDate = DateTime.now();
   bool _isFavorite = false;
-
-  final List<String> _predefinedMealTimes = [
-    "Breakfast",
-    "Lunch",
-    "Dinner",
-    "Snack",
-    "Morning Snack",
-    "Afternoon Snack",
-    "Evening Snack",
-    "Pre-workout",
-    "Post-workout",
-    "Custom"
-  ];
 
   @override
   void initState() {
     super.initState();
     _isFavorite = widget.food.isFavorite == 1;
+    final initial = (widget.initialMealTime ?? mealTimeForNow()).toLowerCase();
+    if (mainMealTimes.contains(initial)) {
+      _mealTime = initial;
+    } else {
+      _mealTime = 'custom';
+      _isCustomMealTime = true;
+      _customMealTimeController.text = initial;
+    }
+    _quantityController.text = '100';
   }
 
+  double? get _grams => double.tryParse(_quantityController.text.trim().replaceAll(',', '.'));
+
+  bool get _isToday => DateUtils.isSameDay(_selectedDate, DateTime.now());
+
   Future<void> _selectDate(BuildContext context) async {
-    final colorScheme = Theme.of(context).colorScheme;
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: colorScheme.primary,
-              brightness: Theme.of(context).brightness,
-            ),
-          ),
-          child: child!,
-        );
-      },
+      lastDate: DateTime.now().add(const Duration(days: 365)),
     );
     if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-      });
+      setState(() => _selectedDate = picked);
     }
   }
 
-  void _storeMeal() async {
+  Future<void> _storeMeal() async {
     final name = widget.food.name.trim();
-    final quantityText = _quantityController.text.trim();
-    if (quantityText.isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Please enter a quantity")));
+
+    final mealTime = _isCustomMealTime ? _customMealTimeController.text.trim() : _mealTime;
+    if (mealTime.isEmpty) {
+      setState(() => _errorMessage = 'Please type a name for this meal.');
       return;
     }
 
-    String? mealTime;
-    if (_isCustomMealTime) {
-      mealTime = _customMealTimeController.text.trim();
-      if (mealTime.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Please enter a meal time")));
-        return;
-      }
-    } else {
-      mealTime = _selectedTime;
-      if (mealTime == null || mealTime.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Please select a meal time")));
-        return;
-      }
-    }
-
-    final double? quantity = double.tryParse(quantityText);
+    final quantity = _grams;
     if (quantity == null || quantity <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Please enter a valid quantity")));
+      setState(() => _errorMessage = 'Please enter how many grams you ate.');
       return;
     }
 
-    final mealTimeValue = mealTime.toLowerCase();
     final mealDate = DateFormat('yyyy-MM-dd').format(_selectedDate);
     setState(() {
       _isStoringMeal = true;
-      _storeMealMessage = null;
+      _errorMessage = null;
     });
 
     try {
-      await _apiService.storeMeal(name, quantity, mealTimeValue, mealDate);
+      await _apiService.storeMeal(name, quantity, mealTime.toLowerCase(), mealDate);
       if (!mounted) return;
-      setState(() {
-        _storeMealMessage = "Meal stored successfully!";
-      });
+      final kcal = (widget.food.calories * quantity / 100).round();
+      Navigator.pop(
+        context,
+        'Added ${quantity.round()} g of $name to ${mealTimeLabel(mealTime.toLowerCase())} ($kcal kcal)',
+      );
     } catch (error) {
       if (!mounted) return;
-      setState(() {
-        _storeMealMessage = "Error: ${error.toString()}";
-      });
+      setState(() => _errorMessage = "Couldn't add this food. ${friendlyError(error)}");
     } finally {
-      if (mounted) {
-        setState(() {
-          _isStoringMeal = false;
-        });
-      }
+      if (mounted) setState(() => _isStoringMeal = false);
     }
   }
 
@@ -153,25 +124,27 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
       });
     } catch (error) {
       _showFeedback(
-        "Error updating favorites: ${error.toString()}",
+        "Couldn't update favorites. ${friendlyError(error)}",
         isError: true,
       );
     } finally {
-      setState(() {
-        _isTogglingFavorite = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isTogglingFavorite = false;
+        });
+      }
     }
   }
 
   void _showFeedback(String message, {bool isError = false}) {
+    if (!mounted) return;
     final colorScheme = Theme.of(context).colorScheme;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
         backgroundColor: isError ? colorScheme.error : colorScheme.primary,
         behavior: SnackBarBehavior.floating,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         duration: const Duration(seconds: 2),
         action: isError
             ? SnackBarAction(
@@ -191,14 +164,16 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
     super.dispose();
   }
 
+  String _fmt(double v) => v == v.roundToDouble() ? '${v.round()}' : v.toStringAsFixed(1);
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final food = widget.food;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.food.name,
-            style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(food.name, style: const TextStyle(fontWeight: FontWeight.bold)),
         elevation: 0,
         backgroundColor: colorScheme.surface,
         foregroundColor: colorScheme.onSurface,
@@ -227,344 +202,226 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                     ),
             ),
             onPressed: _isTogglingFavorite ? null : toggleFavoriteFood,
-            tooltip:
-                _isFavorite ? 'Remove from favorites' : 'Add to favorites',
+            tooltip: _isFavorite ? 'Remove from favorites' : 'Add to favorites',
           ),
         ],
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Nutrition Facts Card
-              Card(
-                elevation: 2,
-                color: colorScheme.surface,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  side: BorderSide(
-                      color: colorScheme.primary.withValues(alpha: 0.15)),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Nutrition Facts",
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.onSurface,
-                        ),
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildAddCard(colorScheme),
+            const SizedBox(height: 16),
+            // Nutrition Facts Card
+            Card(
+              elevation: 0,
+              color: colorScheme.surfaceContainerLow,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Nutrition per 100 g",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onSurface,
                       ),
-                      const SizedBox(height: 20),
-                      LayoutBuilder(
-                        builder: (context, constraints) {
-                          double spacing = constraints.maxWidth * 0.05;
-                          return Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  _nutritionItem(
-                                    Icons.local_fire_department,
-                                    "Calories",
-                                    "${widget.food.calories}",
-                                    Colors.red.shade400,
-                                    colorScheme.onSurfaceVariant,
-                                  ),
-                                  SizedBox(width: spacing),
-                                  _nutritionItem(
-                                    Icons.fitness_center,
-                                    "Protein",
-                                    "${widget.food.protein}g",
-                                    Colors.blue.shade400,
-                                    colorScheme.onSurfaceVariant,
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: spacing),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  _nutritionItem(
-                                    Icons.grain,
-                                    "Carbs",
-                                    "${widget.food.carbs}g",
-                                    Colors.green.shade400,
-                                    colorScheme.onSurfaceVariant,
-                                  ),
-                                  SizedBox(width: spacing),
-                                  _nutritionItem(
-                                    Icons.water_drop,
-                                    "Fats",
-                                    "${widget.food.fats}g",
-                                    Colors.orange.shade400,
-                                    colorScheme.onSurfaceVariant,
-                                  ),
-                                ],
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        _nutritionItem(Icons.local_fire_department, "Calories",
+                            "${_fmt(food.calories)} kcal", Colors.red.shade400, colorScheme.onSurfaceVariant),
+                        const SizedBox(width: 12),
+                        _nutritionItem(Icons.fitness_center, "Protein", "${_fmt(food.protein)} g",
+                            Colors.blue.shade400, colorScheme.onSurfaceVariant),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        _nutritionItem(Icons.grain, "Carbs", "${_fmt(food.carbs)} g",
+                            Colors.green.shade400, colorScheme.onSurfaceVariant),
+                        const SizedBox(width: 12),
+                        _nutritionItem(Icons.water_drop, "Fat", "${_fmt(food.fats)} g",
+                            Colors.orange.shade400, colorScheme.onSurfaceVariant),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 24),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-              // Add to Meal Card
-              Card(
-                elevation: 2,
-                color: colorScheme.surface,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  side: BorderSide(
-                      color: colorScheme.primary.withValues(alpha: 0.15)),
+  Widget _buildAddCard(ColorScheme colorScheme) {
+    final grams = _grams;
+    final food = widget.food;
+
+    return Card(
+      elevation: 0,
+      color: colorScheme.surfaceContainerLow,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'How much did you eat?',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: colorScheme.onSurface),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _quantityController,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              onChanged: (_) => setState(() {}),
+              style: const TextStyle(fontSize: 18),
+              decoration: InputDecoration(
+                labelText: 'Amount',
+                suffixText: 'grams',
+                prefixIcon: const Icon(Icons.scale),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              children: _quickAmounts.map((g) {
+                return ChoiceChip(
+                  showCheckmark: false,
+                  label: Text('$g g'),
+                  selected: grams == g.toDouble(),
+                  onSelected: (_) => setState(() => _quantityController.text = '$g'),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Not sure? A slice of bread is about 30 g, an apple about 150 g, '
+              'a cup of cooked rice about 160 g.',
+              style: TextStyle(fontSize: 13, color: colorScheme.onSurfaceVariant),
+            ),
+            const SizedBox(height: 12),
+            // Live total so people see what they're about to log.
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                grams == null || grams <= 0
+                    ? 'Enter an amount to see the calories'
+                    : '${_fmt(grams)} g = ${(food.calories * grams / 100).round()} kcal  ·  '
+                        'Protein ${_fmt(food.protein * grams / 100)} g  ·  '
+                        'Carbs ${_fmt(food.carbs * grams / 100)} g  ·  '
+                        'Fat ${_fmt(food.fats * grams / 100)} g',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: colorScheme.onPrimaryContainer),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Which meal?',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.onSurface),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              children: [
+                ...mainMealTimes.map((m) => ChoiceChip(
+                      label: Text(m == 'snack' ? 'Snack' : mealTimeLabel(m)),
+                      selected: !_isCustomMealTime && _mealTime == m,
+                      onSelected: (_) => setState(() {
+                        _mealTime = m;
+                        _isCustomMealTime = false;
+                      }),
+                    )),
+                ChoiceChip(
+                  label: const Text('Other…'),
+                  selected: _isCustomMealTime,
+                  onSelected: (_) => setState(() {
+                    _mealTime = 'custom';
+                    _isCustomMealTime = true;
+                  }),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Add to Meal Plan",
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.onSurface,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Date Picker
-                      GestureDetector(
-                        onTap: () => _selectDate(context),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 15,
-                            horizontal: 16,
-                          ),
-                          decoration: BoxDecoration(
-                            color: colorScheme.surfaceContainerHighest,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                                color: colorScheme.outlineVariant),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                DateFormat('EEE, MMM d, yyyy')
-                                    .format(_selectedDate),
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                              Icon(Icons.calendar_today,
-                                  color: colorScheme.onSurfaceVariant),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Meal Time Selection
-                      if (!_isCustomMealTime)
-                        DropdownButtonFormField<String>(
-                          value: _selectedTime,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: colorScheme.surfaceContainerHighest,
-                            contentPadding: const EdgeInsets.symmetric(
-                              vertical: 15,
-                              horizontal: 16,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                  color: colorScheme.outlineVariant),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                  color: colorScheme.outlineVariant),
-                            ),
-                            prefixIcon: Icon(Icons.access_time,
-                                color: colorScheme.onSurfaceVariant),
-                            hintText: "Select Meal Time",
-                            hintStyle: TextStyle(
-                                color: colorScheme.onSurfaceVariant),
-                          ),
-                          style: TextStyle(color: colorScheme.onSurface),
-                          dropdownColor: colorScheme.surface,
-                          items: _predefinedMealTimes.map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedTime = value;
-                              _isCustomMealTime = value == "Custom";
-                            });
-                          },
-                        ),
-
-                      // Custom Meal Time Input
-                      if (_isCustomMealTime)
-                        Column(
-                          children: [
-                            TextField(
-                              controller: _customMealTimeController,
-                              style: TextStyle(color: colorScheme.onSurface),
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor: colorScheme.surfaceContainerHighest,
-                                contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 15,
-                                  horizontal: 16,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                      color: colorScheme.outlineVariant),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                      color: colorScheme.outlineVariant),
-                                ),
-                                prefixIcon: Icon(Icons.access_time,
-                                    color: colorScheme.onSurfaceVariant),
-                                hintText: "Enter Custom Meal Time",
-                                hintStyle: TextStyle(
-                                    color: colorScheme.onSurfaceVariant),
-                                suffixIcon: IconButton(
-                                  icon: Icon(Icons.close,
-                                      color: colorScheme.onSurfaceVariant),
-                                  onPressed: () {
-                                    setState(() {
-                                      _isCustomMealTime = false;
-                                      _selectedTime = null;
-                                      _customMealTimeController.clear();
-                                    });
-                                  },
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              "Examples: Mid-morning, Late-night, Second Breakfast, etc.",
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: colorScheme.onSurfaceVariant,
-                                fontStyle: FontStyle.italic,
-                              ),
-                            ),
-                          ],
-                        ),
-
-                      const SizedBox(height: 16),
-
-                      // Quantity Input
-                      TextField(
-                        controller: _quantityController,
-                        keyboardType: TextInputType.number,
-                        style: TextStyle(color: colorScheme.onSurface),
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: colorScheme.surfaceContainerHighest,
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 15,
-                            horizontal: 16,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide:
-                                BorderSide(color: colorScheme.outlineVariant),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide:
-                                BorderSide(color: colorScheme.outlineVariant),
-                          ),
-                          prefixIcon: Icon(Icons.scale,
-                              color: colorScheme.onSurfaceVariant),
-                          hintText: "Quantity (grams)",
-                          hintStyle:
-                              TextStyle(color: colorScheme.onSurfaceVariant),
-                        ),
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // Add to Meal Button
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: _isStoringMeal ? null : _storeMeal,
-                          style: ElevatedButton.styleFrom(
-                            padding:
-                                const EdgeInsets.symmetric(vertical: 15),
-                            foregroundColor: colorScheme.onPrimary,
-                            backgroundColor: colorScheme.primary,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            elevation: 3,
-                          ),
-                          child: _isStoringMeal
-                              ? CircularProgressIndicator(
-                                  color: colorScheme.onPrimary)
-                              : const Text(
-                                  "Add to Meal",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                        ),
-                      ),
-
-                      // Error/Success Message
-                      if (_storeMealMessage != null)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 16),
-                          child: Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: _storeMealMessage!.startsWith("Error")
-                                  ? colorScheme.errorContainer
-                                  : colorScheme.primaryContainer,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              _storeMealMessage!,
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: _storeMealMessage!.startsWith("Error")
-                                    ? colorScheme.onErrorContainer
-                                    : colorScheme.onPrimaryContainer,
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
+              ],
+            ),
+            if (_isCustomMealTime) ...[
+              const SizedBox(height: 8),
+              TextField(
+                controller: _customMealTimeController,
+                decoration: InputDecoration(
+                  labelText: 'Meal name',
+                  hintText: 'e.g. Pre-workout, Late night',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 ),
               ),
             ],
-          ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Icon(Icons.event, size: 20, color: colorScheme.onSurfaceVariant),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    _isToday ? 'Today' : DateFormat('EEEE, MMM d').format(_selectedDate),
+                    style: TextStyle(fontSize: 16, color: colorScheme.onSurface),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => _selectDate(context),
+                  child: const Text('Change date'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: _isStoringMeal ? null : _storeMeal,
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: _isStoringMeal
+                    ? SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: colorScheme.onPrimary),
+                      )
+                    : Text(
+                        'Add to ${_isCustomMealTime ? 'meal' : mealTimeLabel(_mealTime)}',
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+              ),
+            ),
+            if (_errorMessage != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: colorScheme.errorContainer,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    _errorMessage!,
+                    style: TextStyle(fontSize: 15, color: colorScheme.onErrorContainer),
+                  ),
+                ),
+              ),
+          ],
         ),
       ),
     );
@@ -602,8 +459,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(label,
-                      style: TextStyle(fontSize: 14, color: labelColor)),
+                  Text(label, style: TextStyle(fontSize: 14, color: labelColor)),
                   Text(
                     value,
                     style: TextStyle(

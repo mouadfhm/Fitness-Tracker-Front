@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/exercise_provider.dart';
+import '../providers/profile_provider.dart';
 import 'workout_details_screen.dart';
 import 'widgets/bottom_nav_bar.dart';
 import '../utils/add_banner.dart';
@@ -24,6 +25,13 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     // Ensure workouts are fetched after the first frame.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<ExercisesProvider>(context, listen: false).refreshWorkouts();
+      // Weight is needed for "kcal per hour"; load it if we don't have it yet.
+      try {
+        final profile = Provider.of<ProfileProvider>(context, listen: false);
+        if (profile.profileData == null && !profile.isLoading) profile.fetchProfile();
+      } on ProviderNotFoundException {
+        // Not provided in some tests; the list falls back to per-kg wording.
+      }
     });
   }
 
@@ -261,10 +269,18 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     required VoidCallback? onTap,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
-    return GestureDetector(
+    return Semantics(
+      button: true,
+      selected: active,
+      label: label == 'Simple'
+          ? 'Simple mode: log activities you did'
+          : 'Advanced mode: weekly gym plans',
+      excludeSemantics: true,
+      child: GestureDetector(
       onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
           color: active ? colorScheme.primary : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
@@ -272,40 +288,40 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
         child: Text(
           label,
           style: TextStyle(
-            fontSize: 12,
+            fontSize: 14,
             fontWeight: active ? FontWeight.bold : FontWeight.normal,
             color: active ? colorScheme.onPrimary : colorScheme.onSurfaceVariant,
           ),
         ),
       ),
+      ),
     );
   }
 
-  Widget _buildDifficultyIndicator(String difficulty) {
-    Color color;
-    int level;
-
-    switch (difficulty.toLowerCase()) {
-      case 'easy':
-      case 'beginner':
-        color = Colors.green;
-        level = 1;
-        break;
-      case 'medium':
-      case 'intermediate':
-        color = Colors.orange;
-        level = 2;
-        break;
-      case 'hard':
-      case 'advanced':
-      case 'expert':
-        color = Colors.red;
-        level = 3;
-        break;
-      default:
-        color = Colors.grey;
-        level = 1;
+  /// The user's weight in kg, if their profile is loaded.
+  double? _userWeight(BuildContext context) {
+    try {
+      final w = Provider.of<ProfileProvider>(context).profileData?['weight'];
+      return w is num && w > 0 ? w.toDouble() : null;
+    } on ProviderNotFoundException {
+      return null;
     }
+  }
+
+  Color _intensityColor(String intensity) {
+    switch (intensity) {
+      case 'Light':
+        return Colors.green.shade700;
+      case 'Moderate':
+        return Colors.orange.shade800;
+      default:
+        return Colors.red.shade700;
+    }
+  }
+
+  Widget _buildDifficultyIndicator(String intensity) {
+    final color = _intensityColor(intensity);
+    final level = intensity == 'Light' ? 1 : intensity == 'Moderate' ? 2 : 3;
 
     return Row(
       children: List.generate(3, (index) {
@@ -351,10 +367,20 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
-                    child: TextField(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Text(
+                            'Did some exercise? Find the activity and log it to count the calories you burned.',
+                            style: TextStyle(fontSize: 15, color: colorScheme.onSurfaceVariant),
+                          ),
+                        ),
+                        TextField(
                       onChanged: provider.updateSearchQuery,
                       decoration: InputDecoration(
-                        hintText: 'Search Exercises...',
+                        hintText: 'Search activities (e.g. walking)',
                         prefixIcon: const Icon(Icons.search),
                         filled: true,
                         fillColor: colorScheme.surfaceContainerHighest,
@@ -372,6 +398,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                         ),
                         contentPadding: const EdgeInsets.symmetric(vertical: 12),
                       ),
+                    ),
+                      ],
                     ),
                   ),
                 ),
@@ -440,7 +468,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                         Text(
                           provider.isLoading
                               ? 'Loading workouts...'
-                              : 'Found ${provider.filteredWorkouts.length} workouts',
+                              : '${provider.filteredWorkouts.length} activities',
                           style: TextStyle(
                             color: colorScheme.onSurfaceVariant,
                             fontWeight: FontWeight.w500,
@@ -480,15 +508,21 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              'Error loading workouts',
+                              "Couldn't load activities",
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: colorScheme.error,
+                                color: colorScheme.onSurface,
                               ),
                             ),
                             const SizedBox(height: 8),
-                            Text(provider.errorMessage!),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 24),
+                              child: Text(
+                                provider.errorMessage!,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
                             const SizedBox(height: 16),
                             ElevatedButton.icon(
                               onPressed: provider.fetchWorkouts,
@@ -524,8 +558,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                             const SizedBox(height: 16),
                             Text(
                               provider.searchQuery.isEmpty
-                                  ? 'No workouts available'
-                                  : 'No workouts match your search',
+                                  ? 'No activities available'
+                                  : 'No activities match your search',
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w500,
@@ -564,11 +598,14 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                             final category = workout['name'] ?? 'Other';
                             final caloriesPerKg =
                                 (workout['caloriesPerKg'] as num).toDouble();
+                            // Calorie burn per kg is really an intensity
+                            // measure, so label it as that, not "difficulty".
                             final difficulty = caloriesPerKg > 2
-                                ? 'Hard'
+                                ? 'Vigorous'
                                 : caloriesPerKg > 1
-                                    ? 'Medium'
-                                    : 'Easy';
+                                    ? 'Moderate'
+                                    : 'Light';
+                            final weight = _userWeight(context);
                             final Color categoryColor =
                                 _getCategoryColor(category);
 
@@ -650,7 +687,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                                                       child: Text(
                                                         category,
                                                         style: TextStyle(
-                                                          fontSize: 11,
+                                                          fontSize: 12,
                                                           fontWeight:
                                                               FontWeight.w700,
                                                           color: categoryColor,
@@ -669,9 +706,11 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                                                   const SizedBox(width: 2),
                                                   Flexible(
                                                     child: Text(
-                                                      '${caloriesPerKg.toStringAsFixed(1)} kcal/kg',
+                                                      weight != null
+                                                          ? '≈ ${(caloriesPerKg * weight).round()} kcal per hour'
+                                                          : '${caloriesPerKg.toStringAsFixed(1)} kcal per hour per kg of body weight',
                                                       style: TextStyle(
-                                                        fontSize: 12,
+                                                        fontSize: 13,
                                                         color: colorScheme
                                                             .onSurfaceVariant,
                                                       ),
@@ -693,12 +732,11 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                                                 difficulty),
                                             const SizedBox(height: 4),
                                             Text(
-                                              difficulty.toUpperCase(),
+                                              difficulty,
                                               style: TextStyle(
-                                                fontSize: 10,
+                                                fontSize: 12,
                                                 fontWeight: FontWeight.w600,
-                                                color:
-                                                    colorScheme.outlineVariant,
+                                                color: _intensityColor(difficulty),
                                               ),
                                             ),
                                           ],
