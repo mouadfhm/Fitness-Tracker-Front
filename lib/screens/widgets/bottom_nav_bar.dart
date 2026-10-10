@@ -4,10 +4,10 @@ import '../../l10n/app_localizations.dart';
 import '../../utils/app_theme.dart';
 import '../main_shell.dart';
 
-/// The four-tab bar: a floating rounded bar with a pill that slides to the
-/// selected tab, whose icon fills in and lifts slightly.
+/// The four-tab bar: a floating rounded bar with a circle that slides to the
+/// selected tab, whose icon fills in.
 ///
-/// [MainShell] draws one bar for all tabs, so the pill animates from the old
+/// [MainShell] draws one bar for all tabs, so the circle animates from the old
 /// tab to the new one instead of jumping.
 class CustomBottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -60,7 +60,7 @@ class CustomBottomNavBar extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.fromLTRB(12, 4, 12, 0),
         child: Container(
-          height: 68,
+          height: 72,
           decoration: BoxDecoration(
             color: isLight ? Colors.white : scheme.surfaceContainerHigh,
             borderRadius: BorderRadius.circular(24),
@@ -78,18 +78,27 @@ class CustomBottomNavBar extends StatelessWidget {
               final itemWidth = constraints.maxWidth / items.length;
               return Stack(
                 children: [
-                  // The sliding pill behind the selected tab.
+                  // The sliding circle behind the selected tab's icon. Its
+                  // top and size match the icon slot in [_NavItem].
                   AnimatedPositioned(
                     duration: _duration,
                     curve: Curves.easeOutBack,
-                    left: itemWidth * currentIndex + 6,
-                    top: 6,
-                    bottom: 6,
-                    width: itemWidth - 12,
+                    left: itemWidth * currentIndex +
+                        (itemWidth - _NavItem.circleSize) / 2,
+                    top: _NavItem.circleTop,
+                    width: _NavItem.circleSize,
+                    height: _NavItem.circleSize,
                     child: DecoratedBox(
                       decoration: BoxDecoration(
-                        color: scheme.primaryContainer,
-                        borderRadius: BorderRadius.circular(18),
+                        color: scheme.primary,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: scheme.primary.withValues(alpha: 0.35),
+                            blurRadius: 10,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -132,11 +141,15 @@ class _NavItem extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
+  static const double circleSize = 40;
+  static const double circleTop = 7;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    final color = selected ? scheme.onPrimaryContainer : scheme.onSurfaceVariant;
+    final iconColor = selected ? scheme.onPrimary : scheme.onSurfaceVariant;
+    final labelColor = selected ? scheme.primary : scheme.onSurfaceVariant;
 
     return Semantics(
       button: true,
@@ -150,16 +163,14 @@ class _NavItem extends StatelessWidget {
         highlightShape: BoxShape.rectangle,
         borderRadius: BorderRadius.circular(18),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            AnimatedSlide(
-              duration: CustomBottomNavBar._duration,
-              curve: Curves.easeOutBack,
-              offset: selected ? const Offset(0, -0.08) : Offset.zero,
+            const SizedBox(height: circleTop),
+            SizedBox.square(
+              dimension: circleSize,
               child: AnimatedScale(
                 duration: CustomBottomNavBar._duration,
                 curve: Curves.easeOutBack,
-                scale: selected ? 1.12 : 1.0,
+                scale: selected ? 1.08 : 1.0,
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 200),
                   transitionBuilder: (child, animation) =>
@@ -167,17 +178,17 @@ class _NavItem extends StatelessWidget {
                   child: Icon(
                     selected ? selectedIcon : icon,
                     key: ValueKey(selected),
-                    color: color,
-                    size: 24,
+                    color: iconColor,
+                    size: 22,
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 3),
             AnimatedDefaultTextStyle(
               duration: const Duration(milliseconds: 200),
               style: theme.textTheme.labelMedium!.copyWith(
-                color: color,
+                color: labelColor,
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
               ),
               child: Text(
