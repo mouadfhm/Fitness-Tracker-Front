@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../utils/adaptive.dart';
+import 'main_shell.dart';
 import 'package:intl/intl.dart';
 import 'meal_detail_screen.dart';
 import 'meal_history_screen.dart';
@@ -8,6 +10,7 @@ import '../utils/add_banner.dart';
 import '../utils/friendly_error.dart';
 import '../utils/labels.dart';
 import 'widgets/bottom_nav_bar.dart';
+import 'widgets/notification_prompt_card.dart';
 
 /// Totals for a list of meal foods. Food values are stored per 100 g and the
 /// pivot holds the grams eaten.
@@ -50,6 +53,23 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _fetchData();
+  }
+
+  /// The shell's selected tab the last time this screen looked, or null
+  /// outside the shell.
+  int? _shellTab;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // The shell keeps this tab alive while others show, so meals or workouts
+    // logged elsewhere would otherwise not appear until a restart. Reload
+    // quietly each time Today comes back into view.
+    final tab = MainShellScope.maybeOf(context)?.currentIndex;
+    if (tab == _currentIndex && _shellTab != null && _shellTab != _currentIndex) {
+      _fetchData();
+    }
+    _shellTab = tab;
   }
 
   String get _todayKey => DateFormat('yyyy-MM-dd').format(DateTime.now());
@@ -125,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _showNutrientHelp() {
     showDialog<void>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => AlertDialog.adaptive(
         title: const Text('What do these mean?'),
         content: const Text(
           'Calories (kcal) measure the energy in food. Eating about your daily '
@@ -137,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
           'first, then try to get enough protein.',
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Got it')),
+          AdaptiveDialogAction(isDefault: true, onPressed: () => Navigator.pop(context), child: const Text('Got it')),
         ],
       ),
     );
@@ -193,6 +213,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const SizedBox(height: 8),
                       ..._buildMealCards(colorScheme),
+                      const NotificationPromptCard(),
                       const SizedBox(height: 8),
                       if (_pastMeals.isNotEmpty)
                         OutlinedButton.icon(

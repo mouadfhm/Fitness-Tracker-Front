@@ -1,6 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
+import '../../utils/adaptive.dart';
 import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
 import '../../utils/friendly_error.dart';
@@ -214,7 +215,7 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
 
     final colorScheme = Theme.of(context).colorScheme;
 
-    final DateTime? picked = await showDatePicker(
+    final DateTime? picked = await showAdaptiveDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
@@ -261,16 +262,16 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
   Future<void> _deletePlan(Map<String, dynamic> plan) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => AlertDialog.adaptive(
         title: const Text('Delete saved plan'),
         content: Text(
             'Delete "${plan['name'] ?? 'this plan'}"? This cannot be undone.'),
         actions: [
-          TextButton(
+          AdaptiveDialogAction(
             onPressed: () => Navigator.pop(context, false),
             child: const Text('Cancel'),
           ),
-          TextButton(
+          AdaptiveDialogAction(isDestructive: true,
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Delete'),
           ),

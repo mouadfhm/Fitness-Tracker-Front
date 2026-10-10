@@ -3,6 +3,7 @@
 import 'package:fitness_tracker_app/screens/workout/new_workout_screen.dart';
 import 'package:fitness_tracker_app/utils/friendly_error.dart';
 import 'package:flutter/material.dart';
+import '../../utils/adaptive.dart';
 import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
 
@@ -598,16 +599,16 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
   ) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => AlertDialog.adaptive(
         title: const Text('Delete Workout'),
         content: Text(
             'Delete "${workout['name']}"? Any day using it will become a rest day.'),
         actions: [
-          TextButton(
+          AdaptiveDialogAction(
             onPressed: () => Navigator.pop(context, false),
             child: const Text('Cancel'),
           ),
-          TextButton(
+          AdaptiveDialogAction(isDestructive: true,
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Delete'),
           ),
@@ -999,7 +1000,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
   void _selectStartDate() async {
     final colorScheme = Theme.of(context).colorScheme;
 
-    final DateTime? picked = await showDatePicker(
+    final DateTime? picked = await showAdaptiveDatePicker(
       context: context,
       initialDate: _startDate,
       firstDate: DateTime.now(),

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../utils/friendly_error.dart';
-import 'home_screen.dart';
-import 'profile_screen.dart';
+import 'package:provider/provider.dart';
+import '../providers/profile_provider.dart';
+import 'main_shell.dart';
 
 class OnboardingScreen extends StatefulWidget {
   final Map<String, dynamic> initialData;
@@ -166,14 +167,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       });
       if (!mounted) return;
       if (widget.isEditing) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const ProfileScreen()),
-        );
+        // Back to the Me tab it was opened from, with the saved values.
+        Provider.of<ProfileProvider>(context, listen: false).fetchProfile();
+        Navigator.pop(context);
       } else {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
+          MaterialPageRoute(builder: (_) => const MainShell()),
           (route) => false,
         );
       }

@@ -1,5 +1,6 @@
 import 'package:fitness_tracker_app/services/api_service.dart';
 import 'package:flutter/material.dart';
+import '../utils/adaptive.dart';
 
 class MealDetailScreen extends StatefulWidget {
   final String mealTime;
@@ -210,7 +211,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                             return await showDialog(
                               context: context,
                               builder: (BuildContext context) {
-                                return AlertDialog(
+                                return AlertDialog.adaptive(
                                   backgroundColor: theme.colorScheme.surface,
                                   title: Text(
                                     "Remove Food",
@@ -225,7 +226,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                                     ),
                                   ),
                                   actions: [
-                                    TextButton(
+                                    AdaptiveDialogAction(
                                       onPressed:
                                           () =>
                                               Navigator.of(context).pop(false),
@@ -236,7 +237,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                                         ),
                                       ),
                                     ),
-                                    TextButton(
+                                    AdaptiveDialogAction(isDestructive: true,
                                       onPressed:
                                           () => Navigator.of(context).pop(true),
                                       child: Text(
@@ -298,7 +299,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                                       final confirmed = await showDialog(
                                         context: context,
                                         builder: (BuildContext context) {
-                                          return AlertDialog(
+                                          return AlertDialog.adaptive(
                                             backgroundColor:
                                                 theme.colorScheme.surface,
                                             title: Text(
@@ -316,7 +317,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                                               ),
                                             ),
                                             actions: [
-                                              TextButton(
+                                              AdaptiveDialogAction(
                                                 onPressed:
                                                     () => Navigator.of(
                                                       context,
@@ -335,7 +336,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                                                   ),
                                                 ),
                                               ),
-                                              TextButton(
+                                              AdaptiveDialogAction(isDestructive: true,
                                                 onPressed:
                                                     () => Navigator.of(
                                                       context,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/adaptive.dart';
 import '../services/api_service.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -226,7 +227,7 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    final DateTime? picked = await showAdaptiveDatePicker(
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime(2020),

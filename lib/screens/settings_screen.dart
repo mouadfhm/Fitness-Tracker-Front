@@ -1,8 +1,10 @@
 // lib/screens/settings_screen.dart
 import 'package:flutter/material.dart';
+import '../utils/adaptive.dart';
 import '../utils/friendly_error.dart';
 import 'package:provider/provider.dart';
 import '../services/api_service.dart';
+import '../services/firebase_service.dart';
 import 'package:fitness_tracker_app/providers/theme_provider.dart';
 import 'login_screen.dart';
 import '../utils/privacy_policy.dart';
@@ -61,6 +63,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       subtitle: 'In the evening, if your streak is about to break',
     ),
   ];
+
+  Future<void> _askForPermissionIfUndecided() async {
+    if (await notificationPermissionUndecided()) {
+      await requestNotificationPermission();
+    }
+  }
 
   /// What quiet hours are set to when switched on. Matches the backend's
   /// defaults, so a user who toggles it off and on again lands where they
@@ -244,7 +252,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
           // Defaults to on for a key the server has not sent, matching the
           // backend, where an absent setting means enabled.
           value: _preferences![toggle.key] as bool? ?? true,
-          onChanged: (value) => _savePreferences({toggle.key: value}),
+          onChanged: (value) {
+            _savePreferences({toggle.key: value});
+            // Turning a reminder on is the clearest moment to ask iOS for
+            // permission; without it the reminder could never arrive.
+            if (value) _askForPermissionIfUndecided();
+          },
         ),
       ..._buildQuietHoursTiles(context),
     ];
@@ -299,7 +312,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         style: Theme.of(context).textTheme.titleMedium,
       ),
       onTap: () async {
-        final picked = await showTimePicker(
+        final picked = await showAdaptiveTimePicker(
           context: context,
           initialTime: current,
         );
@@ -341,17 +354,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
+        return AlertDialog.adaptive(
           title: const Text('Delete Account'),
           content: const Text(
             'Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently deleted.',
           ),
           actions: [
-            TextButton(
+            AdaptiveDialogAction(
               onPressed: () => Navigator.of(context).pop(),
               child: const Text('Cancel'),
             ),
-            TextButton(
+            AdaptiveDialogAction(isDestructive: true,
               onPressed: () {
                 Navigator.of(context).pop();
                 _deleteAccount();

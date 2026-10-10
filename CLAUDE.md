@@ -61,10 +61,12 @@ There are two API versions in use:
 - **v2** (`$baseUrl/v2/workouts/...`): custom workouts, scheduled workouts, and weekly cycle plans
 
 ### Navigation
-Bottom navigation (`lib/screens/widgets/bottom_nav_bar.dart`) connects four top-level screens: Home (Nutrition Tracker), Workout Calendar, Foods, Profile. Navigation uses `Navigator.pushReplacement` between these tabs to avoid stacking them.
+Bottom navigation (`lib/screens/widgets/bottom_nav_bar.dart`) connects four top-level screens: Home (Today), Workouts, Foods, Profile (Me). They live in `MainShell` (`lib/screens/main_shell.dart`), an `IndexedStack` that keeps each tab alive so switching back keeps its place; the nav bar switches tabs through `MainShellScope`. The named routes `/home`, `/workouts`, `/foods`, `/profile` open the shell on that tab.
+
+For dialogs, date and time pickers use `AlertDialog.adaptive` with `AdaptiveDialogAction`, `showAdaptiveDatePicker` and `showAdaptiveTimePicker` (`lib/utils/adaptive.dart`) so iPhone users get iOS-style controls.
 
 ### Token/Auth Flow
-On startup, `main.dart` calls `TokenService.getToken()`. If a token exists, the app starts on `HomeScreen`; otherwise on `LoginScreen`. Logout clears the token via `ApiService.logout()` → `TokenService.deleteToken()` and navigates back to `LoginScreen` with the entire navigation stack cleared.
+On startup, `main.dart` calls `TokenService.getToken()`. If a token exists, the app starts on `MainShell` (Today tab); otherwise on `LoginScreen`. Logout clears the token via `ApiService.logout()` → `TokenService.deleteToken()` and navigates back to `LoginScreen` with the entire navigation stack cleared.
 
 ### Platform Notes
 - Token storage uses `FlutterSecureStorage` (mobile/desktop). Web localStorage code exists but is commented out throughout `token_service.dart` and related files.
