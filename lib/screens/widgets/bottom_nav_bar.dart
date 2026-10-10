@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import '../foods_screen.dart';
+import '../home_screen.dart';
+import '../profile_screen.dart';
+import '../workout_root_screen.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -9,6 +13,12 @@ class CustomBottomNavBar extends StatelessWidget {
   });
 
   static const _routes = ['/home', '/workouts', '/foods', '/profile'];
+  static final _screens = <Widget Function()>[
+    () => const HomeScreen(),
+    () => const WorkoutRootScreen(),
+    () => const FoodsScreen(),
+    () => const ProfileScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +29,17 @@ class CustomBottomNavBar extends StatelessWidget {
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       onDestinationSelected: (i) {
         if (i == currentIndex) return;
-        Navigator.of(context).pushReplacementNamed(_routes[i]);
+        // Tabs switch in place, with no transition. A named route would play
+        // the platform's push animation, which on iOS slides each tab in from
+        // the side as if it were a new page, against how iOS tab bars behave.
+        Navigator.of(context).pushReplacement(
+          PageRouteBuilder(
+            settings: RouteSettings(name: _routes[i]),
+            pageBuilder: (_, __, ___) => _screens[i](),
+            transitionDuration: Duration.zero,
+            reverseTransitionDuration: Duration.zero,
+          ),
+        );
       },
       destinations: const [
         NavigationDestination(

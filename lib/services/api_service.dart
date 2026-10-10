@@ -270,9 +270,10 @@ class ApiService {
       },
     );
     _checkUnauthorized(response);
-    if (response.statusCode == 200) {
-      await TokenService.deleteToken();
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete account: ${response.body}');
     }
+    await TokenService.deleteToken();
   }
 
   // Example: GET profile

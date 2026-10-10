@@ -606,10 +606,8 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
         elevation: 0,
         backgroundColor: colorScheme.surface,
         foregroundColor: colorScheme.onSurface,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
+        // Adaptive: a chevron on iOS, an arrow on Android.
+        leading: const BackButton(),
       ),
       body: FutureBuilder<List<dynamic>>(
         future: _plansFuture,

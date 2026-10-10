@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../services/api_service.dart';
 import 'package:fitness_tracker_app/providers/theme_provider.dart';
 import 'login_screen.dart';
+import '../utils/privacy_policy.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -146,7 +147,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ListTile(
             leading: const Icon(Icons.dark_mode),
             title: const Text('Dark Mode'),
-            trailing: Switch(
+            trailing: Switch.adaptive(
               value: isDark,
               onChanged: (value) {
                 themeProvider.setTheme(
@@ -159,6 +160,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
           _buildSectionHeader(context, 'Notifications'),
           ..._buildNotificationSection(context),
           const Divider(),
+          if (privacyPolicyUrl() != null)
+            ListTile(
+              leading: const Icon(Icons.privacy_tip_outlined),
+              title: const Text('Privacy Policy'),
+              trailing: const Icon(Icons.open_in_new),
+              onTap: () => openPrivacyPolicy(context),
+            ),
           ListTile(
             leading: Icon(Icons.delete_forever, color: Theme.of(context).colorScheme.error),
             title: Text(
@@ -229,7 +237,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     return [
       for (final toggle in _notificationToggles)
-        SwitchListTile(
+        SwitchListTile.adaptive(
           secondary: Icon(toggle.icon),
           title: Text(toggle.title),
           subtitle: Text(toggle.subtitle),
@@ -250,7 +258,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final enabled = from != null && to != null;
 
     return [
-      SwitchListTile(
+      SwitchListTile.adaptive(
         secondary: const Icon(Icons.bedtime),
         title: const Text('Quiet hours'),
         subtitle: Text(

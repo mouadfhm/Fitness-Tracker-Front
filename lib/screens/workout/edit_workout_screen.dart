@@ -178,10 +178,8 @@ class _EditWorkoutScreenState extends State<EditWorkoutScreen> {
         elevation: 0,
         backgroundColor: colorScheme.surface,
         foregroundColor: colorScheme.onSurface,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
+        // Adaptive: a chevron on iOS, an arrow on Android.
+        leading: const BackButton(),
         actions: [
           if (_isLoadingExercises)
             Padding(
@@ -581,6 +579,7 @@ class _EditWorkoutScreenState extends State<EditWorkoutScreen> {
                       ),
                       const Spacer(),
                       IconButton(
+                        tooltip: 'Close',
                         icon: Icon(Icons.close, color: colorScheme.onSurface),
                         onPressed: () => Navigator.pop(context),
                       ),
@@ -660,6 +659,7 @@ class _EditWorkoutScreenState extends State<EditWorkoutScreen> {
                                     ? const Icon(Icons.check_circle,
                                         color: Colors.green)
                                     : IconButton(
+                                        tooltip: 'Add exercise',
                                         icon: const Icon(
                                             Icons.add_circle_outline),
                                         color: colorScheme.primary,

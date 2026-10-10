@@ -71,6 +71,11 @@ flutter_icons:
   android: true
   ios: true
   image_path: "lib/assets/fitnessTrackerLogo.png"
+  # App Store Connect rejects an iOS icon with any transparency, and iOS
+  # clips the corners, so iOS gets a padded copy on a solid background.
+  image_path_ios: "lib/assets/fitnessTrackerLogo_ios.png"
+  remove_alpha_ios: true
+  background_color_ios: "#FFFFFF"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

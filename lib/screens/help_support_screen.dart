@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../utils/privacy_policy.dart';
 
 /// Short answers to the questions beginners actually ask, plus a way to
 /// email support when SUPPORT_EMAIL is set in the .env file.
@@ -94,6 +95,44 @@ class HelpSupportScreen extends StatelessWidget {
               ),
             ),
           ),
+          const SizedBox(height: 16),
+          // App Store guideline 1.4.1: health numbers in the app are
+          // estimates, and people should be told so.
+          Card(
+            elevation: 0,
+            color: colorScheme.surfaceContainerLow,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.info_outline, color: colorScheme.onSurfaceVariant),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Calorie goals, calories burned and BMI in this app are '
+                      'estimates to guide you, not medical advice. If you have '
+                      'a health condition, are pregnant, or plan a big change '
+                      'in diet or exercise, check with a doctor first.',
+                      style: TextStyle(fontSize: 15, height: 1.4, color: colorScheme.onSurfaceVariant),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (privacyPolicyUrl() != null) ...[
+            const SizedBox(height: 8),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.privacy_tip_outlined),
+                title: const Text('Privacy Policy'),
+                trailing: const Icon(Icons.open_in_new),
+                onTap: () => openPrivacyPolicy(context),
+              ),
+            ),
+          ],
           if (supportEmail != null && supportEmail.isNotEmpty) ...[
             const SizedBox(height: 16),
             Card(
