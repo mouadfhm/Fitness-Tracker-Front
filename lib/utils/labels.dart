@@ -68,3 +68,11 @@ String _titleCase(String value) => value
     .split(' ')
     .map((w) => w.isEmpty ? w : '${w[0].toUpperCase()}${w.substring(1)}')
     .join(' ');
+
+/// Effort level for an activity from its kcal per kg per hour, which is about
+/// the same as its MET value (walking ≈ 3.5, running ≈ 10).
+String intensityLabel(num caloriesPerKgPerHour) {
+  if (caloriesPerKgPerHour >= 6) return 'Vigorous';
+  if (caloriesPerKgPerHour >= 3) return 'Moderate';
+  return 'Light';
+}

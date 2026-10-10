@@ -5,6 +5,7 @@ import '../providers/profile_provider.dart';
 import 'workout_details_screen.dart';
 import 'widgets/bottom_nav_bar.dart';
 import '../utils/add_banner.dart';
+import '../utils/labels.dart';
 import '../utils/ad_list_helper.dart';
 
 class WorkoutScreen extends StatefulWidget {
@@ -600,11 +601,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                                 (workout['caloriesPerKg'] as num).toDouble();
                             // Calorie burn per kg is really an intensity
                             // measure, so label it as that, not "difficulty".
-                            final difficulty = caloriesPerKg > 2
-                                ? 'Vigorous'
-                                : caloriesPerKg > 1
-                                    ? 'Moderate'
-                                    : 'Light';
+                            final difficulty = intensityLabel(caloriesPerKg);
                             final weight = _userWeight(context);
                             final Color categoryColor =
                                 _getCategoryColor(category);

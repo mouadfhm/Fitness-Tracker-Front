@@ -50,4 +50,10 @@ void main() {
           contains('log in again'));
     });
   });
+
+  test('intensity uses MET-like thresholds', () {
+    expect(intensityLabel(2.0), 'Light'); // slow walk
+    expect(intensityLabel(3.5), 'Moderate'); // brisk walk
+    expect(intensityLabel(8.5), 'Vigorous'); // mountain biking
+  });
 }
