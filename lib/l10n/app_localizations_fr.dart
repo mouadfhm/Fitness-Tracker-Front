@@ -21,6 +21,35 @@ class AppLocalizationsFr extends AppLocalizations {
   String get language => 'Langue';
 
   @override
+  String get languageSystem => 'Langue du système';
+
+  @override
+  String languageSystemSubtitle(String language) {
+    return 'Suit votre téléphone ($language)';
+  }
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get languageFrench => 'Français';
+
+  @override
+  String get settingsPrivacyPolicy => 'Politique de confidentialité';
+
+  @override
+  String get navToday => 'Aujourd\'hui';
+
+  @override
+  String get navWorkouts => 'Séances';
+
+  @override
+  String get navFoods => 'Aliments';
+
+  @override
+  String get navMe => 'Moi';
+
+  @override
   String get notifications => 'Notifications';
 
   @override

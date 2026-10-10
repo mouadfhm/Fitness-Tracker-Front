@@ -274,9 +274,6 @@ class _ProgressScreenState extends State<ProgressScreen> {
 
   Widget _buildProgressEntryForm() {
     return Card(
-      elevation: 4,
-      color: Theme.of(context).colorScheme.surface,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -419,9 +416,6 @@ class _ProgressScreenState extends State<ProgressScreen> {
 
   Widget _buildProgressChart() {
     return Card(
-      elevation: 4,
-      color: Theme.of(context).colorScheme.surface,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

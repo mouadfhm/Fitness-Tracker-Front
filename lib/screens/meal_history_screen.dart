@@ -57,10 +57,7 @@ class MealHistoryScreen extends StatelessWidget {
                 ];
 
                 return Card(
-                  elevation: 0,
-                  color: colorScheme.surfaceContainerLow,
                   margin: const EdgeInsets.symmetric(vertical: 6),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   clipBehavior: Clip.antiAlias,
                   child: ExpansionTile(
                     shape: const Border(),

@@ -11,7 +11,6 @@ import 'package:fitness_tracker_app/services/api_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'onboarding_screen.dart';
 import 'progress_screen.dart';
-import 'widgets/bottom_nav_bar.dart';
 import 'settings_screen.dart';
 import 'help_support_screen.dart';
 import 'achievements_screen.dart';
@@ -26,7 +25,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final int _currentIndex = 3;
   final _apiService = ApiService();
 
   @override
@@ -185,8 +183,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ],
       ),
       body: _buildProfileContent(),
-      bottomNavigationBar: CustomBottomNavBar(currentIndex: _currentIndex),
-    );
+          );
   }
 
   Widget _buildProfileContent() {
@@ -277,15 +274,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const SizedBox(height: 20),
                 // Profile Information Cards
                 Card(
-                  elevation: 2,
-                  color: colorScheme.surface,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    side: BorderSide(
-                      color: colorScheme.primary.withValues(alpha: 0.15),
-                      width: 1,
-                    ),
-                  ),
                   child: Column(
                     children: [
                       _buildProfileTile(

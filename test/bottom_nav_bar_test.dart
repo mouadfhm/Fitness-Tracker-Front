@@ -1,3 +1,4 @@
+import 'package:fitness_tracker_app/l10n/app_localizations.dart';
 import 'package:fitness_tracker_app/screens/main_shell.dart';
 import 'package:fitness_tracker_app/screens/widgets/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,8 @@ void main() {
     int? selected;
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: MainShellScope(
           currentIndex: 0,
           select: (i) => selected = i,
@@ -30,6 +33,8 @@ void main() {
     int? selected;
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: MainShellScope(
           currentIndex: 1,
           select: (i) => selected = i,
@@ -44,5 +49,21 @@ void main() {
     await tester.pump();
 
     expect(selected, isNull);
+  });
+
+  testWidgets('labels follow the app language', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('fr'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const Scaffold(
+          bottomNavigationBar: CustomBottomNavBar(currentIndex: 0),
+        ),
+      ),
+    );
+
+    expect(find.text('Aliments'), findsOneWidget);
+    expect(find.text('Foods'), findsNothing);
   });
 }

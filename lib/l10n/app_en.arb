@@ -4,6 +4,20 @@
   "settingsTitle": "Settings",
   "darkMode": "Dark Mode",
   "language": "Language",
+  "languageSystem": "System default",
+  "languageSystemSubtitle": "Follows your phone ({language})",
+  "@languageSystemSubtitle": {
+    "placeholders": {
+      "language": {"type": "String"}
+    }
+  },
+  "languageEnglish": "English",
+  "languageFrench": "Français",
+  "settingsPrivacyPolicy": "Privacy Policy",
+  "navToday": "Today",
+  "navWorkouts": "Workouts",
+  "navFoods": "Foods",
+  "navMe": "Me",
   "notifications": "Notifications",
   "deleteAccount": "Delete Account",
   "deleteAccountSubtitle": "Permanently delete your account and all data",

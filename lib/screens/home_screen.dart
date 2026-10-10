@@ -9,7 +9,6 @@ import '../services/api_service.dart';
 import '../utils/add_banner.dart';
 import '../utils/friendly_error.dart';
 import '../utils/labels.dart';
-import 'widgets/bottom_nav_bar.dart';
 import 'widgets/notification_prompt_card.dart';
 
 /// Totals for a list of meal foods. Food values are stored per 100 g and the
@@ -232,13 +231,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const AdBannerWidget(),
-          CustomBottomNavBar(currentIndex: _currentIndex),
-        ],
-      ),
+      bottomNavigationBar: const AdBannerWidget(),
     );
   }
 
@@ -294,9 +287,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final ringColor = isOver ? colorScheme.error : colorScheme.primary;
 
     return Card(
-      elevation: 0,
-      color: colorScheme.surfaceContainerLow,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -471,10 +461,7 @@ class _HomeScreenState extends State<HomeScreen> {
               : '${names.take(3).join(', ')} and ${names.length - 3} more';
 
       return Card(
-        elevation: 0,
-        color: colorScheme.surfaceContainerLow,
         margin: const EdgeInsets.symmetric(vertical: 6),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: foods.isEmpty ? () => _addFood(mealTime) : () => _openMeal(mealTime, foods),

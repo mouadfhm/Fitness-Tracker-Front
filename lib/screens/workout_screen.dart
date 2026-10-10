@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../providers/exercise_provider.dart';
 import '../providers/profile_provider.dart';
 import 'workout_details_screen.dart';
-import 'widgets/bottom_nav_bar.dart';
 import '../utils/add_banner.dart';
 import '../utils/labels.dart';
 import '../utils/ad_list_helper.dart';
@@ -18,7 +17,6 @@ class WorkoutScreen extends StatefulWidget {
 }
 
 class _WorkoutScreenState extends State<WorkoutScreen> {
-  final int _currentIndex = 1;
 
   @override
   void initState() {
@@ -619,15 +617,6 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                                   );
                                 },
                                 child: Card(
-                                  elevation: 2,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                    side: BorderSide(
-                                      color: colorScheme.primary
-                                          .withValues(alpha: 0.15),
-                                      width: 1,
-                                    ),
-                                  ),
                                   child: Padding(
                                     padding: const EdgeInsets.all(14),
                                     child: Row(
@@ -755,13 +744,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
         ),
       ),
 
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const AdBannerWidget(),
-          CustomBottomNavBar(currentIndex: _currentIndex),
-        ],
-      ),
+      bottomNavigationBar: const AdBannerWidget(),
     );
   }
 }

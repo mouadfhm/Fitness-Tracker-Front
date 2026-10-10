@@ -97,7 +97,6 @@ class _FoodScanScreenState extends State<FoodScanScreen> {
                     ),
                   if (_scannedFood != null)
                     Card(
-                      elevation: 4,
                       margin: const EdgeInsets.symmetric(vertical: 16),
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),

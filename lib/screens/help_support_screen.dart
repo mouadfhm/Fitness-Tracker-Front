@@ -80,11 +80,8 @@ class HelpSupportScreen extends StatelessWidget {
           const SizedBox(height: 8),
           ..._faqs.map(
             (faq) => Card(
-              elevation: 0,
-              color: colorScheme.surfaceContainerLow,
               margin: const EdgeInsets.symmetric(vertical: 4),
               clipBehavior: Clip.antiAlias,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               child: ExpansionTile(
                 shape: const Border(),
                 title: Text(faq.$1, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
@@ -99,9 +96,6 @@ class HelpSupportScreen extends StatelessWidget {
           // App Store guideline 1.4.1: health numbers in the app are
           // estimates, and people should be told so.
           Card(
-            elevation: 0,
-            color: colorScheme.surfaceContainerLow,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Row(

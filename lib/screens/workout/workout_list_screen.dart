@@ -294,12 +294,6 @@ class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
 
   Widget _buildWorkoutCard(ThemeData theme, ColorScheme colorScheme, Map<String, dynamic> workout) {
     return Card(
-      elevation: 2,
-      color: colorScheme.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
-        side: BorderSide(color: colorScheme.primary.withValues(alpha: 0.15)),
-      ),
       child: InkWell(
         onTap: () => _navigateToWorkoutDetails(workout),
         borderRadius: BorderRadius.circular(14),

@@ -216,9 +216,6 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
             const SizedBox(height: 16),
             // Nutrition Facts Card
             Card(
-              elevation: 0,
-              color: colorScheme.surfaceContainerLow,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
@@ -267,9 +264,6 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
     final food = widget.food;
 
     return Card(
-      elevation: 0,
-      color: colorScheme.surfaceContainerLow,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(

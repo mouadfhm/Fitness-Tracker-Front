@@ -6,7 +6,6 @@ import '../providers/food_provider.dart';
 import '../services/food_service.dart';
 import 'food_details_screen.dart';
 import 'new_food_screen.dart';
-import 'widgets/bottom_nav_bar.dart';
 import '../utils/add_banner.dart';
 import '../utils/ad_list_helper.dart';
 import '../utils/friendly_error.dart';
@@ -40,7 +39,6 @@ class _FoodsScreenState extends State<FoodsScreen>
   bool _sortAscending = false;  // false = high to low (descending), true = low to high (ascending)
 
   Food? _scannedFood;
-  final int _currentIndex = 2; // 0: Today, 1: Workouts, 2: Foods, 3: Me
 
   bool get _isPicker => widget.addToMeal != null;
 
@@ -389,13 +387,9 @@ class _FoodsScreenState extends State<FoodsScreen>
                         const SizedBox(height: 10),
                         if (_scannedFood != null)
                           Card(
-                            elevation: 4,
                             margin: const EdgeInsets.symmetric(
                               horizontal: 16,
                               vertical: 8,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
                             ),
                             child: ListTile(
                               title: Text(_scannedFood!.name),
@@ -445,14 +439,6 @@ class _FoodsScreenState extends State<FoodsScreen>
                                           margin: const EdgeInsets.symmetric(
                                             horizontal: 16,
                                             vertical: 8,
-                                          ),
-                                          elevation: 2,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(14),
-                                            side: BorderSide(
-                                              color: colorScheme.primary.withValues(alpha: 0.15),
-                                              width: 1,
-                                            ),
                                           ),
                                           child: ListTile(
                                             contentPadding:
@@ -515,13 +501,7 @@ class _FoodsScreenState extends State<FoodsScreen>
           ),
           bottomNavigationBar: _isPicker
               ? null
-              : Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const AdBannerWidget(),
-                    CustomBottomNavBar(currentIndex: _currentIndex),
-                  ],
-                ),
+              : const AdBannerWidget(),
         );
       },
     );
