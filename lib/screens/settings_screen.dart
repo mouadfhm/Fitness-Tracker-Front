@@ -8,6 +8,8 @@ import '../services/firebase_service.dart';
 import 'package:fitness_tracker_app/providers/theme_provider.dart';
 import 'login_screen.dart';
 import '../utils/privacy_policy.dart';
+import '../l10n/app_localizations.dart';
+import '../providers/locale_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -32,26 +34,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _NotificationToggle(
       key: 'meal_reminders',
       icon: Icons.restaurant,
-      title: 'Meal reminders',
-      subtitle: 'A nudge when you have not logged a meal',
+      title: _mealRemindersTitle,
+      subtitle: _mealRemindersSubtitle,
     ),
     _NotificationToggle(
       key: 'workout_reminders',
       icon: Icons.fitness_center,
-      title: 'Workout reminders',
-      subtitle: 'A nudge when you have not trained',
+      title: _workoutRemindersTitle,
+      subtitle: _workoutRemindersSubtitle,
     ),
     _NotificationToggle(
       key: 'achievements',
       icon: Icons.emoji_events,
-      title: 'Achievements',
-      subtitle: 'When you unlock a badge',
+      title: _achievementsTitle,
+      subtitle: _achievementsSubtitle,
     ),
     _NotificationToggle(
       key: 'winback',
       icon: Icons.waving_hand,
-      title: 'Check-ins',
-      subtitle: 'If you have been away for a while',
+      title: _checkInsTitle,
+      subtitle: _checkInsSubtitle,
     ),
     // Its own switch rather than sharing the meal or workout one. Someone who
     // turned those off said they did not want to be told to eat or to train;
@@ -59,8 +61,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _NotificationToggle(
       key: 'streaks',
       icon: Icons.local_fire_department,
-      title: 'Streak saves',
-      subtitle: 'In the evening, if your streak is about to break',
+      title: _streakSavesTitle,
+      subtitle: _streakSavesSubtitle,
     ),
   ];
 
@@ -142,10 +144,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDark = themeProvider.themeMode == ThemeMode.dark;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(l10n.settingsTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
         elevation: 0,
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
@@ -154,7 +157,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           ListTile(
             leading: const Icon(Icons.dark_mode),
-            title: const Text('Dark Mode'),
+            title: Text(l10n.darkMode),
             trailing: Switch.adaptive(
               value: isDark,
               onChanged: (value) {
@@ -164,26 +167,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
               },
             ),
           ),
+          _buildLanguageTile(context, l10n),
           const Divider(),
-          _buildSectionHeader(context, 'Notifications'),
+          _buildSectionHeader(context, l10n.notifications),
           ..._buildNotificationSection(context),
           const Divider(),
           if (privacyPolicyUrl() != null)
             ListTile(
               leading: const Icon(Icons.privacy_tip_outlined),
-              title: const Text('Privacy Policy'),
+              title: Text(l10n.settingsPrivacyPolicy),
               trailing: const Icon(Icons.open_in_new),
               onTap: () => openPrivacyPolicy(context),
             ),
           ListTile(
             leading: Icon(Icons.delete_forever, color: Theme.of(context).colorScheme.error),
             title: Text(
-              'Delete Account',
+              l10n.deleteAccount,
               style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
-            subtitle: const Text(
-              'Permanently delete your account and all data',
-            ),
+            subtitle: Text(l10n.deleteAccountSubtitle),
             trailing:
                 _isDeleting
                     ? const SizedBox(
@@ -196,6 +198,88 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  /// Shows the language on screen now, and opens a picker with "System
+  /// default" first: that is where a new install starts, and picking it again
+  /// goes back to following the phone.
+  Widget _buildLanguageTile(BuildContext context, AppLocalizations l10n) {
+    final localeProvider = context.watch<LocaleProvider>();
+    final current = localeProvider.locale;
+    return ListTile(
+      leading: const Icon(Icons.language),
+      title: Text(l10n.language),
+      subtitle: Text(
+        current == null
+            ? l10n.languageSystem
+            : _languageName(l10n, current),
+      ),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () => _showLanguagePicker(context, localeProvider),
+    );
+  }
+
+  /// Each language is named in itself ("Français", not "French"), so someone
+  /// who landed in a language they can't read can still find their own.
+  static String _languageName(AppLocalizations l10n, Locale locale) {
+    switch (locale.languageCode) {
+      case 'fr':
+        return l10n.languageFrench;
+      default:
+        return l10n.languageEnglish;
+    }
+  }
+
+  Future<void> _showLanguagePicker(
+    BuildContext context,
+    LocaleProvider localeProvider,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final systemName = _languageName(l10n, LocaleProvider.systemLocale());
+    final options = <(Locale?, String, String?)>[
+      (null, l10n.languageSystem, l10n.languageSystemSubtitle(systemName)),
+      for (final locale in LocaleProvider.supportedLocales)
+        (locale, _languageName(l10n, locale), null),
+    ];
+
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+                child: Text(
+                  l10n.language,
+                  style: Theme.of(sheetContext).textTheme.titleLarge,
+                ),
+              ),
+              for (final (locale, name, subtitle) in options)
+                ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+                  title: Text(name),
+                  subtitle: subtitle == null ? null : Text(subtitle),
+                  trailing: localeProvider.locale == locale
+                      ? Icon(
+                          Icons.check,
+                          color: Theme.of(sheetContext).colorScheme.primary,
+                        )
+                      : null,
+                  onTap: () {
+                    localeProvider.setLocale(locale);
+                    Navigator.of(sheetContext).pop();
+                  },
+                ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -213,15 +297,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   List<Widget> _buildNotificationSection(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     if (_loadingPreferences) {
-      return const [
+      return [
         ListTile(
-          leading: SizedBox(
+          leading: const SizedBox(
             width: 24,
             height: 24,
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
-          title: Text('Loading your settings…'),
+          title: Text(l10n.settingsLoadingSettings),
         ),
       ];
     }
@@ -233,11 +318,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Icons.error_outline,
             color: Theme.of(context).colorScheme.error,
           ),
-          title: const Text('Could not load your settings'),
-          subtitle: Text(_preferencesError ?? 'Unknown error'),
+          title: Text(l10n.settingsLoadSettingsFailed),
+          subtitle: Text(_preferencesError ?? l10n.settingsUnknownError),
           trailing: TextButton(
             onPressed: _loadPreferences,
-            child: const Text('Retry'),
+            child: Text(l10n.retry),
           ),
         ),
       ];
@@ -247,8 +332,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       for (final toggle in _notificationToggles)
         SwitchListTile.adaptive(
           secondary: Icon(toggle.icon),
-          title: Text(toggle.title),
-          subtitle: Text(toggle.subtitle),
+          title: Text(toggle.title(l10n)),
+          subtitle: Text(toggle.subtitle(l10n)),
           // Defaults to on for a key the server has not sent, matching the
           // backend, where an absent setting means enabled.
           value: _preferences![toggle.key] as bool? ?? true,
@@ -264,6 +349,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   List<Widget> _buildQuietHoursTiles(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final from = _parseTime(_preferences!['quiet_from'] as String?);
     final to = _parseTime(_preferences!['quiet_to'] as String?);
     // The two are stored and cleared as a pair, so either one is enough to tell
@@ -273,11 +359,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return [
       SwitchListTile.adaptive(
         secondary: const Icon(Icons.bedtime),
-        title: const Text('Quiet hours'),
+        title: Text(l10n.settingsQuietHours),
         subtitle: Text(
           enabled
-              ? 'No notifications between ${_formatTime(from)} and ${_formatTime(to)}'
-              : 'Notifications can arrive at any hour',
+              ? l10n.settingsQuietHoursRange(_formatTime(from), _formatTime(to))
+              : l10n.settingsQuietHoursAnyTime,
         ),
         value: enabled,
         onChanged: (value) => _savePreferences(
@@ -289,8 +375,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
       ),
       if (enabled) ...[
-        _buildQuietHourTile(context, 'From', from, 'quiet_from'),
-        _buildQuietHourTile(context, 'To', to, 'quiet_to'),
+        _buildQuietHourTile(context, l10n.settingsQuietHoursFrom, from, 'quiet_from'),
+        _buildQuietHourTile(context, l10n.settingsQuietHoursTo, to, 'quiet_to'),
       ],
     ];
   }
@@ -354,15 +440,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        final l10n = AppLocalizations.of(context)!;
         return AlertDialog.adaptive(
-          title: const Text('Delete Account'),
-          content: const Text(
-            'Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently deleted.',
-          ),
+          title: Text(l10n.deleteAccount),
+          content: Text(l10n.settingsDeleteAccountConfirm),
           actions: [
             AdaptiveDialogAction(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             AdaptiveDialogAction(isDestructive: true,
               onPressed: () {
@@ -370,7 +455,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 _deleteAccount();
               },
               style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
-              child: const Text('Delete'),
+              child: Text(l10n.delete),
             ),
           ],
         );
@@ -390,7 +475,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Account deleted successfully', style: TextStyle(color: Theme.of(context).colorScheme.onError)),
+          content: Text(AppLocalizations.of(context)!.settingsDeleteAccountSuccess, style: TextStyle(color: Theme.of(context).colorScheme.onError)),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -431,6 +516,17 @@ class _NotificationToggle {
 
   final String key;
   final IconData icon;
-  final String title;
-  final String subtitle;
+  final String Function(AppLocalizations) title;
+  final String Function(AppLocalizations) subtitle;
 }
+
+String _mealRemindersTitle(AppLocalizations l) => l.notifMealRemindersTitle;
+String _mealRemindersSubtitle(AppLocalizations l) => l.notifMealRemindersSubtitle;
+String _workoutRemindersTitle(AppLocalizations l) => l.notifWorkoutRemindersTitle;
+String _workoutRemindersSubtitle(AppLocalizations l) => l.notifWorkoutRemindersSubtitle;
+String _achievementsTitle(AppLocalizations l) => l.notifAchievementsTitle;
+String _achievementsSubtitle(AppLocalizations l) => l.notifAchievementsSubtitle;
+String _checkInsTitle(AppLocalizations l) => l.notifCheckInsTitle;
+String _checkInsSubtitle(AppLocalizations l) => l.notifCheckInsSubtitle;
+String _streakSavesTitle(AppLocalizations l) => l.notifStreakSavesTitle;
+String _streakSavesSubtitle(AppLocalizations l) => l.notifStreakSavesSubtitle;

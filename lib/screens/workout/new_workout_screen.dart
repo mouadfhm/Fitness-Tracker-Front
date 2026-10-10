@@ -362,12 +362,6 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
     int index,
   ) {
     return Card(
-      elevation: 2,
-      color: colorScheme.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: colorScheme.primary.withValues(alpha: 0.15)),
-      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

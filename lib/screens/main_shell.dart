@@ -3,14 +3,16 @@ import 'foods_screen.dart';
 import 'home_screen.dart';
 import 'profile_screen.dart';
 import 'workout_root_screen.dart';
+import 'widgets/bottom_nav_bar.dart';
 
 /// Holds the four bottom-nav tabs and keeps each one alive while another is
 /// showing, so switching back lands where you left it (scroll position,
 /// selected week, search text). This is how iOS tab bars behave; replacing
 /// the route on every tap rebuilt the tab from scratch.
 ///
-/// Each tab still draws its own [CustomBottomNavBar]; the bar asks
-/// [MainShellScope] to switch instead of pushing a route.
+/// The shell draws the one [CustomBottomNavBar] under all tabs, so its
+/// selection animates from tab to tab; the bar asks [MainShellScope] to
+/// switch instead of pushing a route.
 class MainShell extends StatefulWidget {
   const MainShell({super.key, this.initialIndex = 0});
 
@@ -53,15 +55,18 @@ class _MainShellState extends State<MainShell> {
     return MainShellScope(
       currentIndex: _index,
       select: _select,
-      child: IndexedStack(
-        index: _index,
-        children: [
-          for (var i = 0; i < 4; i++)
-            _opened.contains(i)
-                // Hidden tabs keep their state but stop animating.
-                ? TickerMode(enabled: i == _index, child: _buildTab(i))
-                : const SizedBox.shrink(),
-        ],
+      child: Scaffold(
+        body: IndexedStack(
+          index: _index,
+          children: [
+            for (var i = 0; i < 4; i++)
+              _opened.contains(i)
+                  // Hidden tabs keep their state but stop animating.
+                  ? TickerMode(enabled: i == _index, child: _buildTab(i))
+                  : const SizedBox.shrink(),
+          ],
+        ),
+        bottomNavigationBar: CustomBottomNavBar(currentIndex: _index),
       ),
     );
   }

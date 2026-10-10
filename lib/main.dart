@@ -20,6 +20,7 @@ import 'services/api_service.dart';
 import 'services/firebase_service.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'utils/ad_config.dart';
+import 'utils/app_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -83,21 +84,8 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.teal,
-          brightness: Brightness.light,
-        ),
-        scaffoldBackgroundColor: const Color(0xFFE0F2F1),
-      ),
-      darkTheme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.teal,
-          brightness: Brightness.dark,
-        ),
-      ),
+      theme: AppTheme.light(),
+      darkTheme: AppTheme.dark(),
       themeMode: themeProvider.themeMode,
       routes: {
         '/login': (_) => const LoginScreen(),

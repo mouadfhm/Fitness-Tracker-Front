@@ -511,13 +511,6 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
               final selectedWorkoutId = _daysPattern[dayKey];
 
               return Card(
-                elevation: 2,
-                color: colorScheme.surface,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  side: BorderSide(
-                      color: colorScheme.primary.withValues(alpha: 0.15)),
-                ),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Row(

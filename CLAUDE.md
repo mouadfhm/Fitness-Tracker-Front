@@ -46,7 +46,7 @@ Uses `provider` package with `ChangeNotifier`. All providers are registered at t
 - `ExercisesProvider` — exercise data
 - `AchievementsProvider` — user achievements
 - `ThemeProvider` — light/dark theme toggle (persisted via `shared_preferences`)
-- `LocaleProvider` — app language (English or French, persisted via `shared_preferences`); strings come from `lib/l10n/*.arb`, regenerated with `flutter gen-l10n`
+- `LocaleProvider` — app language (English or French, persisted via `shared_preferences`); a null locale follows the phone's language, which is the default until the user picks one in Settings; strings come from `lib/l10n/*.arb`, regenerated with `flutter gen-l10n`
 
 ### Service Layer
 All network calls go through `lib/services/api_service.dart`, which reads `BASE_URL` from dotenv and attaches Bearer tokens to authenticated requests. Key services:
@@ -62,7 +62,10 @@ There are two API versions in use:
 - **v2** (`$baseUrl/v2/workouts/...`): custom workouts, scheduled workouts, and weekly cycle plans
 
 ### Navigation
-Bottom navigation (`lib/screens/widgets/bottom_nav_bar.dart`) connects four top-level screens: Home (Today), Workouts, Foods, Profile (Me). They live in `MainShell` (`lib/screens/main_shell.dart`), an `IndexedStack` that keeps each tab alive so switching back keeps its place; the nav bar switches tabs through `MainShellScope`. The named routes `/home`, `/workouts`, `/foods`, `/profile` open the shell on that tab.
+Bottom navigation (`lib/screens/widgets/bottom_nav_bar.dart`) connects four top-level screens: Home (Today), Workouts, Foods, Profile (Me). They live in `MainShell` (`lib/screens/main_shell.dart`), an `IndexedStack` that keeps each tab alive so switching back keeps its place; the shell draws the one nav bar for all tabs (so its selection animates between them), and the bar switches tabs through `MainShellScope`. Tab screens don't add a nav bar of their own. The named routes `/home`, `/workouts`, `/foods`, `/profile` open the shell on that tab.
+
+### Theme
+Light and dark themes live in `lib/utils/app_theme.dart`: a white page in light mode, and cards styled once through `cardTheme` (white with a thin border and soft shadow in light mode). Use a plain `Card` without its own `color`/`elevation`/`shape` so every page matches; for card-like containers that can't be a `Card`, use `AppTheme.cardDecoration(context)`.
 
 For dialogs, date and time pickers use `AlertDialog.adaptive` with `AdaptiveDialogAction`, `showAdaptiveDatePicker` and `showAdaptiveTimePicker` (`lib/utils/adaptive.dart`) so iPhone users get iOS-style controls.
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../utils/app_theme.dart';
 import '../providers/achievement_provider.dart';
 
 class AchievementsScreen extends StatefulWidget {
@@ -367,17 +368,13 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                   achievementsProvider.getColorForType(achievement['type']);
 
               return Card(
-                elevation: 2,
-                color: colorScheme.surface,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(AppTheme.cardRadius),
                   side: unlocked
                       ? BorderSide(color: achievementColor, width: 2)
-                      : BorderSide(
-                          color: colorScheme.primary.withValues(alpha: 0.15)),
+                      : BorderSide(color: AppTheme.cardBorderColor(colorScheme)),
                 ),
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(14),
                   onTap: () {
                     _showAchievementDetails(
                       context,

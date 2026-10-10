@@ -122,6 +122,60 @@ abstract class AppLocalizations {
   /// **'Language'**
   String get language;
 
+  /// No description provided for @languageSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System default'**
+  String get languageSystem;
+
+  /// No description provided for @languageSystemSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Follows your phone ({language})'**
+  String languageSystemSubtitle(String language);
+
+  /// No description provided for @languageEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get languageEnglish;
+
+  /// No description provided for @languageFrench.
+  ///
+  /// In en, this message translates to:
+  /// **'Français'**
+  String get languageFrench;
+
+  /// No description provided for @settingsPrivacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get settingsPrivacyPolicy;
+
+  /// No description provided for @navToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get navToday;
+
+  /// No description provided for @navWorkouts.
+  ///
+  /// In en, this message translates to:
+  /// **'Workouts'**
+  String get navWorkouts;
+
+  /// No description provided for @navFoods.
+  ///
+  /// In en, this message translates to:
+  /// **'Foods'**
+  String get navFoods;
+
+  /// No description provided for @navMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Me'**
+  String get navMe;
+
   /// No description provided for @notifications.
   ///
   /// In en, this message translates to:

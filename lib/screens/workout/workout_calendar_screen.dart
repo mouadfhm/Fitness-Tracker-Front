@@ -11,7 +11,6 @@ import '../../utils/adaptive.dart';
 import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
 import './workout_detail_screen.dart';
-import '../widgets/bottom_nav_bar.dart';
 import '../../utils/add_banner.dart';
 import '../../services/workout_export_service.dart';
 import '../../services/workout_file_io.dart';
@@ -54,7 +53,6 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
   // Initialize _selectedDayIndex with current day of week (0-6, Monday-Sunday)
   int _selectedDayIndex = DateTime.now().weekday - 1;
 
-  final int _currentIndex = 1;
   bool _isLoading = false;
   String? _errorMessage;
   List<Map<String, dynamic>> _workouts = [];
@@ -483,13 +481,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
           );
         },
       ),
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const AdBannerWidget(),
-          CustomBottomNavBar(currentIndex: _currentIndex),
-        ],
-      ),
+      bottomNavigationBar: const AdBannerWidget(),
     );
   }
 
@@ -1101,15 +1093,6 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
-      elevation: 2,
-      color: colorScheme.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
-        side: BorderSide(
-          color: colorScheme.primary.withValues(alpha: 0.15),
-          width: 1,
-        ),
-      ),
       child: InkWell(
         borderRadius: BorderRadius.circular(14),
         onTap: () {

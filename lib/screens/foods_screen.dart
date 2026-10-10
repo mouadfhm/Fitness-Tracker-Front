@@ -6,7 +6,6 @@ import '../providers/food_provider.dart';
 import '../services/food_service.dart';
 import 'food_details_screen.dart';
 import 'new_food_screen.dart';
-import 'widgets/bottom_nav_bar.dart';
 import '../utils/add_banner.dart';
 import '../utils/ad_list_helper.dart';
 import '../utils/friendly_error.dart';
@@ -40,7 +39,6 @@ class _FoodsScreenState extends State<FoodsScreen>
   bool _sortAscending = false;  // false = high to low (descending), true = low to high (ascending)
 
   Food? _scannedFood;
-  final int _currentIndex = 2; // 0: Today, 1: Workouts, 2: Foods, 3: Me
 
   bool get _isPicker => widget.addToMeal != null;
 
@@ -389,13 +387,9 @@ class _FoodsScreenState extends State<FoodsScreen>
                         const SizedBox(height: 10),
                         if (_scannedFood != null)
                           Card(
-                            elevation: 4,
                             margin: const EdgeInsets.symmetric(
                               horizontal: 16,
                               vertical: 8,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
                             ),
                             child: ListTile(
                               title: Text(_scannedFood!.name),
@@ -446,56 +440,64 @@ class _FoodsScreenState extends State<FoodsScreen>
                                             horizontal: 16,
                                             vertical: 8,
                                           ),
-                                          elevation: 2,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(14),
-                                            side: BorderSide(
-                                              color: colorScheme.primary.withValues(alpha: 0.15),
-                                              width: 1,
-                                            ),
-                                          ),
-                                          child: ListTile(
-                                            contentPadding:
-                                                const EdgeInsets.symmetric(
-                                                  horizontal: 16,
-                                                  vertical: 8,
-                                                ),
-                                            title: Text(
-                                              food.name,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16,
-                                                color: colorScheme.onSurface,
+                                          // Name and heart/chevron on top, macros on a
+                                          // full-width row underneath, so the badges
+                                          // get the card's whole width instead of the
+                                          // narrow column a ListTile leaves them.
+                                          child: InkWell(
+                                            onTap: () => _openFood(food),
+                                            child: Padding(
+                                              padding: const EdgeInsets.fromLTRB(16, 14, 12, 14),
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      Icon(
+                                                        food.isFavorite == 1
+                                                            ? Icons.favorite
+                                                            : Icons.favorite_border,
+                                                        color: food.isFavorite == 1
+                                                            ? colorScheme.error
+                                                            : colorScheme.onSurfaceVariant,
+                                                        size: 24,
+                                                      ),
+                                                      const SizedBox(width: 12),
+                                                      Expanded(
+                                                        child: Column(
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                          children: [
+                                                            Text(
+                                                              food.name,
+                                                              maxLines: 2,
+                                                              overflow: TextOverflow.ellipsis,
+                                                              style: TextStyle(
+                                                                fontWeight: FontWeight.bold,
+                                                                fontSize: 16,
+                                                                color: colorScheme.onSurface,
+                                                              ),
+                                                            ),
+                                                            const SizedBox(height: 2),
+                                                            Text(
+                                                              '${food.calories.round()} kcal per 100 g',
+                                                              style: TextStyle(
+                                                                color: colorScheme.onSurfaceVariant,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      Icon(
+                                                        Icons.chevron_right,
+                                                        color: colorScheme.primary,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const SizedBox(height: 12),
+                                                  _buildNutritionInfo(food, proteinColor, carbsColor, fatsColor, caloriesColor),
+                                                ],
                                               ),
                                             ),
-                                            subtitle: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  '${food.calories.round()} kcal per 100 g',
-                                                  style: TextStyle(
-                                                    color: colorScheme.onSurfaceVariant,
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 4),
-                                                _buildNutritionInfo(food, proteinColor, carbsColor, fatsColor, caloriesColor),
-                                              ],
-                                            ),
-                                            leading: Icon(
-                                              food.isFavorite == 1
-                                                  ? Icons.favorite
-                                                  : Icons.favorite_border,
-                                              color:
-                                                  food.isFavorite == 1
-                                                      ? colorScheme.error
-                                                      : colorScheme.onSurfaceVariant,
-                                              size: 28,
-                                            ),
-                                            trailing: Icon(
-                                              Icons.arrow_forward_ios,
-                                              color: colorScheme.primary,
-                                            ),
-                                            onTap: () => _openFood(food),
                                           ),
                                         );
                                       },
@@ -515,13 +517,7 @@ class _FoodsScreenState extends State<FoodsScreen>
           ),
           bottomNavigationBar: _isPicker
               ? null
-              : Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const AdBannerWidget(),
-                    CustomBottomNavBar(currentIndex: _currentIndex),
-                  ],
-                ),
+              : const AdBannerWidget(),
         );
       },
     );
@@ -591,46 +587,38 @@ class _FoodsScreenState extends State<FoodsScreen>
           ),
         );
       default:
-        // Default can show all macro info with pills
-        return Wrap(
-          spacing: 6,
+        // Default shows all three macros as equal-width pills across the card.
+        return Row(
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: proteinColor.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Text(
-                'Protein ${_grams(food.protein)}',
-                style: TextStyle(color: proteinColor, fontWeight: FontWeight.w500),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: carbsColor.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Text(
-                'Carbs ${_grams(food.carbs)}',
-                style: TextStyle(color: carbsColor, fontWeight: FontWeight.w500),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: fatsColor.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Text(
-                'Fat ${_grams(food.fats)}',
-                style: TextStyle(color: fatsColor, fontWeight: FontWeight.w500),
-              ),
-            ),
+            _macroPill('Protein ${_grams(food.protein)}', proteinColor),
+            const SizedBox(width: 8),
+            _macroPill('Carbs ${_grams(food.carbs)}', carbsColor),
+            const SizedBox(width: 8),
+            _macroPill('Fat ${_grams(food.fats)}', fatsColor),
           ],
         );
     }
+  }
+
+  Widget _macroPill(String text, Color color) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        alignment: Alignment.center,
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            text,
+            maxLines: 1,
+            style: TextStyle(color: color, fontWeight: FontWeight.w600),
+          ),
+        ),
+      ),
+    );
   }
 
   /// 3.0 -> "3 g", 2.5 -> "2.5 g".

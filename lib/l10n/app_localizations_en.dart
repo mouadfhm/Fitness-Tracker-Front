@@ -21,6 +21,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get language => 'Language';
 
   @override
+  String get languageSystem => 'System default';
+
+  @override
+  String languageSystemSubtitle(String language) {
+    return 'Follows your phone ($language)';
+  }
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get languageFrench => 'Français';
+
+  @override
+  String get settingsPrivacyPolicy => 'Privacy Policy';
+
+  @override
+  String get navToday => 'Today';
+
+  @override
+  String get navWorkouts => 'Workouts';
+
+  @override
+  String get navFoods => 'Foods';
+
+  @override
+  String get navMe => 'Me';
+
+  @override
   String get notifications => 'Notifications';
 
   @override

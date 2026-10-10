@@ -300,12 +300,6 @@ class ExerciseCard extends StatelessWidget {
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 2,
-      color: colorScheme.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
-        side: BorderSide(color: colorScheme.primary.withValues(alpha: 0.15)),
-      ),
       child: ExpansionTile(
         title: Text(
           exercise['name'],

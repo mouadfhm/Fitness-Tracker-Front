@@ -697,14 +697,6 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 12),
                           child: Card(
-                            elevation: 2,
-                            color: colorScheme.surface,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                              side: BorderSide(
-                                  color: colorScheme.primary
-                                      .withValues(alpha: 0.15)),
-                            ),
                             child: Padding(
                               padding: const EdgeInsets.all(16),
                               child: Column(
