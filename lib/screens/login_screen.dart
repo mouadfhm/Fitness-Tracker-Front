@@ -3,6 +3,7 @@ import '../services/api_service.dart';
 import '../services/firebase_service.dart';
 import 'main_shell.dart';
 import 'register_screen.dart';
+import 'forgot_password_screen.dart';
 import 'widgets/app_text_field.dart';
 import '../utils/friendly_error.dart';
 
@@ -24,6 +25,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _goToRegister() {
     Navigator.push(context, MaterialPageRoute(builder: (_) => const RegisterScreen()));
+  }
+
+  Future<void> _goToForgotPassword() async {
+    final email = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ForgotPasswordScreen(initialEmail: _emailController.text.trim()),
+      ),
+    );
+    if (email != null && mounted) {
+      _emailController.text = email;
+      _passwordController.clear();
+    }
   }
 
   Future<void> _login() async {
@@ -122,7 +136,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 24),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: _goToForgotPassword,
+                      child: const Text('Forgot password?'),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   ElevatedButton(
                     onPressed: _isLoading ? null : _login,
                     style: ElevatedButton.styleFrom(

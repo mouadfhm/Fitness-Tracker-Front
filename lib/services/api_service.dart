@@ -84,6 +84,8 @@ class ApiService {
       throw UserFacingException(
         _serverMessage(response) ?? 'Please check your details and try again.',
       );
+    } else if (response.statusCode == 429) {
+      throw const UserFacingException(_tooManyAttempts);
     } else {
       throw Exception("Failed to register: ${response.body}");
     }
@@ -110,9 +112,62 @@ class ApiService {
       throw UserFacingException(
         _serverMessage(response) ?? 'This account has been deactivated.',
       );
+    } else if (response.statusCode == 429) {
+      throw const UserFacingException(_tooManyAttempts);
     } else {
       throw Exception("Failed to login: ${response.body}");
     }
+  }
+
+  static const _tooManyAttempts =
+      'Too many attempts. Please wait a minute and try again.';
+
+  /// Emails a 6-digit reset code. The server answers the same way whether or
+  /// not the email has an account, so this succeeds for any valid address.
+  Future<void> forgotPassword(String email) async {
+    final response = await http.post(
+      Uri.parse("$baseUrl/forgot-password"),
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+      body: jsonEncode({"email": email}),
+    );
+    if (response.statusCode == 200) return;
+    if (response.statusCode == 429) {
+      throw const UserFacingException(_tooManyAttempts);
+    }
+    if (response.statusCode == 422) {
+      throw const UserFacingException('Please enter a valid email address.');
+    }
+    throw Exception("Failed to request a reset code: ${response.body}");
+  }
+
+  /// Sets a new password using the code from [forgotPassword]. The server
+  /// signs out every existing session, so the person logs in again after.
+  Future<void> resetPassword(
+    String email,
+    String code,
+    String password,
+    String confirmPassword,
+  ) async {
+    final response = await http.post(
+      Uri.parse("$baseUrl/reset-password"),
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+      body: jsonEncode({
+        "email": email,
+        "code": code,
+        "password": password,
+        "password_confirmation": confirmPassword,
+      }),
+    );
+    if (response.statusCode == 200) return;
+    if (response.statusCode == 429) {
+      throw const UserFacingException(_tooManyAttempts);
+    }
+    if (response.statusCode == 422) {
+      throw UserFacingException(
+        _serverMessage(response) ?? 'This code is wrong or has expired. Ask for a new one.',
+      );
+    }
+    throw Exception("Failed to reset password: ${response.body}");
   }
 
   /// The "message" field Laravel puts in error responses, if any.

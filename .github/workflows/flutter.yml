@@ -1,0 +1,29 @@
+name: Flutter
+
+on:
+  pull_request:
+  push:
+    branches:
+      - dev
+
+jobs:
+  analyze-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      # The real .env files aren't committed, but pubspec.yaml lists them as
+      # assets, so the build needs them to exist.
+      - name: Create placeholder env files
+        run: |
+          echo "BASE_URL=http://localhost/api" > .env.development
+          echo "BASE_URL=http://localhost/api" > .env.production
+
+      - run: flutter pub get
+      - run: flutter analyze --no-fatal-infos
+      - run: flutter test
