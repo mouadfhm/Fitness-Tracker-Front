@@ -93,6 +93,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
               ),
             ),
           IconButton(
+            tooltip: 'Refresh',
             icon: const Icon(Icons.refresh),
             onPressed: _fetchWorkoutDetails,
           ),
@@ -173,6 +174,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                             onPressed: _exportWorkout,
                           ),
                           IconButton(
+                            tooltip: 'Edit workout',
                             icon: Icon(Icons.edit, color: colorScheme.primary),
                             onPressed: () async {
                               await Navigator.push(

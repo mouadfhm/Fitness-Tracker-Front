@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/privacy_policy.dart';
 import '../services/api_service.dart';
 import '../services/firebase_service.dart';
 import 'onboarding_screen.dart';
@@ -170,6 +171,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                   ),
+                  if (privacyPolicyUrl() != null) ...[
+                    const SizedBox(height: 8),
+                    TextButton(
+                      onPressed: () => openPrivacyPolicy(context),
+                      child: Text(
+                        'By creating an account you agree to our Privacy Policy',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: colorScheme.onSurfaceVariant, decoration: TextDecoration.underline),
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,

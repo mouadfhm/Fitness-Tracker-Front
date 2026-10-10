@@ -38,6 +38,7 @@ class AppTextField extends StatelessWidget {
         ),
         suffixIcon: showObscureToggle != null
             ? IconButton(
+                tooltip: showObscureToggle! ? 'Hide password' : 'Show password',
                 icon: Icon(
                   showObscureToggle! ? Icons.visibility_off : Icons.visibility,
                   color: colorScheme.onSurfaceVariant,

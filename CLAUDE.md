@@ -35,7 +35,7 @@ The app uses `flutter_dotenv` with two env files (both listed as assets in `pubs
 - `.env.development`
 - `.env.production`
 
-`main.dart` loads `.env.production` by default. Switch to `.env.development` by changing the `dotenv.load(fileName: ...)` call. Both files must define `BASE_URL` (the backend API base URL).
+`main.dart` loads `.env.production` by default. Switch to `.env.development` by changing the `dotenv.load(fileName: ...)` call. Both files must define `BASE_URL` (the backend API base URL). Optional: `SUPPORT_EMAIL` (shown in Help) and `PRIVACY_POLICY_URL` (linked from Register, Settings and Help; required for App Store release, and the links are hidden while it is unset).
 
 ## Architecture
 

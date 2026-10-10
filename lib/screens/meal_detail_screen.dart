@@ -288,6 +288,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                                     ),
                                   ),
                                   IconButton(
+                                    tooltip: 'Remove food',
                                     icon: Icon(
                                       Icons.delete,
                                       color: redColor.withValues(alpha: 0.8),

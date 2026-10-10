@@ -504,6 +504,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
+            tooltip: 'Previous week',
             icon: const Icon(Icons.arrow_back_ios_new, size: 18),
             style: IconButton.styleFrom(
               foregroundColor: colorScheme.primary,
@@ -541,6 +542,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
             ],
           ),
           IconButton(
+            tooltip: 'Next week',
             icon: const Icon(Icons.arrow_forward_ios, size: 18),
             style: IconButton.styleFrom(
               foregroundColor: colorScheme.primary,
@@ -824,6 +826,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                       ),
                       const Spacer(),
                       IconButton(
+                        tooltip: 'Close',
                         icon: const Icon(Icons.close),
                         onPressed: () => Navigator.pop(context),
                       ),
@@ -1018,6 +1021,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                                       )
                                     : null,
                                 trailing: IconButton(
+                                  tooltip: 'Add to this day',
                                   icon: const Icon(Icons.add_circle_outline),
                                   color: colorScheme.primary,
                                   onPressed: () {
@@ -1194,7 +1198,6 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                         horizontal: 12,
                         vertical: 8,
                       ),
-                      visualDensity: VisualDensity.compact,
                       foregroundColor: colorScheme.primary,
                       side: BorderSide(color: colorScheme.primary),
                     ),

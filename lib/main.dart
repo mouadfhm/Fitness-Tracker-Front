@@ -22,18 +22,30 @@ import 'services/navigation_service.dart';
 import 'services/api_service.dart';
 import 'services/firebase_service.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'utils/ad_config.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  try {
-    await MobileAds.instance.initialize();
-  } catch (_) {}
+  if (AdConfig.enabled) {
+    try {
+      await MobileAds.instance.initialize();
+    } catch (_) {}
+  }
   await dotenv.load(
     fileName: kReleaseMode ? ".env.production" : ".env.development",
   );
-  await initializeFirebase();
+  // Firebase needs a native config file per platform. If one is missing
+  // (e.g. no GoogleService-Info.plist yet on iOS) the app must still start;
+  // it just won't get push notifications.
+  var firebaseReady = false;
+  try {
+    await initializeFirebase();
+    firebaseReady = true;
+  } catch (e) {
+    debugPrint('Firebase init failed, push notifications disabled: $e');
+  }
   final token = await TokenService.getToken();
-  if (token != null) {
+  if (token != null && firebaseReady) {
     setupFCM(ApiService());
   }
   runApp(
