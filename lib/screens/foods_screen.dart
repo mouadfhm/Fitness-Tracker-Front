@@ -511,7 +511,7 @@ class _FoodsScreenState extends State<FoodsScreen>
             onPressed: _goToNewFood,
             backgroundColor: colorScheme.primary,
             foregroundColor: colorScheme.onPrimary,
-            elevation: 4,
+            elevation: 0,
             icon: const Icon(Icons.add),
             label: const Text('New food'),
           ),
@@ -646,57 +646,58 @@ class _FoodsScreenState extends State<FoodsScreen>
     
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Search foods',
-                hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
-                prefixIcon: Icon(Icons.search, color: colorScheme.primary),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: colorScheme.outline),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: 'Search foods',
+                  hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
+                  prefixIcon: Icon(Icons.search, color: colorScheme.primary),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: colorScheme.outline),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: colorScheme.outline),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: colorScheme.primary, width: 2),
+                  ),
+                  filled: true,
+                  fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 12),
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: colorScheme.outline),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: colorScheme.primary, width: 2),
-                ),
-                filled: true,
-                fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-                contentPadding: const EdgeInsets.symmetric(vertical: 12),
-              ),
-              style: TextStyle(color: colorScheme.onSurface),
-              cursorColor: colorScheme.primary,
-              onChanged: (query) => setState(() {}), // triggers rebuild to filter list
-            ),
-          ),
-          const SizedBox(width: 8),
-          Tooltip(
-            message: 'Scan a barcode',
-            child: ElevatedButton(
-              onPressed: _scanBarcode,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colorScheme.primaryContainer,
-                foregroundColor: colorScheme.onPrimaryContainer,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                elevation: 2,
-              ),
-              child: Semantics(
-                label: 'Scan a barcode',
-                child: const Icon(Icons.qr_code_scanner, size: 28),
+                style: TextStyle(color: colorScheme.onSurface),
+                cursorColor: colorScheme.primary,
+                onChanged: (query) => setState(() {}), // triggers rebuild to filter list
               ),
             ),
-          ),
-        ],
+            const SizedBox(width: 8),
+            // Same height and corner radius as the search field, filled with
+            // the primary colour like the app's other main actions.
+            AspectRatio(
+              aspectRatio: 1,
+              child: IconButton.filled(
+                onPressed: _scanBarcode,
+                tooltip: 'Scan a barcode',
+                style: IconButton.styleFrom(
+                  backgroundColor: colorScheme.primary,
+                  foregroundColor: colorScheme.onPrimary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                icon: const Icon(Icons.qr_code_scanner),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

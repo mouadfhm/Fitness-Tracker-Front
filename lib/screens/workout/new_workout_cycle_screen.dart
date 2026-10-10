@@ -338,13 +338,6 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
               decoration: BoxDecoration(
                 color: colorScheme.primary,
                 borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: colorScheme.primary.withValues(alpha: 0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
               ),
               alignment: Alignment.center,
               child: Text(
@@ -884,13 +877,6 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: colorScheme.surface,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 5,
-            offset: const Offset(0, -1),
-          ),
-        ],
       ),
       child: Row(
         children: [

@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 /// The app's light and dark themes, in one place so every screen draws its
 /// cards, app bars and backgrounds the same way.
 ///
-/// Light mode is a plain white page with white cards set off by a thin border
-/// and a soft shadow, rather than tinted cards on a tinted page: a border keeps
+/// Light mode is a plain white page with white cards set off by a thin border, rather than tinted cards on a tinted page: a border keeps
 /// the card edge visible on any screen brightness, and text on white keeps the
 /// highest contrast. Dark mode lifts cards one step above the page.
 class AppTheme {
@@ -48,7 +47,6 @@ class AppTheme {
     required Color cardColor,
     required Color pageColor,
   }) {
-    final isLight = scheme.brightness == Brightness.light;
     return ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
@@ -57,8 +55,7 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: cardColor,
         surfaceTintColor: Colors.transparent,
-        elevation: isLight ? 1 : 0,
-        shadowColor: Colors.black.withValues(alpha: 0.06),
+        elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(cardRadius),
           side: BorderSide(color: cardBorderColor(scheme)),
@@ -70,8 +67,17 @@ class AppTheme {
         foregroundColor: scheme.onSurface,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        scrolledUnderElevation: 0.5,
-        shadowColor: scheme.shadow.withValues(alpha: 0.2),
+        scrolledUnderElevation: 0,
+      ),
+      // Flat everywhere: no shadows or glows under buttons.
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        elevation: 0,
+        focusElevation: 0,
+        hoverElevation: 0,
+        highlightElevation: 0,
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(elevation: 0, shadowColor: Colors.transparent),
       ),
       dividerTheme: DividerThemeData(color: scheme.outlineVariant),
       listTileTheme: ListTileThemeData(iconColor: scheme.onSurfaceVariant),
@@ -96,15 +102,6 @@ class AppTheme {
       color: color ?? theme.cardTheme.color ?? scheme.surface,
       borderRadius: BorderRadius.circular(radius),
       border: Border.all(color: cardBorderColor(scheme)),
-      boxShadow: scheme.brightness == Brightness.light
-          ? [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ]
-          : null,
     );
   }
 }

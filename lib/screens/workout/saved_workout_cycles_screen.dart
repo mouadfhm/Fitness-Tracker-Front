@@ -481,7 +481,7 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
                 return SizedBox(
                   width: 220,
                   child: Card(
-                    elevation: 1,
+                    elevation: 0,
                     color: colorScheme.primary.withValues(alpha: 0.06),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),

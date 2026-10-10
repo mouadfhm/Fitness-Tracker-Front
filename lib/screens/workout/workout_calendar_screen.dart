@@ -643,15 +643,6 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                   border: isToday && !isSelected
                       ? Border.all(color: colorScheme.primary, width: 2)
                       : null,
-                  boxShadow: isSelected
-                      ? [
-                          BoxShadow(
-                            color: colorScheme.primary.withValues(alpha: 0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ]
-                      : null,
                 ),
                 width: 48,
                 child: Column(
