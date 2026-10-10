@@ -1,0 +1,817 @@
+{
+  "@@locale": "en",
+  "appTitle": "Fitness Tracker",
+  "settingsTitle": "Settings",
+  "darkMode": "Dark Mode",
+  "language": "Language",
+  "notifications": "Notifications",
+  "deleteAccount": "Delete Account",
+  "deleteAccountSubtitle": "Permanently delete your account and all data",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "retry": "Retry",
+  "ok": "OK",
+  "logout": "Logout",
+  "errorLabel": "Error",
+  "confirmLogoutTitle": "Confirm Logout",
+  "confirmLogoutMessage": "Are you sure you want to log out of your account?",
+
+  "notifMealRemindersTitle": "Meal reminders",
+  "notifMealRemindersSubtitle": "A nudge when you have not logged a meal",
+  "notifWorkoutRemindersTitle": "Workout reminders",
+  "notifWorkoutRemindersSubtitle": "A nudge when you have not trained",
+  "notifAchievementsTitle": "Achievements",
+  "notifAchievementsSubtitle": "When you unlock a badge",
+  "notifCheckInsTitle": "Check-ins",
+  "notifCheckInsSubtitle": "If you have been away for a while",
+  "notifStreakSavesTitle": "Streak saves",
+  "notifStreakSavesSubtitle": "In the evening, if your streak is about to break",
+  "settingsSaveFailed": "Could not save: {error}",
+  "@settingsSaveFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "settingsLoadingSettings": "Loading your settings…",
+  "settingsLoadSettingsFailed": "Could not load your settings",
+  "settingsUnknownError": "Unknown error",
+  "settingsQuietHours": "Quiet hours",
+  "settingsQuietHoursRange": "No notifications between {from} and {to}",
+  "@settingsQuietHoursRange": {
+    "placeholders": {
+      "from": {"type": "String"},
+      "to": {"type": "String"}
+    }
+  },
+  "settingsQuietHoursAnyTime": "Notifications can arrive at any hour",
+  "settingsQuietHoursFrom": "From",
+  "settingsQuietHoursTo": "To",
+  "settingsDeleteAccountConfirm": "Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently deleted.",
+  "settingsDeleteAccountSuccess": "Account deleted successfully",
+  "settingsDeleteAccountFailed": "Failed to delete account: {error}",
+  "@settingsDeleteAccountFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+
+  "loginTitle": "Welcome Back",
+  "loginHeading": "Hello Again!",
+  "loginSubtitle": "Login to continue your fitness journey",
+  "emailLabel": "Email",
+  "emailRequired": "Please enter your email",
+  "emailInvalid": "Please enter a valid email address",
+  "passwordLabel": "Password",
+  "loginPasswordRequired": "Please enter your password",
+  "loginButton": "Login",
+  "loginFailed": "Login failed. Please try again.",
+  "loginNoAccount": "Don't have an account? ",
+  "registerLink": "Register",
+
+  "registerTitle": "Create Account",
+  "registerHeading": "Welcome!",
+  "registerSubtitle": "Create your account to get started",
+  "fullNameLabel": "Full Name",
+  "fullNameRequired": "Please enter your full name",
+  "fullNameTooShort": "Name must be at least 2 characters",
+  "registerPasswordRequired": "Please enter a password",
+  "passwordTooShort": "Password must be at least 8 characters",
+  "confirmPasswordLabel": "Confirm Password",
+  "confirmPasswordRequired": "Please confirm your password",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "registrationFailed": "Registration failed. Please try again.",
+  "alreadyHaveAccount": "Already have an account? ",
+
+  "onboardingFailedSave": "Failed to save profile. Please try again.",
+  "onboardingStep1Title": "Your body stats",
+  "onboardingStep1Subtitle": "We use these to calculate your daily calorie needs",
+  "onboardingAgeLabel": "Age",
+  "onboardingAgeHint": "e.g. 25",
+  "onboardingWeightLabel": "Weight (kg)",
+  "onboardingWeightHint": "e.g. 70",
+  "onboardingHeightLabel": "Height (cm)",
+  "onboardingHeightHint": "e.g. 175",
+  "onboardingInvalidStats": "Please enter valid age, weight, and height",
+  "onboardingBmiEnterStats": "Enter your stats",
+  "onboardingBmiUnderweight": "Underweight",
+  "onboardingBmiHealthy": "Healthy Range",
+  "onboardingBmiOverweight": "Overweight",
+  "onboardingBmiObese": "Obese",
+  "onboardingBmiLabel": "BMI",
+  "onboardingStep2Title": "What's your gender?",
+  "onboardingStep2Subtitle": "Affects your metabolic rate calculation",
+  "onboardingBmrCardTitle": "Estimated Daily Calories at Rest",
+  "onboardingBmrCardSubtitle": "Basal Metabolic Rate",
+  "onboardingGenderMaleLabel": "Male",
+  "onboardingGenderMaleDesc": "Higher BMR on average",
+  "onboardingGenderFemaleLabel": "Female",
+  "onboardingGenderFemaleDesc": "Lower BMR on average",
+  "onboardingStep3Title": "How active are you?",
+  "onboardingStep3Subtitle": "Pick what describes a typical week for you",
+  "onboardingTdeeCardTitle": "Total Daily Energy Expenditure",
+  "onboardingTdeeMultiplier": "×{value} activity multiplier",
+  "@onboardingTdeeMultiplier": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "onboardingActivitySedentary": "Sedentary",
+  "onboardingActivitySedentaryDesc": "Desk job, little to no exercise",
+  "onboardingActivityLight": "Light",
+  "onboardingActivityLightDesc": "Light exercise 1–3 days/week",
+  "onboardingActivityModerate": "Moderate",
+  "onboardingActivityModerateDesc": "Exercise 3–5 days/week",
+  "onboardingActivityActive": "Active",
+  "onboardingActivityActiveDesc": "Hard exercise 6–7 days/week",
+  "onboardingActivityVeryActive": "Very Active",
+  "onboardingActivityVeryActiveDesc": "Physical job or 2× daily training",
+  "onboardingStep4Title": "What's your goal?",
+  "onboardingStep4Subtitle": "We'll adjust your daily target accordingly",
+  "onboardingTargetCardTitle": "Your Daily Calorie Target",
+  "onboardingTargetFromTdee": "{offset} kcal from your TDEE",
+  "@onboardingTargetFromTdee": {
+    "placeholders": {
+      "offset": {"type": "String"}
+    }
+  },
+  "onboardingGoalLoseWeight": "Lose Weight",
+  "onboardingGoalLoseWeightDesc": "500 kcal daily deficit",
+  "onboardingGoalBuildMuscle": "Build Muscle",
+  "onboardingGoalBuildMuscleDesc": "+300 kcal daily surplus",
+  "onboardingGoalStayFit": "Stay Fit",
+  "onboardingGoalStayFitDesc": "Maintain current weight",
+  "onboardingBack": "Back",
+  "onboardingNext": "Next",
+  "onboardingLetsGo": "Let's Go!",
+
+  "appTextFieldRequired": "Please enter {field}",
+  "@appTextFieldRequired": {
+    "placeholders": {
+      "field": {"type": "String"}
+    }
+  },
+
+  "logoutFailed": "Logout failed: {error}",
+  "@logoutFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "homeNoMealsLogged": "No meals logged yet",
+  "homeToday": "Today",
+  "homeYesterday": "Yesterday",
+  "homeMacroCalories": "Calories",
+  "homeMacroProtein": "Protein",
+  "homeMacroFat": "Fat",
+  "homeMacroCarbs": "Carbs",
+  "homeTitle": "Nutrition Tracker",
+  "homeDailyMacroGoals": "Daily Macro Goals",
+  "homeYourMeals": "Your Meals",
+
+  "profileImagePickFailed": "Failed to select image. Please try again.",
+  "profileTitle": "Profile",
+  "profileEditTooltip": "Edit Profile",
+  "profileFreeMember": "Free Member",
+  "profileAge": "Age",
+  "profileYearsValue": "{value} years",
+  "@profileYearsValue": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "profileWeight": "Weight",
+  "profileKgValue": "{value} kg",
+  "@profileKgValue": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "profileHeight": "Height",
+  "profileCmValue": "{value} cm",
+  "@profileCmValue": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "profileActivityLevel": "Activity Level",
+  "profileFitnessGoal": "Fitness Goal",
+  "profileGender": "Gender",
+  "profileProgress": "Progress",
+  "profileAchievements": "Achievements",
+  "profileHelp": "Help",
+  "profileAppVersion": "App version: {version}",
+  "@profileAppVersion": {
+    "placeholders": {
+      "version": {"type": "String"}
+    }
+  },
+  "profileErrorMessage": "Error: {error}",
+  "@profileErrorMessage": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+
+  "helpSupportTitle": "Help & Support",
+  "helpContactSupport": "Contact Support",
+  "helpContactSupportSubtitle": "Get help from our team",
+  "helpFaqs": "FAQs",
+  "helpFaqsSubtitle": "Frequently asked questions",
+  "helpVideoTutorials": "Video Tutorials",
+  "helpVideoTutorialsSubtitle": "Learn how to use the app",
+
+  "achievementUnlocked": "UNLOCKED",
+  "achievementLocked": "LOCKED",
+  "achievementDescriptionLabel": "DESCRIPTION",
+  "achievementRequirementsLabel": "REQUIREMENTS",
+  "achievementTargetLabel": "Target",
+  "achievementCompletionDetailsLabel": "COMPLETION DETAILS",
+  "achievementCompletedOnLabel": "Completed On",
+  "achievementLoadError": "Error loading achievements: {error}",
+  "@achievementLoadError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "achievementNoneFound": "No achievements found",
+  "achievementCompleteToUnlock": "Complete to unlock: {description}",
+  "@achievementCompleteToUnlock": {
+    "placeholders": {
+      "description": {"type": "String"}
+    }
+  },
+  "achievementCompletedBadge": "COMPLETED",
+
+  "foodsNoBarcodeScanned": "No barcode scanned.",
+  "foodsNotFoundForBarcode": "Food not found for barcode: {barcode}",
+  "@foodsNotFoundForBarcode": {
+    "placeholders": {
+      "barcode": {"type": "String"}
+    }
+  },
+  "foodsScanError": "Error scanning barcode: {error}",
+  "@foodsScanError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "foodsSortByTitle": "Sort Foods By",
+  "sortDefault": "Default",
+  "foodsTitle": "Foods",
+  "foodsSortTooltip": "Sort foods",
+  "foodsSortingBy": "Sorting by: {sortTitle}",
+  "@foodsSortingBy": {
+    "placeholders": {
+      "sortTitle": {"type": "String"}
+    }
+  },
+  "foodsCaloriesInline": "Calories: {value}",
+  "@foodsCaloriesInline": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "foodsCaloriesKcal": "Calories: {value} kcal",
+  "@foodsCaloriesKcal": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "foodsProteinGrams": "Protein: {value}g",
+  "@foodsProteinGrams": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "foodsCarbsGrams": "Carbs: {value}g",
+  "@foodsCarbsGrams": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "foodsFatGrams": "Fat: {value}g",
+  "@foodsFatGrams": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "foodsProteinShort": "P: {value}g",
+  "@foodsProteinShort": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "foodsCarbsShort": "C: {value}g",
+  "@foodsCarbsShort": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "foodsFatShort": "F: {value}g",
+  "@foodsFatShort": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "foodsNoFoodsFound": "No foods found.",
+  "foodsSearchHint": "Search Foods...",
+
+  "foodScanTitle": "Scan Food Barcode",
+  "foodScanButton": "Scan Barcode",
+  "foodScanCalories": "Calories: {value} kcal",
+  "@foodScanCalories": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "foodScanProtein": "Protein: {value} g",
+  "@foodScanProtein": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "foodScanCarbs": "Carbs: {value} g",
+  "@foodScanCarbs": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "foodScanFats": "Fats: {value} g",
+  "@foodScanFats": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "foodScanAddToMeal": "Add to Meal",
+
+  "foodDetailsEnterQuantity": "Please enter a quantity",
+  "foodDetailsEnterMealTime": "Please enter a meal time",
+  "foodDetailsSelectMealTime": "Please select a meal time",
+  "foodDetailsEnterValidQuantity": "Please enter a valid quantity",
+  "foodDetailsMealStoredSuccess": "Meal stored successfully!",
+  "foodDetailsErrorPrefix": "Error: {error}",
+  "@foodDetailsErrorPrefix": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "foodDetailsRemovedFromFavorites": "Removed from favorites",
+  "foodDetailsAddedToFavorites": "Added to favorites",
+  "foodDetailsErrorUpdatingFavorites": "Error updating favorites: {error}",
+  "@foodDetailsErrorUpdatingFavorites": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "foodDetailsRemoveFromFavoritesTooltip": "Remove from favorites",
+  "foodDetailsAddToFavoritesTooltip": "Add to favorites",
+  "foodDetailsNutritionFacts": "Nutrition Facts",
+  "foodDetailsFatsLabel": "Fats",
+  "foodDetailsAddToMealPlan": "Add to Meal Plan",
+  "foodDetailsSelectMealTimeHint": "Select Meal Time",
+  "foodDetailsCustomMealTimeHint": "Enter Custom Meal Time",
+  "foodDetailsCustomMealTimeExamples": "Examples: Mid-morning, Late-night, Second Breakfast, etc.",
+  "foodDetailsQuantityHint": "Quantity (grams)",
+
+  "mealDetailTitle": "{mealTime} Details",
+  "@mealDetailTitle": {
+    "placeholders": {
+      "mealTime": {"type": "String"}
+    }
+  },
+  "mealDetailNoFoods": "No foods in this meal",
+  "mealDetailRemoveFoodTitle": "Remove Food",
+  "mealDetailRemoveFoodConfirm": "Are you sure you want to remove {name} from this meal?",
+  "@mealDetailRemoveFoodConfirm": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "mealDetailRemoveAction": "Remove",
+  "mealDetailQuantityLabel": "Quantity",
+
+  "newFoodAddFailed": "Failed to add food. Please try again.",
+  "newFoodInvalidNumber": "Please enter a valid number",
+  "newFoodTitle": "Add New Food",
+  "newFoodNameLabel": "Food Name",
+  "newFoodNameHint": "Enter food name",
+  "newFoodNameRequired": "Please enter food name",
+  "newFoodCarbohydrates": "Carbohydrates",
+  "newFoodAddButton": "Add Food",
+
+  "updateProfileSuccessDefault": "Profile updated successfully.",
+  "updateProfileFailed": "Profile update failed. Please try again.",
+  "updateProfileAgeRequired": "Please enter age",
+  "updateProfileAgeInvalid": "Please enter a valid age",
+  "updateProfileWeightRequired": "Please enter weight",
+  "updateProfileWeightInvalid": "Please enter a valid weight",
+  "updateProfileHeightRequired": "Please enter height",
+  "updateProfileHeightInvalid": "Please enter a valid height",
+  "updateProfileGenderRequired": "Please select a gender",
+  "updateProfileActivityRequired": "Please select an activity level",
+  "updateProfileGoalRequired": "Please select a fitness goal",
+  "updateProfileTitle": "Update Profile",
+
+  "progressFillAllFields": "Please fill in all fields",
+  "progressInvalidWeight": "Invalid weight value",
+  "progressAddedSuccess": "Progress added successfully!",
+  "progressAddError": "Error adding progress: {error}",
+  "@progressAddError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "progressNoDataAvailable": "No progress data available",
+  "progressTooltip": "Date: {date}\nWeight: {weight} kg",
+  "@progressTooltip": {
+    "placeholders": {
+      "date": {"type": "String"},
+      "weight": {"type": "String"}
+    }
+  },
+  "progressTitle": "Progress Tracker",
+  "progressAddEntryTitle": "Add Progress Entry",
+  "progressDateLabel": "Date",
+  "progressAddYourProgress": "Add Your Progress",
+  "progressChartTitle": "Progress Chart",
+
+  "workoutModeSimple": "Simple",
+  "workoutModeAdvanced": "Advanced",
+  "workoutTitle": "Workouts",
+  "workoutDifficultyEasy": "Easy",
+  "workoutDifficultyMedium": "Medium",
+  "workoutDifficultyHard": "Hard",
+  "workoutSearchExercisesHint": "Search Exercises...",
+  "workoutLoading": "Loading workouts...",
+  "workoutFoundCount": "Found {count} workouts",
+  "@workoutFoundCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "workoutAllCategories": "All Categories",
+  "workoutLoadError": "Error loading workouts",
+  "workoutTryAgain": "Try Again",
+  "workoutNoneAvailable": "No workouts available",
+  "workoutNoneMatchSearch": "No workouts match your search",
+  "workoutClearFilters": "Clear filters",
+  "workoutNoDescription": "No Description",
+  "workoutCategoryOther": "Other",
+
+  "workoutDetailsUnknownWorkout": "Unknown Workout",
+  "workoutDetailsEnterDuration": "Please enter a duration",
+  "workoutDetailsEnterValidDuration": "Please enter a valid duration",
+  "workoutDetailsAddedSuccess": "Workout added successfully!",
+  "workoutDetailsNoName": "No Name",
+  "workoutDetailsUncategorized": "Uncategorized",
+  "workoutDetailsAboutTitle": "About This Workout",
+  "workoutDetailsIntensity": "Intensity",
+  "workoutDetailsCaloriesPerHour": "{value}/hr",
+  "@workoutDetailsCaloriesPerHour": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "workoutDetailsScheduleTitle": "Schedule Workout",
+  "workoutDetailsDurationHint": "Duration in minutes",
+  "workoutDetailsAddToPlan": "Add to My Plan",
+
+  "workoutListLoadFailed": "Failed to load workouts: {error}",
+  "@workoutListLoadFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "workoutListImportFailed": "Failed to import workout program: {error}",
+  "@workoutListImportFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "workoutListSingleImportedSuccess": "Workout \"{name}\" imported successfully",
+  "@workoutListSingleImportedSuccess": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "workoutListCycleImportedSuccess": "Workout cycle imported successfully",
+  "workoutListDeletedSuccess": "Workout deleted successfully",
+  "workoutListDeleteFailed": "Failed to delete workout: {error}",
+  "@workoutListDeleteFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "workoutListTitle": "Workout Management",
+  "workoutListImportTooltip": "Import workout program",
+  "workoutListRefreshTooltip": "Refresh workouts",
+  "workoutListUnnamedWorkout": "Unnamed Workout",
+  "workoutListNoDescription": "No description",
+  "workoutListDeleteTooltip": "Delete workout",
+  "workoutListNoWorkoutsYet": "No Workouts Yet",
+  "workoutListCreateFirstWorkout": "Create your first workout to get started",
+  "workoutListCreateNewWorkout": "Create New Workout",
+  "workoutListErrorLoading": "Error Loading Workouts",
+  "workoutListUnknownError": "An unknown error occurred",
+
+  "dayMonday": "Monday",
+  "dayTuesday": "Tuesday",
+  "dayWednesday": "Wednesday",
+  "dayThursday": "Thursday",
+  "dayFriday": "Friday",
+  "daySaturday": "Saturday",
+  "daySunday": "Sunday",
+
+  "workoutCalendarNoExportPlan": "No workout plan to export",
+  "workoutCalendarExportedSuccess": "Workout cycle exported successfully",
+  "workoutCalendarExportFailed": "Failed to export workout cycle: {error}",
+  "@workoutCalendarExportFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "workoutCalendarImportedCycleDefaultName": "Imported Cycle",
+  "workoutCalendarTitle": "My Workouts",
+  "workoutCalendarOptionsTooltip": "Workout program options",
+  "workoutCalendarSavedCycles": "Saved workout cycles",
+  "workoutCalendarExportCycle": "Export workout cycle",
+  "workoutCalendarNoPlanAvailable": "No workout plan available",
+  "workoutCalendarNoPlanForWeek": "No workout plan for week {week}",
+  "@workoutCalendarNoPlanForWeek": {
+    "placeholders": {
+      "week": {"type": "int"}
+    }
+  },
+  "workoutCalendarWeekLabel": "Week {week}",
+  "@workoutCalendarWeekLabel": {
+    "placeholders": {
+      "week": {"type": "int"}
+    }
+  },
+  "workoutCalendarNoWorkoutsForDay": "No workouts for {day}",
+  "@workoutCalendarNoWorkoutsForDay": {
+    "placeholders": {
+      "day": {"type": "String"}
+    }
+  },
+  "workoutCalendarAddWorkoutButton": "Add Workout",
+  "workoutCalendarWorkoutsForDay": "Workouts for {day}",
+  "@workoutCalendarWorkoutsForDay": {
+    "placeholders": {
+      "day": {"type": "String"}
+    }
+  },
+  "workoutCalendarAddMoreTooltip": "Add more workouts",
+  "workoutCalendarSearchWorkoutsHint": "Search workouts...",
+  "workoutCalendarAvailableWorkouts": "Available Workouts",
+  "workoutCalendarNoMatchingWorkouts": "No matching workouts found",
+  "workoutCalendarCreateFirstWorkout": "Create your first workout",
+  "workoutCalendarAddFailed": "Failed to add workout: {error}",
+  "@workoutCalendarAddFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "workoutCalendarDetailsButton": "Details",
+  "workoutCalendarRemoveExerciseTooltip": "Remove exercise",
+  "workoutCalendarMalformedEntry": "This workout entry couldn't be loaded.",
+  "workoutCalendarRemoveEntryTooltip": "Remove entry",
+  "workoutCalendarPreviousWeek": "Previous Week",
+  "workoutCalendarNextWeek": "Next Week",
+  "workoutCalendarCreateWorkoutPlan": "Create Workout Plan",
+  "workoutCalendarReuseSavedCycle": "Reuse a Saved Cycle",
+
+  "importDialogWorkoutsToCreate": "The following workouts will be created:",
+  "importDialogUnmatchedExercises": "These exercises weren't found and will be skipped:",
+  "importDialogImportButton": "Import",
+
+  "newWorkoutLoadExercisesFailed": "Failed to load exercises: {error}",
+  "@newWorkoutLoadExercisesFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "newWorkoutNeedExercise": "Please add at least one exercise to your workout",
+  "newWorkoutTitle": "Create New Workout",
+  "newWorkoutRefreshExercisesTooltip": "Refresh exercise list",
+  "newWorkoutDetailsTitle": "Workout Details",
+  "newWorkoutNameLabel": "Workout Name",
+  "newWorkoutNameHint": "e.g., Upper Body Strength",
+  "newWorkoutNameRequired": "Please enter a workout name",
+  "newWorkoutDescriptionLabel": "Description",
+  "newWorkoutDescriptionHint": "Focus of this workout, target muscle groups, etc.",
+  "newWorkoutDescriptionRequired": "Please enter a description",
+  "newWorkoutExercisesTitle": "Exercises",
+  "newWorkoutAddExercise": "Add Exercise",
+  "newWorkoutExercisesSubtitle": "Add exercises and configure sets, reps, and rest periods",
+  "newWorkoutNoExercisesYet": "No exercises added yet",
+  "newWorkoutAddExercisesPrompt": "Add exercises to create your custom workout",
+  "newWorkoutSetsLabel": "Sets",
+  "newWorkoutRepsLabel": "Reps",
+  "newWorkoutRestLabel": "Rest (sec)",
+  "newWorkoutSelectExercisesTitle": "Select Exercises",
+  "newWorkoutSearchExercisesHint": "Search exercises...",
+  "newWorkoutNoExercisesFound": "No exercises found",
+  "newWorkoutSaveButton": "Save Workout",
+  "newWorkoutSaving": "Saving your workout...",
+  "newWorkoutErrorCreating": "Error Creating Workout",
+
+  "workoutDetailScreenExportedSuccess": "Workout exported successfully",
+  "workoutDetailScreenExportFailed": "Failed to export workout: {error}",
+  "@workoutDetailScreenExportFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "workoutDetailScreenTitle": "Workout Details",
+  "workoutDetailScreenErrorPrefix": "Error: {error}",
+  "@workoutDetailScreenErrorPrefix": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "workoutDetailScreenNoDetails": "No workout details available",
+  "workoutDetailScreenRefresh": "Refresh",
+  "workoutDetailScreenExportTooltip": "Export workout",
+  "workoutDetailScreenNoDescription": "No description available",
+  "workoutDetailScreenExercisesCount": "{count} Exercises",
+  "@workoutDetailScreenExercisesCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "workoutDetailScreenMinutes": "{minutes} min",
+  "@workoutDetailScreenMinutes": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+  "workoutDetailScreenSetsCount": "{count} sets",
+  "@workoutDetailScreenSetsCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "workoutDetailScreenRepsCount": "{count} reps",
+  "@workoutDetailScreenRepsCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "workoutDetailScreenRestSeconds": "{seconds}s rest",
+  "@workoutDetailScreenRestSeconds": {
+    "placeholders": {
+      "seconds": {"type": "int"}
+    }
+  },
+  "workoutDetailScreenDescriptionLabel": "Description:",
+  "workoutDetailScreenEquipmentLabel": "Equipment: {value}",
+  "@workoutDetailScreenEquipmentLabel": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "workoutDetailScreenLevelLabel": "Level: {value}",
+  "@workoutDetailScreenLevelLabel": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+
+  "exerciseSelectionPleaseSelect": "Please select an exercise",
+  "exerciseSelectionInvalidValues": "Please enter valid values for sets, reps, and rest",
+  "exerciseSelectionInvalidDuration": "Please enter a valid duration or leave it empty",
+  "exerciseSelectionTitle": "Select Exercise",
+  "exerciseSelectionFilterByBodyPart": "Filter by Body Part:",
+  "exerciseSelectionDurationLabel": "Duration (sec)",
+  "exerciseSelectionOptionalHint": "Optional",
+  "exerciseSelectionAddToWorkout": "Add to Workout",
+
+  "editWorkoutTitle": "Edit Workout",
+  "editWorkoutAddExercisesPrompt": "Add exercises to update your custom workout",
+  "editWorkoutUpdateButton": "Update Workout",
+  "editWorkoutUpdating": "Updating your workout...",
+  "editWorkoutErrorUpdating": "Error Updating Workout",
+
+  "savedCyclesScheduled": "\"{name}\" scheduled",
+  "@savedCyclesScheduled": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "savedCyclesDefaultName": "Cycle",
+  "savedCyclesReuseFailed": "Failed to reuse cycle: {error}",
+  "@savedCyclesReuseFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "savedCyclesDeleteTitle": "Delete Saved Cycle",
+  "savedCyclesDeleteConfirm": "Delete \"{name}\"? This cannot be undone.",
+  "@savedCyclesDeleteConfirm": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "savedCyclesThisCycle": "this cycle",
+  "savedCyclesDeleteFailed": "Failed to delete cycle: {error}",
+  "@savedCyclesDeleteFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "savedCyclesAutoSetupFailed": "Could not set up workouts automatically ({error}). Pick a workout for each highlighted day instead.",
+  "@savedCyclesAutoSetupFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "savedCyclesSuggestedTitle": "Suggested Cycles",
+  "savedCyclesSuggestedSubtitle": "Quick-start templates — pick one and we'll set up real workouts for each training day.",
+  "savedCyclesWeeksDaysPerWeek": "{weeks} weeks · {days} days/week",
+  "@savedCyclesWeeksDaysPerWeek": {
+    "placeholders": {
+      "weeks": {"type": "int"},
+      "days": {"type": "int"}
+    }
+  },
+  "savedCyclesSettingUp": "Setting up workouts…",
+  "savedCyclesTitle": "Saved Workout Cycles",
+  "savedCyclesLoadFailed": "Failed to load saved cycles: {error}",
+  "@savedCyclesLoadFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "savedCyclesYourCycles": "Your Saved Cycles",
+  "savedCyclesNoneYet": "No saved workout cycles yet",
+  "savedCyclesAutoSavedHint": "Every cycle you create is automatically saved here so you can reuse it later.",
+  "savedCyclesUnnamedCycle": "Unnamed Cycle",
+  "savedCyclesWeeksAndDaysSummary": "{weeks, plural, one{{weeks} week} other{{weeks} weeks}} · {days, plural, one{{days} workout day} other{{days} workout days}}/week",
+  "@savedCyclesWeeksAndDaysSummary": {
+    "placeholders": {
+      "weeks": {"type": "int"},
+      "days": {"type": "int"}
+    }
+  },
+  "savedCyclesReuseButton": "Reuse",
+
+  "newWorkoutCycleLoadFailed": "Failed to load workouts: {error}",
+  "@newWorkoutCycleLoadFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "newWorkoutCycleTitle": "New Workout Cycle",
+  "newWorkoutCycleRefreshTooltip": "Refresh",
+  "newWorkoutCycleNameLabel": "Cycle Name",
+  "newWorkoutCycleNameHint": "e.g. Summer Strength Program",
+  "newWorkoutCycleNameSubtitle": "Give your cycle a name you'll recognize",
+  "newWorkoutCycleDescriptionLabel": "Description",
+  "newWorkoutCycleDescriptionHint": "What is this cycle about?",
+  "newWorkoutCycleStartDateLabel": "Start Date",
+  "newWorkoutCycleStartDateSubtitle": "When should this cycle begin?",
+  "newWorkoutCycleWeeksLabel": "Duration (weeks)",
+  "newWorkoutCycleRepeatsFor": "{weeks, plural, one {Repeats for 1 week} other {Repeats for {weeks} weeks}}",
+  "@newWorkoutCycleRepeatsFor": {
+    "placeholders": {
+      "weeks": {"type": "int"}
+    }
+  },
+  "newWorkoutCycleScheduleTitle": "Weekly Schedule",
+  "newWorkoutCycleScheduleSubtitle": "Assign a workout to each day",
+  "newWorkoutCycleRecommendedPending": "{total, plural, one {{pending} of {total} recommended day still needs a workout} other {{pending} of {total} recommended days still need a workout}}",
+  "@newWorkoutCycleRecommendedPending": {
+    "placeholders": {
+      "total": {"type": "int"},
+      "pending": {"type": "int"}
+    }
+  },
+  "newWorkoutCycleRecommendedComplete": "All recommended days have a workout assigned",
+  "newWorkoutCycleLoadingWorkouts": "Loading your workouts…",
+  "newWorkoutCycleNoWorkoutsFound": "No Workouts Found",
+  "newWorkoutCycleCreateWorkoutsFirst": "Create a custom workout first so you can assign it to a day",
+  "newWorkoutCycleCreateWorkoutButton": "Create Workout",
+  "newWorkoutCycleDeleteWorkoutTitle": "Delete Workout",
+  "newWorkoutCycleDeleteWorkoutConfirm": "Are you sure you want to delete \"{name}\"? This cannot be undone.",
+  "@newWorkoutCycleDeleteWorkoutConfirm": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "newWorkoutCycleDeleteWorkoutFailed": "Failed to delete workout: {error}",
+  "@newWorkoutCycleDeleteWorkoutFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "newWorkoutCycleSearchWorkoutsHint": "Search workouts…",
+  "newWorkoutCycleRestDay": "Rest Day",
+  "newWorkoutCycleNoCustomWorkoutsYet": "You haven't created any custom workouts yet",
+  "newWorkoutCycleNoWorkoutsMatch": "No workouts match \"{query}\"",
+  "@newWorkoutCycleNoWorkoutsMatch": {
+    "placeholders": {
+      "query": {"type": "String"}
+    }
+  }
+}

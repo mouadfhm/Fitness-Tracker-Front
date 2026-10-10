@@ -46,6 +46,7 @@ Uses `provider` package with `ChangeNotifier`. All providers are registered at t
 - `ExercisesProvider` — exercise data
 - `AchievementsProvider` — user achievements
 - `ThemeProvider` — light/dark theme toggle (persisted via `shared_preferences`)
+- `LocaleProvider` — app language (English or French, persisted via `shared_preferences`); strings come from `lib/l10n/*.arb`, regenerated with `flutter gen-l10n`
 
 ### Service Layer
 All network calls go through `lib/services/api_service.dart`, which reads `BASE_URL` from dotenv and attaches Bearer tokens to authenticated requests. Key services:
