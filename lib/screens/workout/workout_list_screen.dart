@@ -3,6 +3,7 @@
 import 'package:fitness_tracker_app/screens/workout/new_workout_screen.dart';
 import 'package:fitness_tracker_app/screens/workout/workout_detail_screen.dart';
 import 'package:flutter/material.dart';
+import '../../utils/adaptive.dart';
 import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
 import '../../services/workout_file_io.dart';
@@ -160,7 +161,7 @@ class _WorkoutManagementScreenState extends State<WorkoutManagementScreen> {
   }
 
   Future<DateTime?> _pickCycleStartDate() {
-    return showDatePicker(
+    return showAdaptiveDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),

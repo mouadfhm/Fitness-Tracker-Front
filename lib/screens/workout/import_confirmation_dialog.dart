@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../utils/adaptive.dart';
 
 class ImportConfirmationDialog extends StatelessWidget {
   final List<String> workoutNames;
@@ -29,7 +30,7 @@ class ImportConfirmationDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return AlertDialog(
+    return AlertDialog.adaptive(
       title: const Text('Import workout program'),
       content: SingleChildScrollView(
         child: Column(
@@ -53,11 +54,11 @@ class ImportConfirmationDialog extends StatelessWidget {
         ),
       ),
       actions: [
-        TextButton(
+        AdaptiveDialogAction(
           onPressed: () => Navigator.of(context).pop(false),
           child: const Text('Cancel'),
         ),
-        FilledButton(
+        AdaptiveDialogAction(isDefault: true,
           onPressed: () => Navigator.of(context).pop(true),
           child: const Text('Import'),
         ),

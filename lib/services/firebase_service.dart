@@ -73,7 +73,14 @@ Future<void> setupFCM(ApiService api) async {
   _api = api;
 
   try {
-    await _requestNotificationPermission();
+    // On iOS the system prompt is shown only once, so it waits for a moment
+    // where the reason is obvious: the reminders card on Today, or turning on
+    // a reminder in Settings (see [requestNotificationPermission]). Asking at
+    // launch, before the person has seen the app, is what Apple's guidelines
+    // advise against and is the ask most people decline.
+    if (!_isApple || !await notificationPermissionUndecided()) {
+      await _requestNotificationPermission();
+    }
 
     final messaging = FirebaseMessaging.instance;
 
@@ -212,7 +219,36 @@ void _showForegroundNotification(RemoteMessage message) {
   );
 }
 
-Future<void> _requestNotificationPermission() async {
+bool get _isApple =>
+    !kIsWeb &&
+    (defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.macOS);
+
+/// True on iOS while the person has never answered the notification prompt.
+/// False everywhere else, and when Firebase isn't set up.
+Future<bool> notificationPermissionUndecided() async {
+  if (!_isApple) return false;
+  try {
+    final settings = await FirebaseMessaging.instance.getNotificationSettings();
+    return settings.authorizationStatus == AuthorizationStatus.notDetermined;
+  } catch (e) {
+    debugPrint('Could not read notification settings: $e');
+    return false;
+  }
+}
+
+/// Shows the system notification prompt, for callers that have just told the
+/// person why. Returns whether notifications are now allowed.
+Future<bool> requestNotificationPermission() async {
+  try {
+    return await _requestNotificationPermission();
+  } catch (e) {
+    debugPrint('Notification permission request failed: $e');
+    return false;
+  }
+}
+
+Future<bool> _requestNotificationPermission() async {
   final messaging = FirebaseMessaging.instance;
   final settings = await messaging.requestPermission(
     alert: true,
@@ -223,9 +259,8 @@ Future<void> _requestNotificationPermission() async {
     provisional: false,
     sound: true,
   );
-  if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-    debugPrint('FCM permission granted');
-  } else {
-    debugPrint('FCM permission denied');
-  }
+  final granted = settings.authorizationStatus == AuthorizationStatus.authorized ||
+      settings.authorizationStatus == AuthorizationStatus.provisional;
+  debugPrint(granted ? 'FCM permission granted' : 'FCM permission denied');
+  return granted;
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../services/firebase_service.dart';
-import 'home_screen.dart';
+import 'main_shell.dart';
 import 'register_screen.dart';
 import 'widgets/app_text_field.dart';
 import '../utils/friendly_error.dart';
@@ -38,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        MaterialPageRoute(builder: (_) => const MainShell()),
       );
     } catch (e) {
       if (!mounted) return;

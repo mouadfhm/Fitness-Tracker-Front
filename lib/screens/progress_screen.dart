@@ -1,6 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
+import '../utils/adaptive.dart';
 import '../utils/friendly_error.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../services/api_service.dart';
@@ -294,7 +295,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
               controller: _dateController,
               readOnly: true,
               onTap: () async {
-                DateTime? pickedDate = await showDatePicker(
+                DateTime? pickedDate = await showAdaptiveDatePicker(
                   context: context,
                   initialDate: DateTime.now(),
                   firstDate: DateTime(2000),

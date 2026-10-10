@@ -1,5 +1,6 @@
 import 'package:fitness_tracker_app/providers/food_provider.dart';
 import 'package:flutter/material.dart';
+import '../utils/adaptive.dart';
 import 'package:provider/provider.dart';
 import '../models/food.dart';
 import '../services/api_service.dart';
@@ -54,7 +55,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
   bool get _isToday => DateUtils.isSameDay(_selectedDate, DateTime.now());
 
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    final DateTime? picked = await showAdaptiveDatePicker(
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime(2020),

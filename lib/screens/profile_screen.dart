@@ -4,6 +4,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import '../utils/adaptive.dart';
 import 'package:provider/provider.dart';
 import 'package:fitness_tracker_app/providers/profile_provider.dart';
 import 'package:fitness_tracker_app/services/api_service.dart';
@@ -94,13 +95,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (mounted) {
         showDialog(
           context: context,
-          builder: (context) => AlertDialog(
+          builder: (context) => AlertDialog.adaptive(
             title: const Text('Error'),
             content: const Text(
               'Failed to select image. Please try again.',
             ),
             actions: [
-              TextButton(
+              AdaptiveDialogAction(isDefault: true,
                 onPressed: () => Navigator.pop(context),
                 child: const Text('OK'),
               ),
@@ -125,19 +126,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return AlertDialog(
+        return AlertDialog.adaptive(
           title: const Text('Log out?'),
           content: const Text(
             'Are you sure you want to log out of your account?',
           ),
           actions: <Widget>[
-            TextButton(
+            AdaptiveDialogAction(
               child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
-            TextButton(
+            AdaptiveDialogAction(isDestructive: true,
               child: Text('Log out', style: TextStyle(color: Theme.of(context).colorScheme.error)),
               onPressed: () {
                 Navigator.of(context).pop();

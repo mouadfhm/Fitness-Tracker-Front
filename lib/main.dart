@@ -12,11 +12,8 @@ import 'providers/food_provider.dart';
 import 'providers/exercise_provider.dart';
 import 'providers/achievement_provider.dart';
 import 'screens/login_screen.dart';
-import 'screens/home_screen.dart';
+import 'screens/main_shell.dart';
 // import 'screens/splash_screen.dart';
-import 'screens/foods_screen.dart';
-import 'screens/profile_screen.dart';
-import 'screens/workout_root_screen.dart';
 import 'services/token_service.dart';
 import 'services/navigation_service.dart';
 import 'services/api_service.dart';
@@ -104,15 +101,15 @@ class MyApp extends StatelessWidget {
       themeMode: themeProvider.themeMode,
       routes: {
         '/login': (_) => const LoginScreen(),
-        '/home': (_) => const HomeScreen(),
-        '/workouts': (_) => const WorkoutRootScreen(),
-        '/foods': (_) => const FoodsScreen(),
-        '/profile': (_) => const ProfileScreen(),
+        '/home': (_) => const MainShell(),
+        '/workouts': (_) => const MainShell(initialIndex: 1),
+        '/foods': (_) => const MainShell(initialIndex: 2),
+        '/profile': (_) => const MainShell(initialIndex: 3),
       },
       // home: SplashScreen(
       //   nextScreen: isLoggedIn ? const HomeScreen() : const LoginScreen(),
       // ),
-      home: isLoggedIn ? const HomeScreen() : const LoginScreen(),
+      home: isLoggedIn ? const MainShell() : const LoginScreen(),
     );
   }
 }
