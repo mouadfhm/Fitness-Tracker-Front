@@ -3,6 +3,7 @@ import '../services/api_service.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:fitness_tracker_app/providers/profile_provider.dart';
+import '../utils/labels.dart';
 import 'package:fitness_tracker_app/utils/friendly_error.dart';
 
 class WorkoutDetailsScreen extends StatefulWidget {
@@ -306,11 +307,7 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
     final description = widget.workout['description'] ?? 'No Description';
     final category = widget.workout['name'] ?? 'Uncategorized';
     final difficulty =
-        widget.workout['caloriesPerKg'] > 2
-            ? 'Vigorous'
-            : widget.workout['caloriesPerKg'] > 1
-            ? 'Moderate'
-            : 'Light';
+        intensityLabel(widget.workout['caloriesPerKg'] as num);
 
     final Color categoryColor = _getCategoryColor(category);
     final IconData categoryIcon = _getCategoryIcon(category);

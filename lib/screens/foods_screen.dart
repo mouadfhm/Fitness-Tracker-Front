@@ -10,6 +10,7 @@ import 'widgets/bottom_nav_bar.dart';
 import '../utils/add_banner.dart';
 import '../utils/ad_list_helper.dart';
 import '../utils/friendly_error.dart';
+import '../utils/food_search.dart';
 import '../utils/labels.dart';
 
 enum SortBy {
@@ -310,11 +311,7 @@ class _FoodsScreenState extends State<FoodsScreen>
       builder: (context, foodProvider, child) {
         // Filter foods based on search query.
         List<Food> filteredFoods =
-            foodProvider.foods.where((food) {
-              return food.name.toLowerCase().contains(
-                _searchController.text.toLowerCase(),
-              );
-            }).toList();
+            searchFoods(foodProvider.foods, _searchController.text, (food) => food.name);
         
         // Apply sorting
         filteredFoods = _sortFoods(filteredFoods);
