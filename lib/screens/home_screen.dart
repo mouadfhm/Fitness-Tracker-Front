@@ -10,6 +10,8 @@ import '../utils/add_banner.dart';
 import '../utils/friendly_error.dart';
 import '../utils/labels.dart';
 import 'widgets/notification_prompt_card.dart';
+import '../utils/l10n.dart';
+import '../l10n/app_localizations.dart';
 
 /// Totals for a list of meal foods. Food values are stored per 100 g and the
 /// pivot holds the grams eaten.
@@ -46,7 +48,8 @@ class _HomeScreenState extends State<HomeScreen> {
   List<dynamic> _pastMeals = [];
   double _caloriesBurned = 0;
   bool _isLoading = true;
-  String? _errorMessage;
+  /// Kept as the error itself so its message follows the current language.
+  Object? _error;
 
   @override
   void initState() {
@@ -97,13 +100,13 @@ class _HomeScreenState extends State<HomeScreen> {
         _todayMeals = today;
         _pastMeals = past;
         _caloriesBurned = burned;
-        _errorMessage = null;
+        _error = null;
         _isLoading = false;
       });
     } catch (error) {
       if (!mounted) return;
       setState(() {
-        _errorMessage = friendlyError(error);
+        _error = error;
         _isLoading = false;
       });
     }
@@ -144,36 +147,32 @@ class _HomeScreenState extends State<HomeScreen> {
   void _showNutrientHelp() {
     showDialog<void>(
       context: context,
-      builder: (context) => AlertDialog.adaptive(
-        title: const Text('What do these mean?'),
-        content: const Text(
-          'Calories (kcal) measure the energy in food. Eating about your daily '
-          'goal helps you reach your target weight.\n\n'
-          'Protein, carbs and fat are the three nutrients that give food its '
-          'calories. Protein helps build and repair muscle, carbs give you '
-          'energy, and fat supports your body in many ways.\n\n'
-          "You don't need to hit every number exactly. Focus on calories "
-          'first, then try to get enough protein.',
-        ),
-        actions: [
-          AdaptiveDialogAction(isDefault: true, onPressed: () => Navigator.pop(context), child: const Text('Got it')),
-        ],
-      ),
+      builder: (context) {
+        final l10n = AppLocalizations.of(context)!;
+        return AlertDialog.adaptive(
+          title: Text(l10n.homeHelpTitle),
+          content: Text(l10n.homeHelpBody),
+          actions: [
+            AdaptiveDialogAction(isDefault: true, onPressed: () => Navigator.pop(context), child: Text(l10n.homeHelpGotIt)),
+          ],
+        );
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Today', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(l10n.homeToday, style: const TextStyle(fontWeight: FontWeight.bold)),
             Text(
-              DateFormat('EEEE, MMMM d').format(DateTime.now()),
+              DateFormat.MMMMEEEEd(Localizations.localeOf(context).toString()).format(DateTime.now()),
               style: TextStyle(fontSize: 14, color: colorScheme.onSurfaceVariant),
             ),
           ],
@@ -184,14 +183,14 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline),
-            tooltip: 'What do these numbers mean?',
+            tooltip: l10n.homeHelpTooltip,
             onPressed: _showNutrientHelp,
           ),
         ],
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator(color: colorScheme.primary))
-          : _errorMessage != null
+          : _error != null
               ? _buildError(colorScheme)
               : RefreshIndicator(
                   color: colorScheme.primary,
@@ -203,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       _buildCalorieSummary(colorScheme),
                       const SizedBox(height: 24),
                       Text(
-                        'Your meals',
+                        l10n.homeYourMealsHeading,
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -223,7 +222,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ).then((_) => _fetchData()),
                           icon: const Icon(Icons.history),
-                          label: const Text('See past days'),
+                          label: Text(l10n.homeSeePastDays),
                           style: OutlinedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 14),
                           ),
@@ -236,6 +235,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildError(ColorScheme colorScheme) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -245,7 +245,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Icon(Icons.cloud_off, color: colorScheme.error, size: 48),
             const SizedBox(height: 16),
             Text(
-              "We couldn't load today's data",
+              l10n.homeLoadErrorTitle,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -255,7 +255,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              _errorMessage!,
+              friendlyError(_error!),
               style: TextStyle(fontSize: 16, color: colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
@@ -266,7 +266,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 _fetchData();
               },
               icon: const Icon(Icons.refresh),
-              label: const Text('Try again'),
+              label: Text(l10n.homeTryAgain),
             ),
           ],
         ),
@@ -285,6 +285,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final isOver = goal > 0 && left < 0;
     final progress = goal > 0 ? (eaten / goal).clamp(0.0, 1.0) : 0.0;
     final ringColor = isOver ? colorScheme.error : colorScheme.primary;
+    final l10n = AppLocalizations.of(context)!;
 
     return Card(
       child: Padding(
@@ -293,10 +294,10 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Semantics(
               label: goal <= 0
-                  ? '${eaten.round()} calories eaten today'
+                  ? l10n.homeSemanticsEatenToday(eaten.round())
                   : isOver
-                      ? '${(-left).round()} calories over your goal today'
-                      : '${left.round()} calories left today',
+                      ? l10n.homeSemanticsOverGoal((-left).round())
+                      : l10n.homeSemanticsLeftToday(left.round()),
               excludeSemantics: true,
               child: SizedBox(
                 width: 170,
@@ -326,10 +327,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         Text(
                           goal <= 0
-                              ? 'kcal eaten'
+                              ? l10n.homeKcalEaten
                               : isOver
-                                  ? 'kcal over'
-                                  : 'kcal left',
+                                  ? l10n.homeKcalOver
+                                  : l10n.homeKcalLeft,
                           style: TextStyle(fontSize: 16, color: colorScheme.onSurfaceVariant),
                         ),
                       ],
@@ -343,32 +344,32 @@ class _HomeScreenState extends State<HomeScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _summaryFigure('Goal', goal, colorScheme),
-                  _summaryFigure('Eaten', eaten, colorScheme),
-                  _summaryFigure('Exercise', _caloriesBurned, colorScheme),
+                  _summaryFigure(l10n.homeSummaryGoal, goal, colorScheme),
+                  _summaryFigure(l10n.homeSummaryEaten, eaten, colorScheme),
+                  _summaryFigure(l10n.homeSummaryExercise, _caloriesBurned, colorScheme),
                 ],
               )
             else
               Text(
-                'Finish your profile on the Me tab to get a daily calorie goal.',
+                l10n.homeFinishProfileForGoal,
                 style: TextStyle(fontSize: 15, color: colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
             if (goal > 0 && _caloriesBurned > 0) ...[
               const SizedBox(height: 8),
               Text(
-                "Today's exercise is already added to your goal.",
+                l10n.homeExerciseAddedToGoal,
                 style: TextStyle(fontSize: 14, color: colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
             ],
             if (_goalMacros != null) ...[
               const SizedBox(height: 20),
-              _nutrientBar('Protein', totals.protein,
+              _nutrientBar(l10n.homeMacroProtein, totals.protein,
                   (_goalMacros!['protein'] as num?)?.toDouble() ?? 0, Colors.blue, colorScheme),
-              _nutrientBar('Carbs', totals.carbs,
+              _nutrientBar(l10n.homeMacroCarbs, totals.carbs,
                   (_goalMacros!['carbs'] as num?)?.toDouble() ?? 0, Colors.green, colorScheme),
-              _nutrientBar('Fat', totals.fat,
+              _nutrientBar(l10n.homeMacroFat, totals.fat,
                   (_goalMacros!['fats'] as num?)?.toDouble() ?? 0, Colors.orange, colorScheme),
             ],
           ],
@@ -389,7 +390,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         Text(
-          '$label (kcal)',
+          AppLocalizations.of(context)!.homeSummaryLabelKcal(label),
           style: TextStyle(fontSize: 14, color: colorScheme.onSurfaceVariant),
         ),
       ],
@@ -423,7 +424,9 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const Spacer(),
               Text(
-                goal > 0 ? '${eaten.round()} of ${goal.round()} g' : '${eaten.round()} g',
+                goal > 0
+                    ? AppLocalizations.of(context)!.homeNutrientOfGoal(eaten.round(), goal.round())
+                    : '${eaten.round()} g',
                 style: TextStyle(fontSize: 15, color: colorScheme.onSurfaceVariant),
               ),
             ],
@@ -443,6 +446,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<Widget> _buildMealCards(ColorScheme colorScheme) {
     final byMeal = _todayFoodsByMeal;
+    final l10n = AppLocalizations.of(context)!;
     // Always offer the four main meals, then any other meal names the person
     // has used today (e.g. "pre-workout").
     final mealTimes = [
@@ -453,12 +457,12 @@ class _HomeScreenState extends State<HomeScreen> {
     return mealTimes.map((mealTime) {
       final foods = byMeal[mealTime] ?? [];
       final totals = MealTotals()..addFoods(foods);
-      final names = foods.map((f) => f['name'].toString()).toList();
+      final names = foods.map((f) => localizedName(f)).toList();
       final summary = names.isEmpty
-          ? 'Nothing added yet'
+          ? l10n.homeNothingAddedYet
           : names.length <= 3
               ? names.join(', ')
-              : '${names.take(3).join(', ')} and ${names.length - 3} more';
+              : l10n.homeFoodsAndMore(names.take(3).join(', '), names.length - 3);
 
       return Card(
         margin: const EdgeInsets.symmetric(vertical: 6),
@@ -508,13 +512,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(width: 8),
                 Semantics(
-                  label: 'Add food to ${mealTimeLabel(mealTime)}',
+                  label: l10n.homeAddFoodToMeal(mealTimeLabel(mealTime)),
                   excludeSemantics: true,
                   button: true,
                   child: FilledButton.tonalIcon(
                     onPressed: () => _addFood(mealTime),
                     icon: const Icon(Icons.add),
-                    label: const Text('Add'),
+                    label: Text(l10n.homeAddButton),
                   ),
                 ),
               ],

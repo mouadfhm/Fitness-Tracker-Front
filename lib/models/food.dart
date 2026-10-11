@@ -1,3 +1,4 @@
+import '../utils/l10n.dart';
 // ignore_for_file: prefer_interpolation_to_compose_strings
 
 class Food {
@@ -48,7 +49,7 @@ class Food {
         id: json['id'] is int
             ? json['id'] as int
             : int.tryParse(json['id'].toString()) ?? 0,
-        name: json['name'] ?? 'Unknown',
+        name: localizedName(json, fallback: 'Unknown'),
         calories: (json['calories'] as num).toDouble(),
         protein: (json['protein'] as num).toDouble(),
         carbs: (json['carbs'] as num).toDouble(),

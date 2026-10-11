@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/app_localizations.dart';
 import '../utils/app_theme.dart';
+import '../utils/l10n.dart';
 import '../providers/achievement_provider.dart';
 
 class AchievementsScreen extends StatefulWidget {
@@ -18,6 +20,30 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AchievementsProvider>().loadAchievements();
     });
+  }
+
+  /// Shown name of an achievement type code (the code itself stays as is).
+  String _typeLabel(AppLocalizations l10n, String type) {
+    switch (type) {
+      case 'meals':
+        return l10n.achievementTypeMeals;
+      case 'streak':
+        return l10n.achievementTypeStreak;
+      case 'calories':
+        return l10n.achievementTypeCalories;
+      case 'workouts':
+        return l10n.achievementTypeWorkouts;
+      case 'cardio':
+        return l10n.achievementTypeCardio;
+      case 'progress':
+        return l10n.achievementTypeProgress;
+      case 'weight':
+        return l10n.achievementTypeWeight;
+      case 'muscle':
+        return l10n.achievementTypeMuscle;
+      default:
+        return type.toUpperCase();
+    }
   }
 
   void _showAchievementDetails(
@@ -40,6 +66,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
       backgroundColor: Colors.transparent,
       builder: (context) {
         final colorScheme = Theme.of(context).colorScheme;
+        final l10n = AppLocalizations.of(context)!;
 
         return Container(
           height: MediaQuery.of(context).size.height * 0.75,
@@ -100,7 +127,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            achievement['name'],
+                            localizedName(achievement),
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -123,7 +150,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: Text(
-                                  unlocked ? 'UNLOCKED' : 'LOCKED',
+                                  unlocked ? l10n.achievementUnlocked : l10n.achievementLocked,
                                   style: TextStyle(
                                     color: unlocked
                                         ? colorScheme.primary
@@ -135,7 +162,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                achievement['type'].toUpperCase(),
+                                _typeLabel(l10n, achievement['type']),
                                 style: TextStyle(
                                   color: colorScheme.onSurfaceVariant,
                                   fontSize: 12,
@@ -159,7 +186,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'DESCRIPTION',
+                        l10n.achievementDescriptionLabel,
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -169,7 +196,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        achievement['description'],
+                        localizedName(achievement, field: 'description'),
                         style: TextStyle(
                           fontSize: 16,
                           height: 1.5,
@@ -179,7 +206,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                       const SizedBox(height: 24),
 
                       Text(
-                        'REQUIREMENTS',
+                        l10n.achievementRequirementsLabel,
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -210,7 +237,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Target',
+                                    l10n.achievementTargetLabel,
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
@@ -238,7 +265,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                       if (unlocked) ...[
                         const SizedBox(height: 24),
                         Text(
-                          'COMPLETION DETAILS',
+                          l10n.achievementCompletionDetailsLabel,
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
@@ -269,7 +296,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Completed On',
+                                      l10n.achievementCompletedOnLabel,
                                       style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600,
@@ -307,10 +334,11 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Achievements',
+        title: Text(l10n.profileAchievements,
             style: TextStyle(fontWeight: FontWeight.bold)),
         elevation: 0,
         backgroundColor: colorScheme.surface,
@@ -334,12 +362,13 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                         size: 48, color: colorScheme.error),
                     const SizedBox(height: 16),
                     Text(
-                        "Couldn't load achievements. ${achievementsProvider.error}"),
+                        l10n.achievementCouldNotLoad(
+                            '${achievementsProvider.error}')),
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () =>
                           achievementsProvider.retryLoadAchievements(),
-                      child: const Text('Retry'),
+                      child: Text(l10n.retry),
                     ),
                   ],
                 ),
@@ -348,7 +377,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
           }
 
           if (achievementsProvider.achievements.isEmpty) {
-            return const Center(child: Text('No achievements found'));
+            return Center(child: Text(l10n.achievementNoneFound));
           }
 
           return GridView.builder(
@@ -435,7 +464,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          achievement['name'],
+                          localizedName(achievement),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: unlocked
@@ -449,8 +478,9 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                         const SizedBox(height: 8),
                         Text(
                           unlocked
-                              ? achievement['description']
-                              : 'Complete to unlock: ${achievement['description']}',
+                              ? localizedName(achievement, field: 'description')
+                              : l10n.achievementCompleteToUnlock(
+                                  localizedName(achievement, field: 'description')),
                           style: TextStyle(
                             fontSize: 12,
                             color: colorScheme.onSurfaceVariant,
@@ -471,7 +501,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
-                              'COMPLETED',
+                              l10n.achievementCompletedBadge,
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,

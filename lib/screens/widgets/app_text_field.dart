@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 
 class AppTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -23,6 +24,7 @@ class AppTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     return TextFormField(
       controller: controller,
       obscureText: obscureText,
@@ -38,7 +40,7 @@ class AppTextField extends StatelessWidget {
         ),
         suffixIcon: showObscureToggle != null
             ? IconButton(
-                tooltip: showObscureToggle! ? 'Hide password' : 'Show password',
+                tooltip: showObscureToggle! ? l10n.appTextFieldHidePassword : l10n.appTextFieldShowPassword,
                 icon: Icon(
                   showObscureToggle! ? Icons.visibility_off : Icons.visibility,
                   color: colorScheme.onSurfaceVariant,
@@ -49,7 +51,7 @@ class AppTextField extends StatelessWidget {
       ),
       validator: validator ??
           (value) {
-            if (value == null || value.isEmpty) return 'Please enter $labelText';
+            if (value == null || value.isEmpty) return l10n.appTextFieldRequired(labelText);
             return null;
           },
     );

@@ -4,8 +4,9 @@ import '../services/api_service.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:fitness_tracker_app/providers/profile_provider.dart';
-import '../utils/labels.dart';
 import 'package:fitness_tracker_app/utils/friendly_error.dart';
+import '../utils/l10n.dart';
+import '../l10n/app_localizations.dart';
 
 class WorkoutDetailsScreen extends StatefulWidget {
   final dynamic workout;
@@ -21,7 +22,12 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
   final TextEditingController _durationController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
   bool _isAddingWorkout = false;
-  String? _addWorkoutMessage;
+  // Outcome of the last "I did this" tap; the message is built in build() so
+  // it follows the current language.
+  int? _loggedMinutes;
+  String? _addWorkoutError;
+  bool get _hasAddWorkoutResult => _loggedMinutes != null || _addWorkoutError != null;
+  bool get _addWorkoutFailed => _addWorkoutError != null;
   final ApiService apiService = ApiService();
 
   // Helper methods for dynamic styling - bringing over from WorkoutScreen
@@ -182,6 +188,30 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
     }
   }
 
+  /// Effort level code ('Light', 'Moderate', 'Vigorous') from kcal per kg per
+  /// hour, same thresholds as intensityLabel() in utils/labels.dart. Kept as a fixed code because
+  /// the colors and the indicator key off it; [_intensityDisplay] gives the
+  /// text shown on screen.
+  String _intensityCode(num caloriesPerKgPerHour) {
+    if (caloriesPerKgPerHour >= 6) return 'Vigorous';
+    if (caloriesPerKgPerHour >= 3) return 'Moderate';
+    return 'Light';
+  }
+
+  /// Localized display name for an effort level code.
+  String _intensityDisplay(AppLocalizations l10n, String code) {
+    switch (code) {
+      case 'Vigorous':
+        return l10n.workoutDetailsIntensityVigorous;
+      case 'Moderate':
+        return l10n.workoutDetailsIntensityModerate;
+      case 'Light':
+        return l10n.workoutDetailsIntensityLight;
+      default:
+        return code;
+    }
+  }
+
   Widget _buildDifficultyIndicator(String difficulty) {
     Color color;
     int level;
@@ -252,13 +282,14 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
   }
 
   void _addWorkout() async {
+    // Sent to the backend as the logged workout's name, so it stays English.
     final workoutName = widget.workout['description'] ?? 'Unknown Workout';
     final durationText = _durationController.text.trim();
 
     final int? duration = int.tryParse(durationText);
     if (duration == null || duration <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter how many minutes you exercised")),
+        SnackBar(content: Text(AppLocalizations.of(context)!.workoutDetailsEnterMinutes)),
       );
       return;
     }
@@ -267,14 +298,15 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
 
     setState(() {
       _isAddingWorkout = true;
-      _addWorkoutMessage = null;
+      _loggedMinutes = null;
+      _addWorkoutError = null;
     });
 
     try {
       await _apiService.storeWorkout(workoutName, duration, workoutDate);
       if (!mounted) return;
       setState(() {
-        _addWorkoutMessage = "Nice work! Logged $duration min. You'll see it on the Today tab.";
+        _loggedMinutes = duration;
       });
 
       Future.delayed(const Duration(seconds: 2), () {
@@ -285,7 +317,7 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
     } catch (error) {
       if (!mounted) return;
       setState(() {
-        _addWorkoutMessage = "Error: couldn't log this activity. ${friendlyError(error)}";
+        _addWorkoutError = friendlyError(error);
       });
     } finally {
       if (mounted) {
@@ -304,11 +336,19 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final name = widget.workout['name'] ?? 'No Name';
-    final description = widget.workout['description'] ?? 'No Description';
-    final category = widget.workout['name'] ?? 'Uncategorized';
+    final l10n = AppLocalizations.of(context)!;
+    final localeName = Localizations.localeOf(context).toString();
+    final name = localizedName(widget.workout, fallback: l10n.workoutDetailsNoName);
+    final description = widget.workout['display_name'] ?? widget.workout['description'] ?? l10n.workoutNoDescription;
+    final category = localizedName(widget.workout, fallback: l10n.workoutDetailsUncategorized);
     final difficulty =
-        intensityLabel(widget.workout['caloriesPerKg'] as num);
+        _intensityCode(widget.workout['caloriesPerKg'] as num);
+    final difficultyText = _intensityDisplay(l10n, difficulty);
+    final String? addWorkoutMessage = _addWorkoutFailed
+        ? l10n.workoutDetailsLogFailed(_addWorkoutError!)
+        : _loggedMinutes != null
+            ? l10n.workoutDetailsLoggedSuccess(_loggedMinutes!)
+            : null;
 
     final Color categoryColor = _getCategoryColor(category);
     final IconData categoryIcon = _getCategoryIcon(category);
@@ -360,7 +400,7 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                   child: Row(
                     children: [
                       Text(
-                        difficulty,
+                        difficultyText,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -402,7 +442,7 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                               ),
                               const SizedBox(width: 10),
                               Text(
-                                "About this activity",
+                                l10n.workoutDetailsAboutActivity,
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -476,8 +516,8 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                               children: [
                                 _buildStatItem(
                                   Icons.local_fire_department,
-                                  "Intensity",
-                                  difficulty,
+                                  l10n.workoutDetailsIntensity,
+                                  difficultyText,
                                   difficulty == 'Light'
                                       ? Colors.green.shade700
                                       : difficulty == 'Moderate'
@@ -486,9 +526,9 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                                 ),
                                 _buildStatItem(
                                   Icons.flash_on,
-                                  "Burns about",
+                                  l10n.workoutDetailsBurnsAbout,
                                   weight > 0
-                                      ? "${(widget.workout['caloriesPerKg'] * weight).toStringAsFixed(0)} kcal/hour"
+                                      ? l10n.workoutDetailsKcalPerHour((widget.workout['caloriesPerKg'] * weight).toStringAsFixed(0))
                                       : "—",
                                   colorScheme.primary,
                                 ),
@@ -522,7 +562,7 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                               ),
                               const SizedBox(width: 10),
                               Text(
-                                "Log this activity",
+                                l10n.workoutDetailsLogActivity,
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -555,7 +595,7 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        "When (tap to change)",
+                                        l10n.workoutDetailsWhenTapToChange,
                                         style: TextStyle(
                                           fontSize: 14,
                                           color: colorScheme.onSurfaceVariant,
@@ -564,8 +604,8 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                                       const SizedBox(height: 4),
                                       Text(
                                         DateUtils.isSameDay(_selectedDate, DateTime.now())
-                                            ? 'Today'
-                                            : DateFormat('EEE, MMM d, yyyy').format(_selectedDate),
+                                            ? l10n.homeToday
+                                            : DateFormat.yMMMEd(localeName).format(_selectedDate),
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
@@ -614,7 +654,7 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                                     ),
                                     decoration: InputDecoration(
                                       border: InputBorder.none,
-                                      hintText: "How many minutes?",
+                                      hintText: l10n.workoutDetailsHowManyMinutes,
                                       hintStyle: TextStyle(
                                         color: colorScheme.onSurfaceVariant,
                                         fontWeight: FontWeight.normal,
@@ -637,7 +677,7 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                             children: [15, 30, 45, 60].map((m) {
                               return ChoiceChip(
                                 showCheckmark: false,
-                                label: Text('$m min'),
+                                label: Text(l10n.workoutDetailScreenMinutes(m)),
                                 selected: _durationController.text.trim() == '$m',
                                 onSelected: (_) => setState(() => _durationController.text = '$m'),
                               );
@@ -647,7 +687,7 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                             Padding(
                               padding: const EdgeInsets.only(top: 8),
                               child: Text(
-                                'About ${((widget.workout['caloriesPerKg'] as num) * weight * (int.parse(_durationController.text.trim())) / 60).round()} kcal burned',
+                                l10n.workoutDetailsAboutKcalBurned(((widget.workout['caloriesPerKg'] as num) * weight * (int.parse(_durationController.text.trim())) / 60).round()),
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w600,
@@ -686,8 +726,8 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                                           strokeWidth: 2,
                                         ),
                                       )
-                                      : const Text(
-                                        "I did this",
+                                      : Text(
+                                        l10n.workoutDetailsIDidThis,
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
@@ -697,7 +737,7 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                           ),
 
                           // Success/Error Message
-                          if (_addWorkoutMessage != null)
+                          if (_hasAddWorkoutResult && addWorkoutMessage != null)
                             Padding(
                               padding: const EdgeInsets.only(top: 16),
                               child: Container(
@@ -705,13 +745,13 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
                                   color:
-                                      _addWorkoutMessage!.startsWith("Error")
+                                      _addWorkoutFailed
                                           ? colorScheme.errorContainer
                                           : colorScheme.primaryContainer,
                                   borderRadius: BorderRadius.circular(16),
                                   border: Border.all(
                                     color:
-                                        _addWorkoutMessage!.startsWith("Error")
+                                        _addWorkoutFailed
                                             ? colorScheme.error.withValues(alpha: 0.4)
                                             : colorScheme.primary.withValues(alpha: 0.4),
                                   ),
@@ -719,22 +759,22 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                                 child: Row(
                                   children: [
                                     Icon(
-                                      _addWorkoutMessage!.startsWith("Error")
+                                      _addWorkoutFailed
                                           ? Icons.error
                                           : Icons.check_circle,
                                       color:
-                                          _addWorkoutMessage!.startsWith("Error")
+                                          _addWorkoutFailed
                                               ? colorScheme.error
                                               : colorScheme.primary,
                                     ),
                                     const SizedBox(width: 12),
                                     Expanded(
                                       child: Text(
-                                        _addWorkoutMessage!,
+                                        addWorkoutMessage,
                                         style: TextStyle(
                                           fontSize: 15,
                                           color:
-                                              _addWorkoutMessage!.startsWith("Error")
+                                              _addWorkoutFailed
                                                   ? colorScheme.onErrorContainer
                                                   : colorScheme.onPrimaryContainer,
                                         ),

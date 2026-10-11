@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 import 'l10n/app_localizations.dart';
 import 'providers/theme_provider.dart';
 import 'providers/locale_provider.dart';
@@ -17,12 +18,17 @@ import 'screens/main_shell.dart';
 import 'services/token_service.dart';
 import 'services/navigation_service.dart';
 import 'services/api_service.dart';
+import 'services/locale_service.dart';
 import 'services/firebase_service.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'utils/ad_config.dart';
 import 'utils/app_theme.dart';
 
-Future<void> main() async {
+/// Every HTTP call in the app goes through [LocaleHeaderClient], so the
+/// backend answers in the app's language.
+Future<void> main() => http.runWithClient(_main, LocaleHeaderClient.new);
+
+Future<void> _main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (AdConfig.enabled) {
     try {
@@ -87,6 +93,13 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: themeProvider.themeMode,
+      // Keep the language used by code without a BuildContext (labels, error
+      // messages) in step with the one actually on screen, including when
+      // the app follows the phone's language.
+      builder: (context, child) {
+        LocaleService.languageCode = Localizations.localeOf(context).languageCode;
+        return child!;
+      },
       routes: {
         '/login': (_) => const LoginScreen(),
         '/home': (_) => const MainShell(),

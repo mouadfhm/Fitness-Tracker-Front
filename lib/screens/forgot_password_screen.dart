@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import 'widgets/app_text_field.dart';
 import '../utils/friendly_error.dart';
+import '../l10n/app_localizations.dart';
 
 /// "Forgot password": ask for the email, then for the 6-digit code it
 /// receives and a new password. Pops back to login on success.
@@ -36,11 +37,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     super.dispose();
   }
 
-  void _showError(Object e, String fallback) {
+  void _showError(Object e, String Function(AppLocalizations l10n) fallback) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(friendlyError(e, fallback: fallback)),
+        content: Text(friendlyError(e, fallback: fallback(AppLocalizations.of(context)!))),
         backgroundColor: Theme.of(context).colorScheme.error,
       ),
     );
@@ -56,7 +57,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       if (!mounted) return;
       setState(() => _codeSent = true);
     } catch (e) {
-      _showError(e, "Couldn't send the code. Please try again.");
+      _showError(e, (l10n) => l10n.forgotPasswordSendFailed);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -74,11 +75,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password changed. You can log in now.')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.forgotPasswordChanged)),
       );
       Navigator.pop(context, _emailController.text.trim());
     } catch (e) {
-      _showError(e, "Couldn't change your password. Please try again.");
+      _showError(e, (l10n) => l10n.forgotPasswordChangeFailed);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -87,9 +88,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Reset Password', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(l10n.forgotPasswordTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
         elevation: 0,
         backgroundColor: colorScheme.surface,
@@ -107,10 +109,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 children: [
                   Text(
                     _codeSent
-                        ? 'If ${_emailController.text.trim()} has an account, we sent it a '
-                            '6-digit code. Enter it below with your new password.'
-                        : "Enter your account's email and we'll send you a code "
-                            'to reset your password.',
+                        ? l10n.forgotPasswordCodeSentIntro(_emailController.text.trim())
+                        : l10n.forgotPasswordIntro,
                     style: TextStyle(fontSize: 16, color: colorScheme.onSurfaceVariant),
                     textAlign: TextAlign.center,
                   ),
@@ -118,15 +118,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   if (!_codeSent)
                     AppTextField(
                       controller: _emailController,
-                      labelText: 'Email',
+                      labelText: l10n.emailLabel,
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
-                        if (value == null || value.isEmpty) return 'Please enter your email';
+                        if (value == null || value.isEmpty) return l10n.emailRequired;
                         final emailRegex = RegExp(
                           r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
                         );
                         if (!emailRegex.hasMatch(value.trim())) {
-                          return 'Please enter a valid email address';
+                          return l10n.emailInvalid;
                         }
                         return null;
                       },
@@ -134,11 +134,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   else ...[
                     AppTextField(
                       controller: _codeController,
-                      labelText: 'Code',
+                      labelText: l10n.forgotPasswordCodeLabel,
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value == null || value.trim().length != 6) {
-                          return 'Enter the 6-digit code from the email';
+                          return l10n.forgotPasswordCodeInvalid;
                         }
                         return null;
                       },
@@ -146,28 +146,28 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     const SizedBox(height: 16),
                     AppTextField(
                       controller: _passwordController,
-                      labelText: 'New Password',
+                      labelText: l10n.forgotPasswordNewPasswordLabel,
                       obscureText: _obscurePassword,
                       showObscureToggle: _obscurePassword,
                       onObscureToggle: () =>
                           setState(() => _obscurePassword = !_obscurePassword),
                       validator: (value) {
-                        if (value == null || value.isEmpty) return 'Please enter a password';
-                        if (value.length < 8) return 'Password must be at least 8 characters';
+                        if (value == null || value.isEmpty) return l10n.registerPasswordRequired;
+                        if (value.length < 8) return l10n.passwordTooShort;
                         return null;
                       },
                     ),
                     const SizedBox(height: 16),
                     AppTextField(
                       controller: _confirmPasswordController,
-                      labelText: 'Confirm New Password',
+                      labelText: l10n.forgotPasswordConfirmNewPasswordLabel,
                       obscureText: _obscureConfirmPassword,
                       showObscureToggle: _obscureConfirmPassword,
                       onObscureToggle: () =>
                           setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
                       validator: (value) {
-                        if (value == null || value.isEmpty) return 'Please confirm your password';
-                        if (value != _passwordController.text) return 'Passwords do not match';
+                        if (value == null || value.isEmpty) return l10n.confirmPasswordRequired;
+                        if (value != _passwordController.text) return l10n.passwordsDoNotMatch;
                         return null;
                       },
                     ),
@@ -186,7 +186,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     child: _isLoading
                         ? CircularProgressIndicator(color: colorScheme.onPrimary)
                         : Text(
-                            _codeSent ? 'Change password' : 'Send code',
+                            _codeSent ? l10n.forgotPasswordChangeButton : l10n.forgotPasswordSendCode,
                             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                   ),
@@ -194,7 +194,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     const SizedBox(height: 16),
                     TextButton(
                       onPressed: _isLoading ? null : _sendCode,
-                      child: const Text("Didn't get it? Send a new code"),
+                      child: Text(l10n.forgotPasswordResend),
                     ),
                   ],
                 ],

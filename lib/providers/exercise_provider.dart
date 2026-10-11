@@ -24,6 +24,11 @@ class ExercisesProvider extends ChangeNotifier {
   String _selectedCategory = 'All';
   String get selectedCategory => _selectedCategory;
 
+  /// Category (the English name the filter matches on) -> the name in the
+  /// app's language, from the backend's display_name.
+  final Map<String, String> _categoryLabels = {};
+  String categoryLabel(String category) => _categoryLabels[category] ?? category;
+
   String _searchQuery = '';
   String get searchQuery => _searchQuery;
 
@@ -37,10 +42,15 @@ class ExercisesProvider extends ChangeNotifier {
 
       // Extract unique categories from workouts
       final Set<String> categorySet = {'All'};
+      _categoryLabels.clear();
       for (var workout in workouts) {
         final category = workout['name']?.toString() ?? 'Other';
         if (category.isNotEmpty) {
           categorySet.add(category);
+          final label = workout['display_name']?.toString();
+          if (label != null && label.isNotEmpty) {
+            _categoryLabels.putIfAbsent(category, () => label);
+          }
         }
       }
 
@@ -79,8 +89,11 @@ class ExercisesProvider extends ChangeNotifier {
             final name = workout['name']?.toString().toLowerCase() ?? '';
             final description =
                 workout['description']?.toString().toLowerCase() ?? '';
+            final displayName =
+                workout['display_name']?.toString().toLowerCase() ?? '';
             return name.contains(_searchQuery.toLowerCase()) ||
-                description.contains(_searchQuery.toLowerCase());
+                description.contains(_searchQuery.toLowerCase()) ||
+                displayName.contains(_searchQuery.toLowerCase());
           }).toList();
     }
     _filteredWorkouts = temp;

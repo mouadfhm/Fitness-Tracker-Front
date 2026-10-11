@@ -16,6 +16,7 @@ import 'help_support_screen.dart';
 import 'achievements_screen.dart';
 import '../utils/labels.dart';
 import 'login_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -93,18 +94,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (mounted) {
         showDialog(
           context: context,
-          builder: (context) => AlertDialog.adaptive(
-            title: const Text('Error'),
-            content: const Text(
-              'Failed to select image. Please try again.',
-            ),
-            actions: [
-              AdaptiveDialogAction(isDefault: true,
-                onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
+          builder: (context) {
+            final l10n = AppLocalizations.of(context)!;
+            return AlertDialog.adaptive(
+              title: Text(l10n.errorLabel),
+              content: Text(l10n.profileImagePickFailed),
+              actions: [
+                AdaptiveDialogAction(isDefault: true,
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(l10n.ok),
+                ),
+              ],
+            );
+          },
         );
       }
     }
@@ -124,20 +126,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
+        final l10n = AppLocalizations.of(context)!;
         return AlertDialog.adaptive(
-          title: const Text('Log out?'),
-          content: const Text(
-            'Are you sure you want to log out of your account?',
-          ),
+          title: Text(l10n.profileLogoutTitle),
+          content: Text(l10n.profileLogoutConfirm),
           actions: <Widget>[
             AdaptiveDialogAction(
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             AdaptiveDialogAction(isDestructive: true,
-              child: Text('Log out', style: TextStyle(color: Theme.of(context).colorScheme.error)),
+              child: Text(l10n.profileLogOut, style: TextStyle(color: Theme.of(context).colorScheme.error)),
               onPressed: () {
                 Navigator.of(context).pop();
                 _logout();
@@ -152,12 +153,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Me',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          l10n.navMe,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         elevation: 0,
         backgroundColor: colorScheme.surface,
@@ -166,7 +168,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           IconButton(
             onPressed: _goToSettings,
             icon: Icon(Icons.settings, color: colorScheme.onSurface),
-            tooltip: 'Settings',
+            tooltip: l10n.settingsTitle,
           ),
           Consumer<ProfileProvider>(
             builder: (context, provider, child) {
@@ -176,7 +178,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ? () => _goToProfileEdit(provider.profileData!)
                     : null,
                 icon: Icon(Icons.edit, color: colorScheme.onSurface),
-                tooltip: 'Edit Profile',
+                tooltip: l10n.profileEditTooltip,
               );
             },
           ),
@@ -188,6 +190,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildProfileContent() {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     
     return Consumer<ProfileProvider>(
       builder: (context, provider, child) {
@@ -249,7 +252,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           size: 20,
                         ),
                         onPressed: _selectProfileImage,
-                        tooltip: 'Change profile photo',
+                        tooltip: l10n.profileChangePhotoTooltip,
                       ),
                     ),
                   ],
@@ -278,34 +281,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       _buildProfileTile(
                         Icons.cake,
-                        "Age",
-                        "${profileData['age']} years",
+                        l10n.profileAge,
+                        l10n.profileYearsValue('${profileData['age']}'),
                       ),
                       _buildProfileTile(
                         Icons.monitor_weight,
-                        "Weight",
-                        "${profileData['weight']} kg",
+                        l10n.profileWeight,
+                        l10n.profileKgValue('${profileData['weight']}'),
                       ),
                       _buildProfileTile(
                         Icons.height,
-                        "Height",
-                        "${profileData['height']} cm",
+                        l10n.profileHeight,
+                        l10n.profileCmValue('${profileData['height']}'),
                       ),
                       _buildProfileTile(
                         Icons.directions_walk,
-                        "How active you are",
+                        l10n.profileHowActive,
                         activityLabel(profileData['activity_level']?.toString()),
                       ),
                       _buildProfileTile(
                         Icons.emoji_events,
-                        "Your goal",
+                        l10n.profileYourGoal,
                         goalLabel(profileData['fitness_goal']?.toString()),
                       ),
                       _buildProfileTile(
                         profileData['gender'] == "male"
                             ? Icons.male
                             : Icons.female,
-                        "Gender",
+                        l10n.profileGender,
                         genderLabel(profileData['gender']?.toString()),
                       ),
                     ],
@@ -317,7 +320,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: TextButton.icon(
                     onPressed: () => _goToProfileEdit(profileData),
                     icon: const Icon(Icons.edit),
-                    label: const Text('Edit my details'),
+                    label: Text(l10n.profileEditDetails),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -331,27 +334,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     _buildQuickActionButton(
                       Icons.show_chart,
-                      "Weight log",
+                      l10n.profileWeightLog,
                       _goToProgressScreen,
                     ),
                     _buildQuickActionButton(
                       Icons.emoji_events,
-                      "Achievements",
+                      l10n.profileAchievements,
                       _goToAchievements,
                     ),
                     _buildQuickActionButton(
                       Icons.settings,
-                      "Settings",
+                      l10n.settingsTitle,
                       _goToSettings,
                     ),
                     _buildQuickActionButton(
                       Icons.help_outline,
-                      "Help",
+                      l10n.profileHelp,
                       _goToHelpSupport,
                     ),
                     _buildQuickActionButton(
                       Icons.logout,
-                      "Log out",
+                      l10n.profileLogOut,
                       _showLogoutConfirmation,
                       isLogout: true,
                     ),
@@ -389,7 +392,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     backgroundColor: colorScheme.primary,
                     foregroundColor: colorScheme.onPrimary,
                   ),
-                  child: const Text("Try again"),
+                  child: Text(l10n.profileTryAgain),
                 ),
               ],
             ),

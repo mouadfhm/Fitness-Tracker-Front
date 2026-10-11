@@ -1,3 +1,4 @@
+import '../utils/l10n.dart';
 // lib/models/exercise.dart
 class Exercise {
   final int id;
@@ -27,7 +28,7 @@ class Exercise {
   factory Exercise.fromJson(Map<String, dynamic> json) {
     return Exercise(
       id: json['id'],
-      name: json['name'],
+      name: localizedName(json),
       description: json['description'],
       type: json['type'],
       bodyPart: json['body_part'],

@@ -27,7 +27,24 @@ class _MainShellState extends State<MainShell> {
 
   /// Tabs are built the first time they are opened, not all at start-up, so
   /// launching the app doesn't fire every tab's network calls at once.
-  late final Set<int> _opened = {widget.initialIndex};
+  late Set<int> _opened = {widget.initialIndex};
+
+  /// Bumped when the app language changes, so every tab is rebuilt and
+  /// reloads its data: food, activity and exercise names come from the
+  /// server in the language of the request.
+  int _generation = 0;
+  String? _languageCode;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final code = Localizations.localeOf(context).languageCode;
+    if (_languageCode != null && _languageCode != code) {
+      _generation++;
+      _opened = {_index};
+    }
+    _languageCode = code;
+  }
 
   void _select(int index) {
     if (index == _index) return;
@@ -62,7 +79,11 @@ class _MainShellState extends State<MainShell> {
             for (var i = 0; i < 4; i++)
               _opened.contains(i)
                   // Hidden tabs keep their state but stop animating.
-                  ? TickerMode(enabled: i == _index, child: _buildTab(i))
+                  ? TickerMode(
+                      key: ValueKey('$i-$_generation'),
+                      enabled: i == _index,
+                      child: _buildTab(i),
+                    )
                   : const SizedBox.shrink(),
           ],
         ),

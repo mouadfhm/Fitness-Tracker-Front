@@ -5,6 +5,7 @@ import 'package:fitness_tracker_app/utils/friendly_error.dart';
 import 'package:flutter/material.dart';
 import '../../utils/adaptive.dart';
 import 'package:intl/intl.dart';
+import '../../l10n/app_localizations.dart';
 import '../../services/api_service.dart';
 
 /// Distinguishes "the workout picker was dismissed with no choice made"
@@ -51,15 +52,15 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
     'sun': null,
   };
   Set<String> _recommendedDayKeys = {};
-  final List<String> _dayNames = [
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-    'Sunday',
-  ];
+  List<String> _dayNames(AppLocalizations l10n) => [
+        l10n.dayMonday,
+        l10n.dayTuesday,
+        l10n.dayWednesday,
+        l10n.dayThursday,
+        l10n.dayFriday,
+        l10n.daySaturday,
+        l10n.daySunday,
+      ];
   final List<String> _dayKeys = [
     'mon',
     'tue',
@@ -73,6 +74,9 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
   bool _isLoading = false;
   bool _isLoadingWorkouts = true;
   String? _errorMessage;
+  // True when _errorMessage holds the reason loading workouts failed, so the
+  // localized "couldn't load" prefix is added at build time.
+  bool _errorIsLoadFailure = false;
 
   List<Map<String, dynamic>> _customWorkouts = [];
 
@@ -118,7 +122,8 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _errorMessage = "Couldn't load your workouts. ${friendlyError(e)}";
+        _errorMessage = friendlyError(e);
+        _errorIsLoadFailure = true;
         _isLoadingWorkouts = false;
       });
     }
@@ -128,12 +133,13 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Create Workout Plan',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          l10n.workoutCalendarCreateWorkoutPlan,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         elevation: 0,
         backgroundColor: colorScheme.surface,
@@ -158,7 +164,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _fetchCustomWorkouts,
-            tooltip: 'Refresh workout list',
+            tooltip: l10n.newWorkoutCycleRefreshWorkoutListTooltip,
           ),
         ],
       ),
@@ -192,11 +198,12 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
   }
 
   Widget _buildNameSection(ThemeData theme, ColorScheme colorScheme) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Plan Name',
+          l10n.newWorkoutCyclePlanNameLabel,
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
             color: colorScheme.onSurface,
@@ -206,7 +213,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
         TextField(
           controller: _nameController,
           decoration: InputDecoration(
-            hintText: 'e.g. Push Pull Legs',
+            hintText: l10n.newWorkoutCyclePlanNameHint,
             filled: true,
             fillColor: colorScheme.surfaceContainerHighest,
             border: OutlineInputBorder(
@@ -220,7 +227,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
         ),
         const SizedBox(height: 8),
         Text(
-          'Give it a name so you can save and reuse this plan later',
+          l10n.newWorkoutCyclePlanNameSubtitle,
           style: theme.textTheme.bodySmall,
         ),
       ],
@@ -228,11 +235,12 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
   }
 
   Widget _buildDescriptionSection(ThemeData theme, ColorScheme colorScheme) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Description (optional)',
+          l10n.newWorkoutCycleDescriptionOptionalLabel,
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
             color: colorScheme.onSurface,
@@ -243,7 +251,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
           controller: _descriptionController,
           maxLines: 3,
           decoration: InputDecoration(
-            hintText: 'e.g. 3 days a week to get stronger',
+            hintText: l10n.newWorkoutCycleDescriptionExampleHint,
             filled: true,
             fillColor: colorScheme.surfaceContainerHighest,
             border: OutlineInputBorder(
@@ -259,11 +267,12 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
   }
 
   Widget _buildStartDateSection(ThemeData theme, ColorScheme colorScheme) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Start Date',
+          l10n.newWorkoutCycleStartDateLabel,
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
             color: colorScheme.onSurface,
@@ -285,7 +294,8 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  DateFormat('EEEE, MMMM d, yyyy').format(_startDate),
+                  DateFormat.yMMMMEEEEd(Localizations.localeOf(context).toString())
+                      .format(_startDate),
                   style: theme.textTheme.bodyLarge,
                 ),
                 Icon(Icons.calendar_today,
@@ -296,7 +306,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
         ),
         const SizedBox(height: 8),
         Text(
-          'Your plan will start on this date',
+          l10n.newWorkoutCyclePlanStartHint,
           style: theme.textTheme.bodySmall,
         ),
       ],
@@ -304,11 +314,12 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
   }
 
   Widget _buildWeeksSection(ThemeData theme, ColorScheme colorScheme) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Number of Weeks',
+          l10n.newWorkoutCycleNumberOfWeeksLabel,
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
             color: colorScheme.onSurface,
@@ -351,7 +362,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
           ],
         ),
         Text(
-          'Your plan will repeat every week for $_weeks weeks',
+          l10n.newWorkoutCyclePlanRepeatsFor(_weeks),
           style: theme.textTheme.bodySmall,
         ),
       ],
@@ -363,6 +374,8 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
       .length;
 
   Widget _buildDaysPatternSection(ThemeData theme, ColorScheme colorScheme) {
+    final l10n = AppLocalizations.of(context)!;
+    final dayNames = _dayNames(l10n);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -373,7 +386,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Workout Schedule',
+                    l10n.newWorkoutCycleWorkoutScheduleTitle,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: colorScheme.onSurface,
@@ -381,7 +394,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Choose workouts for each day of the week',
+                    l10n.newWorkoutCycleWorkoutScheduleSubtitle,
                     style: theme.textTheme.bodySmall,
                   ),
                 ],
@@ -391,7 +404,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
               TextButton.icon(
                 onPressed: _fetchCustomWorkouts,
                 icon: Icon(Icons.refresh, size: 18, color: colorScheme.primary),
-                label: Text('Refresh',
+                label: Text(l10n.newWorkoutCycleRefreshTooltip,
                     style: TextStyle(color: colorScheme.primary)),
               ),
           ],
@@ -415,8 +428,10 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
                 Expanded(
                   child: Text(
                     _pendingRecommendedDaysCount > 0
-                        ? 'This template suggests ${_recommendedDayKeys.length} training day(s), marked below. Pick a workout for the $_pendingRecommendedDaysCount day(s) still highlighted in orange — everything else stays a rest day unless you change it.'
-                        : 'All suggested training days have a workout assigned.',
+                        ? l10n.newWorkoutCycleTemplateSuggestsDays(
+                            _recommendedDayKeys.length,
+                            _pendingRecommendedDaysCount)
+                        : l10n.newWorkoutCycleAllSuggestedDaysAssigned,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: colorScheme.primary,
                       fontWeight: FontWeight.w600,
@@ -438,7 +453,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
                   CircularProgressIndicator(color: colorScheme.primary),
                   const SizedBox(height: 16),
                   Text(
-                    'Loading your custom workouts...',
+                    l10n.newWorkoutCycleLoadingCustomWorkouts,
                     style: TextStyle(color: colorScheme.onSurface),
                     textAlign: TextAlign.center,
                   ),
@@ -459,7 +474,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'No custom workouts found',
+                    l10n.newWorkoutCycleNoCustomWorkoutsFound,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: colorScheme.onSurface,
@@ -468,7 +483,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Create a workout first, then add it to your plan',
+                    l10n.newWorkoutCycleCreateWorkoutFirstHint,
                     style: theme.textTheme.bodyMedium,
                     textAlign: TextAlign.center,
                   ),
@@ -482,7 +497,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
                       ).then((_) => _fetchCustomWorkouts());
                     },
                     icon: Icon(Icons.add, color: colorScheme.onPrimary),
-                    label: const Text('Create Workout'),
+                    label: Text(l10n.newWorkoutCycleCreateWorkoutButton),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: colorScheme.primary,
                       foregroundColor: colorScheme.onPrimary,
@@ -496,11 +511,11 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
           ListView.separated(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: _dayNames.length,
+            itemCount: dayNames.length,
             separatorBuilder: (context, index) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
               final dayKey = _dayKeys[index];
-              final dayName = _dayNames[index];
+              final dayName = dayNames[index];
               final selectedWorkoutId = _daysPattern[dayKey];
 
               return Card(
@@ -585,21 +600,24 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
   ) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog.adaptive(
-        title: const Text('Delete Workout'),
-        content: Text(
-            'Delete "${workout['name']}"? Any day using it will become a rest day.'),
-        actions: [
-          AdaptiveDialogAction(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          AdaptiveDialogAction(isDestructive: true,
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
+      builder: (context) {
+        final l10n = AppLocalizations.of(context)!;
+        return AlertDialog.adaptive(
+          title: Text(l10n.newWorkoutCycleDeleteWorkoutTitle),
+          content: Text(l10n.newWorkoutCycleDeleteWorkoutRestDayConfirm(
+              '${workout['name']}')),
+          actions: [
+            AdaptiveDialogAction(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(l10n.cancel),
+            ),
+            AdaptiveDialogAction(isDestructive: true,
+              onPressed: () => Navigator.pop(context, true),
+              child: Text(l10n.delete),
+            ),
+          ],
+        );
+      },
     );
 
     if (confirmed != true) return;
@@ -614,7 +632,9 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Couldn't delete this workout. ${friendlyError(e)}")),
+        SnackBar(
+            content: Text(AppLocalizations.of(context)!
+                .newWorkoutCycleDeleteThisWorkoutFailed(friendlyError(e)))),
       );
     }
   }
@@ -639,6 +659,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setSheetState) {
+            final l10n = AppLocalizations.of(context)!;
             final filtered = _customWorkouts
                 .where((workout) => (workout['name'] as String? ?? '')
                     .toLowerCase()
@@ -670,7 +691,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
                           controller: searchController,
                           autofocus: false,
                           decoration: InputDecoration(
-                            hintText: 'Search workouts',
+                            hintText: l10n.newWorkoutCycleSearchWorkoutsHint,
                             prefixIcon: const Icon(Icons.search),
                             filled: true,
                             fillColor: colorScheme.surfaceContainerHighest,
@@ -690,7 +711,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
                           children: [
                             ListTile(
                               leading: const Icon(Icons.hotel),
-                              title: const Text('Rest day'),
+                              title: Text(l10n.newWorkoutCycleRestDay),
                               selected: currentWorkoutId == null,
                               onTap: () => Navigator.pop(
                                   context, const _WorkoutPick(null)),
@@ -700,8 +721,8 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
                                 padding: const EdgeInsets.all(24),
                                 child: Text(
                                   _customWorkouts.isEmpty
-                                      ? 'No custom workouts yet'
-                                      : 'No workouts match "$query"',
+                                      ? l10n.newWorkoutCycleNoCustomWorkoutsYetShort
+                                      : l10n.newWorkoutCycleNoWorkoutsMatch(query),
                                   textAlign: TextAlign.center,
                                   style: theme.textTheme.bodyMedium,
                                 ),
@@ -726,7 +747,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
                                   trailing: IconButton(
                                     icon: Icon(Icons.delete_outline,
                                         color: colorScheme.error),
-                                    tooltip: 'Delete workout',
+                                    tooltip: l10n.newWorkoutCycleDeleteWorkoutTitle,
                                     onPressed: () => _deleteWorkoutFromPicker(
                                         workout, setSheetState),
                                   ),
@@ -763,6 +784,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
     final bool showRecommendedHint =
         isRecommended && selectedWorkoutId == null;
     final Color recommendedColor = Colors.orange.shade700;
+    final l10n = AppLocalizations.of(context)!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -776,7 +798,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
                 Icon(Icons.star, size: 14, color: recommendedColor),
                 const SizedBox(width: 4),
                 Text(
-                  'Recommended training day',
+                  l10n.newWorkoutCycleRecommendedTrainingDay,
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: recommendedColor,
                     fontWeight: FontWeight.bold,
@@ -809,7 +831,9 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
                   Expanded(
                     child: Text(
                       _workoutNameFor(selectedWorkoutId) ??
-                          (showRecommendedHint ? 'Choose a workout' : 'Rest day'),
+                          (showRecommendedHint
+                              ? l10n.newWorkoutCycleChooseWorkout
+                              : l10n.newWorkoutCycleRestDay),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: selectedWorkoutId != null
                             ? colorScheme.onSurface
@@ -853,7 +877,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
                     color: colorScheme.primary, size: 16),
                 const SizedBox(width: 4),
                 Text(
-                  'Add New Workout',
+                  l10n.newWorkoutCycleAddNewWorkout,
                   style: TextStyle(
                     color: colorScheme.primary,
                     fontWeight: FontWeight.w500,
@@ -872,6 +896,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
     final bool hasWorkouts = _customWorkouts.isNotEmpty &&
         _nameController.text.trim().isNotEmpty &&
         _pendingRecommendedDaysCount == 0;
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -890,7 +915,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
                 ),
                 side: BorderSide(color: colorScheme.primary),
               ),
-              child: Text('Cancel',
+              child: Text(l10n.cancel,
                   style: TextStyle(color: colorScheme.primary)),
             ),
           ),
@@ -909,7 +934,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
                 disabledBackgroundColor:
                     colorScheme.primary.withValues(alpha: 0.3),
               ),
-              child: const Text('Create Plan'),
+              child: Text(l10n.newWorkoutCycleCreatePlanButton),
             ),
           ),
         ],
@@ -918,6 +943,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
   }
 
   Widget _buildLoadingState(ColorScheme colorScheme) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -925,7 +951,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
           CircularProgressIndicator(color: colorScheme.primary),
           const SizedBox(height: 16),
           Text(
-            'Creating your workout plan...',
+            l10n.newWorkoutCycleCreatingPlan,
             style: TextStyle(color: colorScheme.onSurface),
           ),
         ],
@@ -934,6 +960,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
   }
 
   Widget _buildErrorState(ThemeData theme, ColorScheme colorScheme) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -941,7 +968,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
           Icon(Icons.error_outline, size: 64, color: colorScheme.error),
           const SizedBox(height: 16),
           Text(
-            "Couldn't create your plan",
+            l10n.newWorkoutCycleCreatePlanFailedTitle,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -952,7 +979,11 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Text(
-              _errorMessage ?? 'An unknown error occurred',
+              _errorMessage == null
+                  ? l10n.workoutListUnknownError
+                  : _errorIsLoadFailure
+                      ? l10n.newWorkoutCycleLoadWorkoutsFailed(_errorMessage!)
+                      : _errorMessage!,
               style: TextStyle(color: colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
@@ -962,10 +993,11 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
             onPressed: () {
               setState(() {
                 _errorMessage = null;
+                _errorIsLoadFailure = false;
               });
             },
             icon: const Icon(Icons.refresh),
-            label: const Text('Try Again'),
+            label: Text(l10n.workoutTryAgain),
             style: ElevatedButton.styleFrom(
               backgroundColor: colorScheme.primary,
               foregroundColor: colorScheme.onPrimary,
@@ -1008,6 +1040,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
+      _errorIsLoadFailure = false;
     });
 
     try {
@@ -1028,6 +1061,7 @@ class _NewWorkoutCycleScreenState extends State<NewWorkoutCycleScreen> {
       if (!mounted) return;
       setState(() {
         _errorMessage = e.toString();
+        _errorIsLoadFailure = false;
         _isLoading = false;
       });
     }

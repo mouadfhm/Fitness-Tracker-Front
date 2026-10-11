@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fitness_tracker_app/l10n/app_localizations.dart';
 import 'package:fitness_tracker_app/screens/onboarding_screen.dart';
 
-Widget _wrap(Widget child) => MaterialApp(home: child);
+Widget _wrap(Widget child) => MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: child,
+    );
 
 void main() {
   group('OnboardingScreen Step 1', () {

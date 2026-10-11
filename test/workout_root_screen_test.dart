@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fitness_tracker_app/l10n/app_localizations.dart';
 import 'package:fitness_tracker_app/providers/exercise_provider.dart';
 import 'package:fitness_tracker_app/screens/workout_screen.dart';
 import 'package:fitness_tracker_app/screens/workout/workout_calendar_screen.dart';
@@ -10,7 +11,11 @@ import 'package:fitness_tracker_app/screens/workout_root_screen.dart';
 
 Widget _wrap(Widget child) => MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => ExercisesProvider())],
-      child: MaterialApp(home: child),
+      child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: child,
+      ),
     );
 
 void main() {
@@ -40,6 +45,8 @@ void main() {
   testWidgets('WorkoutCalendarScreen calls onModeToggle when Simple tapped', (tester) async {
     bool toggled = false;
     await tester.pumpWidget(MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: WorkoutCalendarScreen(onModeToggle: () => toggled = true),
     ));
     await tester.pump();

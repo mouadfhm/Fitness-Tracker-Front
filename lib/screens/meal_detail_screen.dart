@@ -1,6 +1,9 @@
 import 'package:fitness_tracker_app/services/api_service.dart';
 import 'package:flutter/material.dart';
 import '../utils/adaptive.dart';
+import '../utils/labels.dart';
+import '../utils/l10n.dart';
+import '../l10n/app_localizations.dart';
 
 class MealDetailScreen extends StatefulWidget {
   final String mealTime;
@@ -52,6 +55,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
 
     // Calculate total nutritional values
     final totalCalories = _foods.fold(0.0, (sum, food) {
@@ -85,7 +89,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
-          "${widget.mealTime} Details",
+          l10n.mealDetailTitle(mealTimeLabel(widget.mealTime)),
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -115,25 +119,25 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
               children: [
                 _nutritionSummaryItem(
                   Icons.local_fire_department,
-                  "Calories",
+                  l10n.homeMacroCalories,
                   totalCalories.toStringAsFixed(1),
                   redColor,
                 ),
                 _nutritionSummaryItem(
                   Icons.fitness_center,
-                  "Protein",
+                  l10n.homeMacroProtein,
                   "${totalProtein.toStringAsFixed(1)}g",
                   blueColor,
                 ),
                 _nutritionSummaryItem(
                   Icons.grain,
-                  "Carbs",
+                  l10n.homeMacroCarbs,
                   "${totalCarbs.toStringAsFixed(1)}g",
                   greenColor,
                 ),
                 _nutritionSummaryItem(
                   Icons.water_drop,
-                  "Fat",
+                  l10n.homeMacroFat,
                   "${totalFat.toStringAsFixed(1)}g",
                   orangeColor,
                 ),
@@ -156,7 +160,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            "No foods in this meal",
+                            l10n.mealDetailNoFoods,
                             style: TextStyle(
                               fontSize: 18,
                               color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
@@ -207,13 +211,13 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                                 return AlertDialog.adaptive(
                                   backgroundColor: theme.colorScheme.surface,
                                   title: Text(
-                                    "Remove Food",
+                                    l10n.mealDetailRemoveFoodTitle,
                                     style: TextStyle(
                                       color: theme.colorScheme.onSurface,
                                     ),
                                   ),
                                   content: Text(
-                                    "Are you sure you want to remove ${food['name']} from this meal?",
+                                    l10n.mealDetailRemoveFoodConfirm(localizedName(food)),
                                     style: TextStyle(
                                       color: theme.colorScheme.onSurface,
                                     ),
@@ -224,7 +228,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                                           () =>
                                               Navigator.of(context).pop(false),
                                       child: Text(
-                                        "Cancel",
+                                        l10n.cancel,
                                         style: TextStyle(
                                           color: theme.colorScheme.onSurfaceVariant,
                                         ),
@@ -234,7 +238,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                                       onPressed:
                                           () => Navigator.of(context).pop(true),
                                       child: Text(
-                                        "Remove",
+                                        l10n.mealDetailRemoveAction,
                                         style: TextStyle(color: redColor),
                                       ),
                                     ),
@@ -266,7 +270,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                                 children: [
                                   Expanded(
                                     child: Text(
-                                      food['name'],
+                                      localizedName(food),
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: theme.colorScheme.onSurface,
@@ -275,7 +279,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                                     ),
                                   ),
                                   IconButton(
-                                    tooltip: 'Remove food',
+                                    tooltip: l10n.mealDetailRemoveFoodTooltip,
                                     icon: Icon(
                                       Icons.delete,
                                       color: redColor.withValues(alpha: 0.8),
@@ -289,14 +293,14 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                                             backgroundColor:
                                                 theme.colorScheme.surface,
                                             title: Text(
-                                              "Remove Food",
+                                              l10n.mealDetailRemoveFoodTitle,
                                               style: TextStyle(
                                                 color:
                                                     theme.colorScheme.onSurface,
                                               ),
                                             ),
                                             content: Text(
-                                              "Are you sure you want to remove ${food['name']} from this meal?",
+                                              l10n.mealDetailRemoveFoodConfirm(localizedName(food)),
                                               style: TextStyle(
                                                 color:
                                                     theme.colorScheme.onSurface,
@@ -309,7 +313,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                                                       context,
                                                     ).pop(false),
                                                 child: Text(
-                                                  "Cancel",
+                                                  l10n.cancel,
                                                   style: TextStyle(
                                                     color:
                                                         isDark
@@ -328,7 +332,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                                                       context,
                                                     ).pop(true),
                                                 child: Text(
-                                                  "Remove",
+                                                  l10n.mealDetailRemoveAction,
                                                   style: TextStyle(
                                                     color: redColor,
                                                   ),
@@ -359,31 +363,31 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                                   const SizedBox(height: 4),
                                   _nutritionDetailRow(
                                     Icons.local_fire_department,
-                                    "Calories",
+                                    l10n.homeMacroCalories,
                                     "${foodCalories.toStringAsFixed(1)} kcal",
                                     redColor,
                                   ),
                                   _nutritionDetailRow(
                                     Icons.fitness_center,
-                                    "Protein",
+                                    l10n.homeMacroProtein,
                                     "${foodProtein.toStringAsFixed(1)}g",
                                     blueColor,
                                   ),
                                   _nutritionDetailRow(
                                     Icons.grain,
-                                    "Carbs",
+                                    l10n.homeMacroCarbs,
                                     "${foodCarbs.toStringAsFixed(1)}g",
                                     greenColor,
                                   ),
                                   _nutritionDetailRow(
                                     Icons.water_drop,
-                                    "Fat",
+                                    l10n.homeMacroFat,
                                     "${foodFat.toStringAsFixed(1)}g",
                                     orangeColor,
                                   ),
                                   _nutritionDetailRow(
                                     Icons.scale,
-                                    "Quantity",
+                                    l10n.mealDetailQuantityLabel,
                                     "${quantity.toStringAsFixed(1)}g",
                                     purpleColor,
                                   ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fitness_tracker_app/l10n/app_localizations.dart';
 import 'package:fitness_tracker_app/screens/workout/import_confirmation_dialog.dart';
 
 void main() {
@@ -8,6 +9,8 @@ void main() {
     late Future<bool> resultFuture;
 
     await tester.pumpWidget(MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
         body: Builder(
           builder: (context) => ElevatedButton(
@@ -39,6 +42,8 @@ void main() {
 
   testWidgets('hides the warning section when every exercise matched', (tester) async {
     await tester.pumpWidget(MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
         body: Builder(
           builder: (context) => ElevatedButton(
@@ -65,6 +70,8 @@ void main() {
     late Future<bool> resultFuture;
 
     await tester.pumpWidget(MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
         body: Builder(
           builder: (context) => ElevatedButton(

@@ -3,44 +3,49 @@
 /// shows a raw value like `very_active` or `weight_loss`.
 library;
 
+import 'l10n.dart';
+
 String activityLabel(String? value) {
+  final l = appL10n;
   switch (value?.toLowerCase()) {
     case 'sedentary':
-      return 'Mostly sitting';
+      return l.labelActivitySedentary;
     case 'light':
-      return 'Lightly active';
+      return l.labelActivityLight;
     case 'moderate':
-      return 'Moderately active';
+      return l.labelActivityModerate;
     case 'active':
-      return 'Active';
+      return l.labelActivityActive;
     case 'very_active':
-      return 'Very active';
+      return l.labelActivityVeryActive;
     default:
-      return value == null || value.isEmpty ? 'Not set' : _titleCase(value);
+      return value == null || value.isEmpty ? l.labelNotSet : _titleCase(value);
   }
 }
 
 String goalLabel(String? value) {
+  final l = appL10n;
   switch (value) {
     case 'weight_loss':
-      return 'Lose weight';
+      return l.labelGoalWeightLoss;
     case 'muscle_gain':
-      return 'Build muscle';
+      return l.labelGoalMuscleGain;
     case 'maintenance':
-      return 'Stay at my weight';
+      return l.labelGoalMaintenance;
     default:
-      return value == null || value.isEmpty ? 'Not set' : _titleCase(value);
+      return value == null || value.isEmpty ? l.labelNotSet : _titleCase(value);
   }
 }
 
 String genderLabel(String? value) {
+  final l = appL10n;
   switch (value) {
     case 'male':
-      return 'Male';
+      return l.labelGenderMale;
     case 'female':
-      return 'Female';
+      return l.labelGenderFemale;
     default:
-      return value == null || value.isEmpty ? 'Not set' : _titleCase(value);
+      return value == null || value.isEmpty ? l.labelNotSet : _titleCase(value);
   }
 }
 
@@ -57,9 +62,20 @@ String mealTimeForNow([DateTime? now]) {
   return 'snack';
 }
 
-/// "afternoon snack" -> "Afternoon Snack", "snack" -> "Snacks".
+/// "snack" -> "Snacks", the main meals in the app's language, anything else
+/// title-cased ("afternoon snack" -> "Afternoon Snack").
 String mealTimeLabel(String mealTime) {
-  if (mealTime.toLowerCase() == 'snack') return 'Snacks';
+  final l = appL10n;
+  switch (mealTime.toLowerCase()) {
+    case 'breakfast':
+      return l.labelMealBreakfast;
+    case 'lunch':
+      return l.labelMealLunch;
+    case 'dinner':
+      return l.labelMealDinner;
+    case 'snack':
+      return l.labelMealSnacks;
+  }
   return _titleCase(mealTime);
 }
 
@@ -72,7 +88,8 @@ String _titleCase(String value) => value
 /// Effort level for an activity from its kcal per kg per hour, which is about
 /// the same as its MET value (walking ≈ 3.5, running ≈ 10).
 String intensityLabel(num caloriesPerKgPerHour) {
-  if (caloriesPerKgPerHour >= 6) return 'Vigorous';
-  if (caloriesPerKgPerHour >= 3) return 'Moderate';
-  return 'Light';
+  final l = appL10n;
+  if (caloriesPerKgPerHour >= 6) return l.labelIntensityVigorous;
+  if (caloriesPerKgPerHour >= 3) return l.labelIntensityModerate;
+  return l.labelIntensityLight;
 }

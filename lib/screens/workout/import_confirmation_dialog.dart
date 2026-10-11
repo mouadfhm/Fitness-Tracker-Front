@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../utils/adaptive.dart';
 
 class ImportConfirmationDialog extends StatelessWidget {
@@ -29,22 +30,23 @@ class ImportConfirmationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return AlertDialog.adaptive(
-      title: const Text('Import workout program'),
+      title: Text(l10n.workoutListImportTooltip),
       content: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('The following workouts will be created:'),
+            Text(l10n.importDialogWorkoutsToCreate),
             const SizedBox(height: 8),
             for (final name in workoutNames)
               Text('• $name', style: const TextStyle(fontWeight: FontWeight.bold)),
             if (unmatchedExerciseNames.isNotEmpty) ...[
               const SizedBox(height: 16),
               Text(
-                "These exercises weren't found and will be skipped:",
+                l10n.importDialogUnmatchedExercises,
                 style: TextStyle(color: colorScheme.error),
               ),
               const SizedBox(height: 8),
@@ -56,11 +58,11 @@ class ImportConfirmationDialog extends StatelessWidget {
       actions: [
         AdaptiveDialogAction(
           onPressed: () => Navigator.of(context).pop(false),
-          child: const Text('Cancel'),
+          child: Text(l10n.cancel),
         ),
         AdaptiveDialogAction(isDefault: true,
           onPressed: () => Navigator.of(context).pop(true),
-          child: const Text('Import'),
+          child: Text(l10n.importDialogImportButton),
         ),
       ],
     );

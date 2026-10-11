@@ -5,6 +5,7 @@ import '../services/firebase_service.dart';
 import 'onboarding_screen.dart';
 import 'widgets/app_text_field.dart';
 import '../utils/friendly_error.dart';
+import '../l10n/app_localizations.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -47,7 +48,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(friendlyError(e, fallback: "Couldn't create your account. Please try again."),
+          content: Text(friendlyError(e, fallback: AppLocalizations.of(context)!.registerCouldNotCreate),
               style: TextStyle(color: Theme.of(context).colorScheme.onError)),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
@@ -69,9 +70,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Account', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(l10n.registerTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
         elevation: 0,
         backgroundColor: colorScheme.surface,
@@ -88,7 +90,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'Welcome!',
+                    l10n.registerHeading,
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -98,58 +100,58 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Create your account to get started',
+                    l10n.registerSubtitle,
                     style: TextStyle(fontSize: 16, color: colorScheme.onSurfaceVariant),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 32),
                   AppTextField(
                     controller: _nameController,
-                    labelText: 'Full Name',
+                    labelText: l10n.fullNameLabel,
                     validator: (value) {
-                      if (value == null || value.isEmpty) return 'Please enter your full name';
-                      if (value.length < 2) return 'Name must be at least 2 characters';
+                      if (value == null || value.isEmpty) return l10n.fullNameRequired;
+                      if (value.length < 2) return l10n.fullNameTooShort;
                       return null;
                     },
                   ),
                   const SizedBox(height: 16),
                   AppTextField(
                     controller: _emailController,
-                    labelText: 'Email',
+                    labelText: l10n.emailLabel,
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) {
-                      if (value == null || value.isEmpty) return 'Please enter your email';
+                      if (value == null || value.isEmpty) return l10n.emailRequired;
                       final emailRegex = RegExp(
                         r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
                       );
-                      if (!emailRegex.hasMatch(value)) return 'Please enter a valid email address';
+                      if (!emailRegex.hasMatch(value)) return l10n.emailInvalid;
                       return null;
                     },
                   ),
                   const SizedBox(height: 16),
                   AppTextField(
                     controller: _passwordController,
-                    labelText: 'Password',
+                    labelText: l10n.passwordLabel,
                     obscureText: _obscurePassword,
                     showObscureToggle: _obscurePassword,
                     onObscureToggle: () => setState(() => _obscurePassword = !_obscurePassword),
                     validator: (value) {
-                      if (value == null || value.isEmpty) return 'Please enter a password';
-                      if (value.length < 8) return 'Password must be at least 8 characters';
+                      if (value == null || value.isEmpty) return l10n.registerPasswordRequired;
+                      if (value.length < 8) return l10n.passwordTooShort;
                       return null;
                     },
                   ),
                   const SizedBox(height: 16),
                   AppTextField(
                     controller: _confirmPasswordController,
-                    labelText: 'Confirm Password',
+                    labelText: l10n.confirmPasswordLabel,
                     obscureText: _obscureConfirmPassword,
                     showObscureToggle: _obscureConfirmPassword,
                     onObscureToggle: () =>
                         setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
                     validator: (value) {
-                      if (value == null || value.isEmpty) return 'Please confirm your password';
-                      if (value != _passwordController.text) return 'Passwords do not match';
+                      if (value == null || value.isEmpty) return l10n.confirmPasswordRequired;
+                      if (value != _passwordController.text) return l10n.passwordsDoNotMatch;
                       return null;
                     },
                   ),
@@ -166,9 +168,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     child: _isLoading
                         ? CircularProgressIndicator(color: colorScheme.onPrimary)
-                        : const Text(
-                            'Create Account',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        : Text(
+                            l10n.registerTitle,
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                   ),
                   if (privacyPolicyUrl() != null) ...[
@@ -176,7 +178,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     TextButton(
                       onPressed: () => openPrivacyPolicy(context),
                       child: Text(
-                        'By creating an account you agree to our Privacy Policy',
+                        l10n.registerPrivacyAgreement,
                         textAlign: TextAlign.center,
                         style: TextStyle(color: colorScheme.onSurfaceVariant, decoration: TextDecoration.underline),
                       ),
@@ -187,14 +189,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Already have an account? ',
+                        l10n.alreadyHaveAccount,
                         style: TextStyle(color: colorScheme.onSurfaceVariant),
                       ),
                       TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: const Text(
-                          'Log in',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                        child: Text(
+                          l10n.loginLogIn,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
