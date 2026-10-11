@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'home_screen.dart' show MealTotals;
 import 'meal_detail_screen.dart';
 import '../utils/labels.dart';
+import '../utils/l10n.dart';
 import '../l10n/app_localizations.dart';
 
 /// Past days' meals. Home only shows today; older days live here so the main
@@ -76,7 +77,7 @@ class MealHistoryScreen extends StatelessWidget {
                         title: Text(mealTimeLabel(mealTime)),
                         subtitle: Text(
                           '${totals.calories.round()} kcal · '
-                          '${foods.map((f) => f['name']).join(', ')}',
+                          '${foods.map((f) => localizedName(f)).join(', ')}',
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),

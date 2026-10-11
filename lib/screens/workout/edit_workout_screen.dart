@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:fitness_tracker_app/utils/friendly_error.dart';
 import '../../l10n/app_localizations.dart';
+import '../../utils/l10n.dart';
 import '../../services/api_service.dart';
 
 class EditWorkoutScreen extends StatefulWidget {
@@ -51,7 +52,7 @@ class _EditWorkoutScreenState extends State<EditWorkoutScreen> {
       _selectedExercises = List<Map<String, dynamic>>.from(
         (workoutData['gym_exercises'] ?? []).map((exercise) => {
           'id': exercise['id'],
-          'name': exercise['name'],
+          'name': localizedName(exercise),
           'description': exercise['description'],
           'body_part': exercise['body_part'],
           'equipment': exercise['equipment'],
@@ -86,7 +87,7 @@ class _EditWorkoutScreenState extends State<EditWorkoutScreen> {
       setState(() {
         _gymExercises = exercises.map((exercise) => {
           'id': exercise['id'],
-          'name': exercise['name'],
+          'name': localizedName(exercise),
           'description': exercise['description'],
           'body_part': exercise['body_part'],
           'equipment': exercise['equipment'],
@@ -430,7 +431,7 @@ class _EditWorkoutScreenState extends State<EditWorkoutScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        exercise['name'],
+                        localizedName(exercise),
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: colorScheme.onSurface,
@@ -562,7 +563,7 @@ class _EditWorkoutScreenState extends State<EditWorkoutScreen> {
           builder: (BuildContext context, StateSetter setModalState) {
             final l10n = AppLocalizations.of(context)!;
             final filteredExercises = _gymExercises.where((exercise) =>
-              exercise['name'].toLowerCase().contains(exerciseSearchTerm.toLowerCase()) ||
+              localizedName(exercise).toLowerCase().contains(exerciseSearchTerm.toLowerCase()) ||
               exercise['body_part'].toLowerCase().contains(exerciseSearchTerm.toLowerCase()) ||
               exercise['equipment'].toLowerCase().contains(exerciseSearchTerm.toLowerCase()) ||
               exercise['level'].toLowerCase().contains(exerciseSearchTerm.toLowerCase()) ||
@@ -650,7 +651,7 @@ class _EditWorkoutScreenState extends State<EditWorkoutScreen> {
 
                               return ListTile(
                                 title: Text(
-                                  exercise['name'],
+                                  localizedName(exercise),
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: colorScheme.onSurface,

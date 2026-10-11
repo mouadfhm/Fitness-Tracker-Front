@@ -2,6 +2,7 @@ import 'package:fitness_tracker_app/services/api_service.dart';
 import 'package:flutter/material.dart';
 import '../utils/adaptive.dart';
 import '../utils/labels.dart';
+import '../utils/l10n.dart';
 import '../l10n/app_localizations.dart';
 
 class MealDetailScreen extends StatefulWidget {
@@ -216,7 +217,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                                     ),
                                   ),
                                   content: Text(
-                                    l10n.mealDetailRemoveFoodConfirm('${food['name']}'),
+                                    l10n.mealDetailRemoveFoodConfirm(localizedName(food)),
                                     style: TextStyle(
                                       color: theme.colorScheme.onSurface,
                                     ),
@@ -269,7 +270,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                                 children: [
                                   Expanded(
                                     child: Text(
-                                      food['name'],
+                                      localizedName(food),
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: theme.colorScheme.onSurface,
@@ -299,7 +300,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                                               ),
                                             ),
                                             content: Text(
-                                              l10n.mealDetailRemoveFoodConfirm('${food['name']}'),
+                                              l10n.mealDetailRemoveFoodConfirm(localizedName(food)),
                                               style: TextStyle(
                                                 color:
                                                     theme.colorScheme.onSurface,

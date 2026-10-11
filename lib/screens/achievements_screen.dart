@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../l10n/app_localizations.dart';
 import '../utils/app_theme.dart';
+import '../utils/l10n.dart';
 import '../providers/achievement_provider.dart';
 
 class AchievementsScreen extends StatefulWidget {
@@ -126,7 +127,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            achievement['name'],
+                            localizedName(achievement),
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -195,7 +196,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        achievement['description'],
+                        localizedName(achievement, field: 'description'),
                         style: TextStyle(
                           fontSize: 16,
                           height: 1.5,
@@ -463,7 +464,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          achievement['name'],
+                          localizedName(achievement),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: unlocked
@@ -477,9 +478,9 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                         const SizedBox(height: 8),
                         Text(
                           unlocked
-                              ? achievement['description']
+                              ? localizedName(achievement, field: 'description')
                               : l10n.achievementCompleteToUnlock(
-                                  '${achievement['description']}'),
+                                  localizedName(achievement, field: 'description')),
                           style: TextStyle(
                             fontSize: 12,
                             color: colorScheme.onSurfaceVariant,

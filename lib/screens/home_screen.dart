@@ -10,6 +10,7 @@ import '../utils/add_banner.dart';
 import '../utils/friendly_error.dart';
 import '../utils/labels.dart';
 import 'widgets/notification_prompt_card.dart';
+import '../utils/l10n.dart';
 import '../l10n/app_localizations.dart';
 
 /// Totals for a list of meal foods. Food values are stored per 100 g and the
@@ -456,7 +457,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return mealTimes.map((mealTime) {
       final foods = byMeal[mealTime] ?? [];
       final totals = MealTotals()..addFoods(foods);
-      final names = foods.map((f) => f['name'].toString()).toList();
+      final names = foods.map((f) => localizedName(f)).toList();
       final summary = names.isEmpty
           ? l10n.homeNothingAddedYet
           : names.length <= 3

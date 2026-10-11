@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:fitness_tracker_app/utils/friendly_error.dart';
 import '../../l10n/app_localizations.dart';
+import '../../utils/l10n.dart';
 import '../../services/api_service.dart';
 
 class NewWorkoutScreen extends StatefulWidget {
@@ -55,7 +56,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
         _gymExercises = exercises.map((exercise) {
           return {
             'id': exercise['id'],
-            'name': exercise['name'],
+            'name': localizedName(exercise),
             'description': exercise['description'],
             'body_part': exercise['body_part'],
             'equipment': exercise['equipment'],
@@ -386,7 +387,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        exercise['name'],
+                        localizedName(exercise),
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: colorScheme.onSurface,
@@ -537,7 +538,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
           builder: (BuildContext context, StateSetter setModalState) {
             final l10n = AppLocalizations.of(context)!;
             final filteredExercises = _gymExercises.where((exercise) =>
-              exercise['name'].toLowerCase().contains(exerciseSearchTerm.toLowerCase()) ||
+              localizedName(exercise).toLowerCase().contains(exerciseSearchTerm.toLowerCase()) ||
               exercise['body_part'].toLowerCase().contains(exerciseSearchTerm.toLowerCase()) ||
               exercise['equipment'].toLowerCase().contains(exerciseSearchTerm.toLowerCase()) ||
               exercise['level'].toLowerCase().contains(exerciseSearchTerm.toLowerCase()) ||
@@ -621,7 +622,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
 
                               return ListTile(
                                 title: Text(
-                                  exercise['name'],
+                                  localizedName(exercise),
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: colorScheme.onSurface,

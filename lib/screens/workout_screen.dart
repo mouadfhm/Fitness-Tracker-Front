@@ -6,6 +6,7 @@ import '../l10n/app_localizations.dart';
 import 'workout_details_screen.dart';
 import '../utils/add_banner.dart';
 import '../utils/labels.dart';
+import '../utils/l10n.dart';
 import '../utils/ad_list_helper.dart';
 
 class WorkoutScreen extends StatefulWidget {
@@ -455,7 +456,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                               child: Text(
                                 category == 'All'
                                     ? l10n.workoutCategoryAll
-                                    : category,
+                                    : provider.categoryLabel(category),
                                 style: TextStyle(
                                   color: isSelected
                                       ? colorScheme.onPrimary
@@ -609,13 +610,18 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                             index,
                             (realIndex) {
                             final workout = provider.filteredWorkouts[realIndex];
-                            final description =
-                                workout['description'] ?? l10n.workoutNoDescription;
+                            // The backend's display_name is the activity in
+                            // the app's language.
+                            final description = workout['display_name'] ??
+                                workout['description'] ??
+                                l10n.workoutNoDescription;
                             // Colour and icon are picked from the English
                             // name; only the shown text is translated.
                             final String? name = workout['name'];
                             final categoryKey = name ?? 'Other';
-                            final category = name ?? l10n.workoutCategoryOther;
+                            final category = name == null
+                                ? l10n.workoutCategoryOther
+                                : localizedName(workout);
                             final caloriesPerKg =
                                 (workout['caloriesPerKg'] as num).toDouble();
                             // Calorie burn per kg is really an intensity

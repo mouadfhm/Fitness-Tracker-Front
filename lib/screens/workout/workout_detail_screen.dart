@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
 import '../../services/workout_export_service.dart';
 import '../../services/workout_file_io.dart';
+import '../../utils/l10n.dart';
 import '../../l10n/app_localizations.dart';
 
 class WorkoutDetailScreen extends StatefulWidget {
@@ -307,7 +308,7 @@ class ExerciseCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: ExpansionTile(
         title: Text(
-          exercise['name'],
+          localizedName(exercise),
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16,

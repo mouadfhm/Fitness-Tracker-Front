@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:fitness_tracker_app/providers/profile_provider.dart';
 import 'package:fitness_tracker_app/utils/friendly_error.dart';
+import '../utils/l10n.dart';
 import '../l10n/app_localizations.dart';
 
 class WorkoutDetailsScreen extends StatefulWidget {
@@ -337,9 +338,9 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final localeName = Localizations.localeOf(context).toString();
-    final name = widget.workout['name'] ?? l10n.workoutDetailsNoName;
-    final description = widget.workout['description'] ?? l10n.workoutNoDescription;
-    final category = widget.workout['name'] ?? l10n.workoutDetailsUncategorized;
+    final name = localizedName(widget.workout, fallback: l10n.workoutDetailsNoName);
+    final description = widget.workout['display_name'] ?? widget.workout['description'] ?? l10n.workoutNoDescription;
+    final category = localizedName(widget.workout, fallback: l10n.workoutDetailsUncategorized);
     final difficulty =
         _intensityCode(widget.workout['caloriesPerKg'] as num);
     final difficultyText = _intensityDisplay(l10n, difficulty);

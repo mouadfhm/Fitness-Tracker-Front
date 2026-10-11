@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 import 'l10n/app_localizations.dart';
 import 'providers/theme_provider.dart';
 import 'providers/locale_provider.dart';
@@ -23,7 +24,11 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'utils/ad_config.dart';
 import 'utils/app_theme.dart';
 
-Future<void> main() async {
+/// Every HTTP call in the app goes through [LocaleHeaderClient], so the
+/// backend answers in the app's language.
+Future<void> main() => http.runWithClient(_main, LocaleHeaderClient.new);
+
+Future<void> _main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (AdConfig.enabled) {
     try {
