@@ -2707,6 +2707,1878 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No workouts match \"{query}\"'**
   String newWorkoutCycleNoWorkoutsMatch(String query);
+
+  /// No description provided for @workoutCalendarExportedPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout plan exported'**
+  String get workoutCalendarExportedPlan;
+
+  /// No description provided for @workoutCalendarExportPlanFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t export your plan. {error}'**
+  String workoutCalendarExportPlanFailed(String error);
+
+  /// No description provided for @workoutCalendarImportPlanFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t import that plan. {error}'**
+  String workoutCalendarImportPlanFailed(String error);
+
+  /// No description provided for @workoutCalendarImportFileHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Check that the file is a workout plan exported from this app.'**
+  String get workoutCalendarImportFileHint;
+
+  /// No description provided for @workoutCalendarImportedPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout plan imported'**
+  String get workoutCalendarImportedPlan;
+
+  /// No description provided for @workoutCalendarLoadWorkoutsFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your workouts. {error}'**
+  String workoutCalendarLoadWorkoutsFailed(String error);
+
+  /// No description provided for @workoutCalendarSimpleModeSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Simple mode: log activities you did'**
+  String get workoutCalendarSimpleModeSemantics;
+
+  /// No description provided for @workoutCalendarAdvancedModeSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced mode: weekly gym plans'**
+  String get workoutCalendarAdvancedModeSemantics;
+
+  /// No description provided for @workoutCalendarReadyMadePlans.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready-made and saved plans'**
+  String get workoutCalendarReadyMadePlans;
+
+  /// No description provided for @workoutCalendarExportMyPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Export my plan'**
+  String get workoutCalendarExportMyPlan;
+
+  /// No description provided for @workoutCalendarImportPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Import a plan'**
+  String get workoutCalendarImportPlan;
+
+  /// No description provided for @workoutCalendarLoadPlanFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your plan. {error}'**
+  String workoutCalendarLoadPlanFailed(String error);
+
+  /// No description provided for @workoutCalendarNoPlanYet.
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have a workout plan yet'**
+  String get workoutCalendarNoPlanYet;
+
+  /// No description provided for @workoutCalendarNothingPlannedThisWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing planned for this week'**
+  String get workoutCalendarNothingPlannedThisWeek;
+
+  /// No description provided for @workoutCalendarThisWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get workoutCalendarThisWeek;
+
+  /// No description provided for @workoutCalendarNextWeekRelative.
+  ///
+  /// In en, this message translates to:
+  /// **'Next week'**
+  String get workoutCalendarNextWeekRelative;
+
+  /// No description provided for @workoutCalendarLastWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Last week'**
+  String get workoutCalendarLastWeek;
+
+  /// No description provided for @workoutCalendarAddToDayTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to this day'**
+  String get workoutCalendarAddToDayTooltip;
+
+  /// No description provided for @workoutCalendarAddWorkoutFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t add this workout. {error}'**
+  String workoutCalendarAddWorkoutFailed(String error);
+
+  /// No description provided for @workoutCalendarPlanStartsWeekOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Your plan starts the week of {date}.'**
+  String workoutCalendarPlanStartsWeekOf(String date);
+
+  /// No description provided for @workoutCalendarShowThatWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Show that week'**
+  String get workoutCalendarShowThatWeek;
+
+  /// No description provided for @workoutCalendarNewToWorkingOut.
+  ///
+  /// In en, this message translates to:
+  /// **'New to working out?'**
+  String get workoutCalendarNewToWorkingOut;
+
+  /// No description provided for @workoutCalendarReadyMadePitch.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with a ready-made plan. Full Body is 3 days a week and we fill in the exercises for you.'**
+  String get workoutCalendarReadyMadePitch;
+
+  /// No description provided for @workoutCalendarChooseReadyMadePlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a ready-made plan'**
+  String get workoutCalendarChooseReadyMadePlan;
+
+  /// No description provided for @workoutCalendarBuildOwnPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Build my own plan'**
+  String get workoutCalendarBuildOwnPlan;
+
+  /// No description provided for @workoutDetailScreenExportWorkoutFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t export this workout. {error}'**
+  String workoutDetailScreenExportWorkoutFailed(String error);
+
+  /// No description provided for @workoutDetailScreenLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load this workout. {error}'**
+  String workoutDetailScreenLoadFailed(String error);
+
+  /// No description provided for @workoutDetailScreenEditTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit workout'**
+  String get workoutDetailScreenEditTooltip;
+
+  /// No description provided for @workoutDetailScreenDurationSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds}s'**
+  String workoutDetailScreenDurationSeconds(int seconds);
+
+  /// No description provided for @workoutDetailsIntensityLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get workoutDetailsIntensityLight;
+
+  /// No description provided for @workoutDetailsIntensityModerate.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderate'**
+  String get workoutDetailsIntensityModerate;
+
+  /// No description provided for @workoutDetailsIntensityVigorous.
+  ///
+  /// In en, this message translates to:
+  /// **'Vigorous'**
+  String get workoutDetailsIntensityVigorous;
+
+  /// No description provided for @workoutDetailsEnterMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter how many minutes you exercised'**
+  String get workoutDetailsEnterMinutes;
+
+  /// No description provided for @workoutDetailsLoggedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Nice work! Logged {minutes} min. You\'ll see it on the Today tab.'**
+  String workoutDetailsLoggedSuccess(int minutes);
+
+  /// No description provided for @workoutDetailsLogFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: couldn\'t log this activity. {error}'**
+  String workoutDetailsLogFailed(String error);
+
+  /// No description provided for @workoutDetailsAboutActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'About this activity'**
+  String get workoutDetailsAboutActivity;
+
+  /// No description provided for @workoutDetailsBurnsAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'Burns about'**
+  String get workoutDetailsBurnsAbout;
+
+  /// No description provided for @workoutDetailsKcalPerHour.
+  ///
+  /// In en, this message translates to:
+  /// **'{kcal} kcal/hour'**
+  String workoutDetailsKcalPerHour(String kcal);
+
+  /// No description provided for @workoutDetailsLogActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Log this activity'**
+  String get workoutDetailsLogActivity;
+
+  /// No description provided for @workoutDetailsWhenTapToChange.
+  ///
+  /// In en, this message translates to:
+  /// **'When (tap to change)'**
+  String get workoutDetailsWhenTapToChange;
+
+  /// No description provided for @workoutDetailsHowManyMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'How many minutes?'**
+  String get workoutDetailsHowManyMinutes;
+
+  /// No description provided for @workoutDetailsAboutKcalBurned.
+  ///
+  /// In en, this message translates to:
+  /// **'About {kcal} kcal burned'**
+  String workoutDetailsAboutKcalBurned(int kcal);
+
+  /// No description provided for @workoutDetailsIDidThis.
+  ///
+  /// In en, this message translates to:
+  /// **'I did this'**
+  String get workoutDetailsIDidThis;
+
+  /// No description provided for @exerciseSelectionAllBodyParts.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get exerciseSelectionAllBodyParts;
+
+  /// No description provided for @savedCyclesSuggestedFullBodyName.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Body'**
+  String get savedCyclesSuggestedFullBodyName;
+
+  /// No description provided for @savedCyclesSuggestedFullBodyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Whole body, 3 days a week with rest days in between. The best place to start.'**
+  String get savedCyclesSuggestedFullBodyDescription;
+
+  /// No description provided for @savedCyclesSuggestedUpperLowerName.
+  ///
+  /// In en, this message translates to:
+  /// **'Upper / Lower'**
+  String get savedCyclesSuggestedUpperLowerName;
+
+  /// No description provided for @savedCyclesSuggestedUpperLowerDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Upper body one day, legs the next. Try it once 3 days feels easy.'**
+  String get savedCyclesSuggestedUpperLowerDescription;
+
+  /// No description provided for @savedCyclesSuggestedPushPullLegsName.
+  ///
+  /// In en, this message translates to:
+  /// **'Push Pull Legs'**
+  String get savedCyclesSuggestedPushPullLegsName;
+
+  /// No description provided for @savedCyclesSuggestedPushPullLegsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Different muscles each day. For people who already train often.'**
+  String get savedCyclesSuggestedPushPullLegsDescription;
+
+  /// No description provided for @savedCyclesStartPlanFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t start this plan. {error}'**
+  String savedCyclesStartPlanFailed(String error);
+
+  /// No description provided for @savedCyclesDeletePlanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete saved plan'**
+  String get savedCyclesDeletePlanTitle;
+
+  /// No description provided for @savedCyclesThisPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'this plan'**
+  String get savedCyclesThisPlan;
+
+  /// No description provided for @savedCyclesDeletePlanFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t delete this plan. {error}'**
+  String savedCyclesDeletePlanFailed(String error);
+
+  /// No description provided for @savedCyclesReadyMadeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready-made plans'**
+  String get savedCyclesReadyMadeTitle;
+
+  /// No description provided for @savedCyclesReadyMadeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick one and we\'ll fill in the exercises for each training day. Not sure? Start with Full Body.'**
+  String get savedCyclesReadyMadeSubtitle;
+
+  /// No description provided for @savedCyclesBeginnerBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Beginner'**
+  String get savedCyclesBeginnerBadge;
+
+  /// No description provided for @savedCyclesDaysAWeekWeeks.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days a week · {weeks} weeks'**
+  String savedCyclesDaysAWeekWeeks(int days, int weeks);
+
+  /// No description provided for @savedCyclesPlansTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout plans'**
+  String get savedCyclesPlansTitle;
+
+  /// No description provided for @savedCyclesLoadPlansFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your plans. {error}'**
+  String savedCyclesLoadPlansFailed(String error);
+
+  /// No description provided for @savedCyclesYourPlans.
+  ///
+  /// In en, this message translates to:
+  /// **'Your saved plans'**
+  String get savedCyclesYourPlans;
+
+  /// No description provided for @savedCyclesNoPlansYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved plans yet'**
+  String get savedCyclesNoPlansYet;
+
+  /// No description provided for @savedCyclesPlansAutoSavedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Every plan you create is saved here so you can reuse it later.'**
+  String get savedCyclesPlansAutoSavedHint;
+
+  /// No description provided for @savedCyclesUnnamedPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Unnamed plan'**
+  String get savedCyclesUnnamedPlan;
+
+  /// No description provided for @newWorkoutCycleRefreshWorkoutListTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh workout list'**
+  String get newWorkoutCycleRefreshWorkoutListTooltip;
+
+  /// No description provided for @newWorkoutCyclePlanNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan Name'**
+  String get newWorkoutCyclePlanNameLabel;
+
+  /// No description provided for @newWorkoutCyclePlanNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Push Pull Legs'**
+  String get newWorkoutCyclePlanNameHint;
+
+  /// No description provided for @newWorkoutCyclePlanNameSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Give it a name so you can save and reuse this plan later'**
+  String get newWorkoutCyclePlanNameSubtitle;
+
+  /// No description provided for @newWorkoutCycleDescriptionOptionalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (optional)'**
+  String get newWorkoutCycleDescriptionOptionalLabel;
+
+  /// No description provided for @newWorkoutCycleDescriptionExampleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 3 days a week to get stronger'**
+  String get newWorkoutCycleDescriptionExampleHint;
+
+  /// No description provided for @newWorkoutCyclePlanStartHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your plan will start on this date'**
+  String get newWorkoutCyclePlanStartHint;
+
+  /// No description provided for @newWorkoutCycleNumberOfWeeksLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of Weeks'**
+  String get newWorkoutCycleNumberOfWeeksLabel;
+
+  /// No description provided for @newWorkoutCyclePlanRepeatsFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Your plan will repeat every week for {weeks} weeks'**
+  String newWorkoutCyclePlanRepeatsFor(int weeks);
+
+  /// No description provided for @newWorkoutCycleWorkoutScheduleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout Schedule'**
+  String get newWorkoutCycleWorkoutScheduleTitle;
+
+  /// No description provided for @newWorkoutCycleWorkoutScheduleSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose workouts for each day of the week'**
+  String get newWorkoutCycleWorkoutScheduleSubtitle;
+
+  /// No description provided for @newWorkoutCycleTemplateSuggestsDays.
+  ///
+  /// In en, this message translates to:
+  /// **'This template suggests {total} training day(s), marked below. Pick a workout for the {pending} day(s) still highlighted in orange — everything else stays a rest day unless you change it.'**
+  String newWorkoutCycleTemplateSuggestsDays(int total, int pending);
+
+  /// No description provided for @newWorkoutCycleAllSuggestedDaysAssigned.
+  ///
+  /// In en, this message translates to:
+  /// **'All suggested training days have a workout assigned.'**
+  String get newWorkoutCycleAllSuggestedDaysAssigned;
+
+  /// No description provided for @newWorkoutCycleLoadingCustomWorkouts.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading your custom workouts...'**
+  String get newWorkoutCycleLoadingCustomWorkouts;
+
+  /// No description provided for @newWorkoutCycleNoCustomWorkoutsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No custom workouts found'**
+  String get newWorkoutCycleNoCustomWorkoutsFound;
+
+  /// No description provided for @newWorkoutCycleCreateWorkoutFirstHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a workout first, then add it to your plan'**
+  String get newWorkoutCycleCreateWorkoutFirstHint;
+
+  /// No description provided for @newWorkoutCycleDeleteWorkoutRestDayConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{name}\"? Any day using it will become a rest day.'**
+  String newWorkoutCycleDeleteWorkoutRestDayConfirm(String name);
+
+  /// No description provided for @newWorkoutCycleDeleteThisWorkoutFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t delete this workout. {error}'**
+  String newWorkoutCycleDeleteThisWorkoutFailed(String error);
+
+  /// No description provided for @newWorkoutCycleNoCustomWorkoutsYetShort.
+  ///
+  /// In en, this message translates to:
+  /// **'No custom workouts yet'**
+  String get newWorkoutCycleNoCustomWorkoutsYetShort;
+
+  /// No description provided for @newWorkoutCycleRecommendedTrainingDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended training day'**
+  String get newWorkoutCycleRecommendedTrainingDay;
+
+  /// No description provided for @newWorkoutCycleChooseWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a workout'**
+  String get newWorkoutCycleChooseWorkout;
+
+  /// No description provided for @newWorkoutCycleAddNewWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Add New Workout'**
+  String get newWorkoutCycleAddNewWorkout;
+
+  /// No description provided for @newWorkoutCycleCreatePlanButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Plan'**
+  String get newWorkoutCycleCreatePlanButton;
+
+  /// No description provided for @newWorkoutCycleCreatingPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating your workout plan...'**
+  String get newWorkoutCycleCreatingPlan;
+
+  /// No description provided for @newWorkoutCycleCreatePlanFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t create your plan'**
+  String get newWorkoutCycleCreatePlanFailedTitle;
+
+  /// No description provided for @newWorkoutCycleLoadWorkoutsFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your workouts. {error}'**
+  String newWorkoutCycleLoadWorkoutsFailed(String error);
+
+  /// No description provided for @loginCouldNotLogIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t log you in. Please try again.'**
+  String get loginCouldNotLogIn;
+
+  /// No description provided for @loginForgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get loginForgotPassword;
+
+  /// No description provided for @loginLogIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Log in'**
+  String get loginLogIn;
+
+  /// No description provided for @loginCreateOne.
+  ///
+  /// In en, this message translates to:
+  /// **'Create one'**
+  String get loginCreateOne;
+
+  /// No description provided for @registerCouldNotCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t create your account. Please try again.'**
+  String get registerCouldNotCreate;
+
+  /// No description provided for @registerPrivacyAgreement.
+  ///
+  /// In en, this message translates to:
+  /// **'By creating an account you agree to our Privacy Policy'**
+  String get registerPrivacyAgreement;
+
+  /// No description provided for @forgotPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Password'**
+  String get forgotPasswordTitle;
+
+  /// No description provided for @forgotPasswordIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your account\'s email and we\'ll send you a code to reset your password.'**
+  String get forgotPasswordIntro;
+
+  /// No description provided for @forgotPasswordCodeSentIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'If {email} has an account, we sent it a 6-digit code. Enter it below with your new password.'**
+  String forgotPasswordCodeSentIntro(String email);
+
+  /// No description provided for @forgotPasswordCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get forgotPasswordCodeLabel;
+
+  /// No description provided for @forgotPasswordCodeInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the 6-digit code from the email'**
+  String get forgotPasswordCodeInvalid;
+
+  /// No description provided for @forgotPasswordNewPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New Password'**
+  String get forgotPasswordNewPasswordLabel;
+
+  /// No description provided for @forgotPasswordConfirmNewPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm New Password'**
+  String get forgotPasswordConfirmNewPasswordLabel;
+
+  /// No description provided for @forgotPasswordChangeButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Change password'**
+  String get forgotPasswordChangeButton;
+
+  /// No description provided for @forgotPasswordSendCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Send code'**
+  String get forgotPasswordSendCode;
+
+  /// No description provided for @forgotPasswordResend.
+  ///
+  /// In en, this message translates to:
+  /// **'Didn\'t get it? Send a new code'**
+  String get forgotPasswordResend;
+
+  /// No description provided for @forgotPasswordSendFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t send the code. Please try again.'**
+  String get forgotPasswordSendFailed;
+
+  /// No description provided for @forgotPasswordChangeFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t change your password. Please try again.'**
+  String get forgotPasswordChangeFailed;
+
+  /// No description provided for @forgotPasswordChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Password changed. You can log in now.'**
+  String get forgotPasswordChanged;
+
+  /// No description provided for @helpCommonQuestions.
+  ///
+  /// In en, this message translates to:
+  /// **'Common questions'**
+  String get helpCommonQuestions;
+
+  /// No description provided for @helpFaqLogFoodQ.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I log what I ate?'**
+  String get helpFaqLogFoodQ;
+
+  /// No description provided for @helpFaqLogFoodA.
+  ///
+  /// In en, this message translates to:
+  /// **'On the Today tab, tap \"Add\" next to the meal (Breakfast, Lunch, Dinner or Snacks). Search for the food, enter how many grams you ate and tap \"Add\". You can also scan a barcode on the Foods tab.'**
+  String get helpFaqLogFoodA;
+
+  /// No description provided for @helpFaqNoScaleQ.
+  ///
+  /// In en, this message translates to:
+  /// **'I don\'t weigh my food. What should I enter?'**
+  String get helpFaqNoScaleQ;
+
+  /// No description provided for @helpFaqNoScaleA.
+  ///
+  /// In en, this message translates to:
+  /// **'A rough guess is fine. A slice of bread is about 30 g, an apple about 150 g, a cup of cooked rice about 160 g and a chicken breast about 170 g. Use the quick buttons (50, 100, 150, 200 g) as a starting point.'**
+  String get helpFaqNoScaleA;
+
+  /// No description provided for @helpFaqKcalLeftQ.
+  ///
+  /// In en, this message translates to:
+  /// **'What does \"kcal left\" mean?'**
+  String get helpFaqKcalLeftQ;
+
+  /// No description provided for @helpFaqKcalLeftA.
+  ///
+  /// In en, this message translates to:
+  /// **'It is how many more calories you can eat today and still stay on track for your goal. If you go over, the number turns red. One day over is fine; what matters is most days.'**
+  String get helpFaqKcalLeftA;
+
+  /// No description provided for @helpFaqMacrosQ.
+  ///
+  /// In en, this message translates to:
+  /// **'What are protein, carbs and fat?'**
+  String get helpFaqMacrosQ;
+
+  /// No description provided for @helpFaqMacrosA.
+  ///
+  /// In en, this message translates to:
+  /// **'They are the three nutrients that give food its calories. Protein helps build and repair muscle, carbs are your main energy source, and fat supports your body in many ways. Focus on calories first, then on getting enough protein.'**
+  String get helpFaqMacrosA;
+
+  /// No description provided for @helpFaqCalorieGoalQ.
+  ///
+  /// In en, this message translates to:
+  /// **'How is my daily calorie goal worked out?'**
+  String get helpFaqCalorieGoalQ;
+
+  /// No description provided for @helpFaqCalorieGoalA.
+  ///
+  /// In en, this message translates to:
+  /// **'From your age, weight, height, gender and how active you are, we estimate how many calories you burn on a normal day. Then we take away 500 to lose weight, add 300 to build muscle, or keep it the same. Exercise you log is added on top for that day.'**
+  String get helpFaqCalorieGoalA;
+
+  /// No description provided for @helpFaqLogExerciseQ.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I log exercise?'**
+  String get helpFaqLogExerciseQ;
+
+  /// No description provided for @helpFaqLogExerciseA.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to the Workouts tab. In Simple mode, find the activity (walking, cycling, …), tap it, choose how many minutes and tap \"I did this\".'**
+  String get helpFaqLogExerciseA;
+
+  /// No description provided for @helpFaqAdvancedModeQ.
+  ///
+  /// In en, this message translates to:
+  /// **'What is Advanced mode?'**
+  String get helpFaqAdvancedModeQ;
+
+  /// No description provided for @helpFaqAdvancedModeA.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced mode is for planning gym workouts week by week. If you are new, choose a ready-made plan: Full Body is 3 days a week and we fill in the exercises for you.'**
+  String get helpFaqAdvancedModeA;
+
+  /// No description provided for @helpFaqChangeGoalQ.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I change my weight or goal?'**
+  String get helpFaqChangeGoalQ;
+
+  /// No description provided for @helpFaqChangeGoalA.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to the Me tab and tap the edit button at the top. To track your weight over time, use \"Weight log\" on the same tab.'**
+  String get helpFaqChangeGoalA;
+
+  /// No description provided for @helpDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Calorie goals, calories burned and BMI in this app are estimates to guide you, not medical advice. If you have a health condition, are pregnant, or plan a big change in diet or exercise, check with a doctor first.'**
+  String get helpDisclaimer;
+
+  /// No description provided for @helpEmailUs.
+  ///
+  /// In en, this message translates to:
+  /// **'Still stuck? Email us'**
+  String get helpEmailUs;
+
+  /// No description provided for @helpNoEmailApp.
+  ///
+  /// In en, this message translates to:
+  /// **'No email app found. You can write to {email}.'**
+  String helpNoEmailApp(String email);
+
+  /// No description provided for @appTextFieldHidePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide password'**
+  String get appTextFieldHidePassword;
+
+  /// No description provided for @appTextFieldShowPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Show password'**
+  String get appTextFieldShowPassword;
+
+  /// No description provided for @adaptiveDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get adaptiveDone;
+
+  /// No description provided for @privacyPolicyOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open the privacy policy. It\'s at {url}'**
+  String privacyPolicyOpenFailed(String url);
+
+  /// No description provided for @onboardingSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save your details. {error}'**
+  String onboardingSaveFailed(String error);
+
+  /// No description provided for @onboardingBodyStatsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We only use these to work out how much you should eat each day. You can change them any time.'**
+  String get onboardingBodyStatsSubtitle;
+
+  /// No description provided for @onboardingUnitsMetric.
+  ///
+  /// In en, this message translates to:
+  /// **'kg / cm'**
+  String get onboardingUnitsMetric;
+
+  /// No description provided for @onboardingUnitsImperial.
+  ///
+  /// In en, this message translates to:
+  /// **'lb / ft'**
+  String get onboardingUnitsImperial;
+
+  /// No description provided for @onboardingWeightLbLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight (lb)'**
+  String get onboardingWeightLbLabel;
+
+  /// No description provided for @onboardingWeightLbHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 155'**
+  String get onboardingWeightLbHint;
+
+  /// No description provided for @onboardingHeightFtLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Height (ft)'**
+  String get onboardingHeightFtLabel;
+
+  /// No description provided for @onboardingHeightFtHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 5'**
+  String get onboardingHeightFtHint;
+
+  /// No description provided for @onboardingHeightInLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'(in)'**
+  String get onboardingHeightInLabel;
+
+  /// No description provided for @onboardingHeightInHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 9'**
+  String get onboardingHeightInHint;
+
+  /// No description provided for @onboardingFillStats.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill in your age, weight and height'**
+  String get onboardingFillStats;
+
+  /// No description provided for @onboardingBmiCardLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'BMI (your weight compared to your height)'**
+  String get onboardingBmiCardLabel;
+
+  /// No description provided for @onboardingGenderSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Men and women burn calories at slightly different rates'**
+  String get onboardingGenderSubtitle;
+
+  /// No description provided for @onboardingBmrCaption.
+  ///
+  /// In en, this message translates to:
+  /// **'Calories your body burns resting'**
+  String get onboardingBmrCaption;
+
+  /// No description provided for @onboardingBmrFootnote.
+  ///
+  /// In en, this message translates to:
+  /// **'Even if you stayed in bed all day'**
+  String get onboardingBmrFootnote;
+
+  /// No description provided for @onboardingKcalValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} kcal'**
+  String onboardingKcalValue(String value);
+
+  /// No description provided for @onboardingKcalPerDayValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} kcal/day'**
+  String onboardingKcalPerDayValue(String value);
+
+  /// No description provided for @onboardingTdeeCaption.
+  ///
+  /// In en, this message translates to:
+  /// **'Calories you burn on a typical day'**
+  String get onboardingTdeeCaption;
+
+  /// No description provided for @onboardingTdeeFootnote.
+  ///
+  /// In en, this message translates to:
+  /// **'Including your daily activity'**
+  String get onboardingTdeeFootnote;
+
+  /// No description provided for @onboardingActMostlySitting.
+  ///
+  /// In en, this message translates to:
+  /// **'Mostly sitting'**
+  String get onboardingActMostlySitting;
+
+  /// No description provided for @onboardingActMostlySittingDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Desk job, little or no exercise'**
+  String get onboardingActMostlySittingDesc;
+
+  /// No description provided for @onboardingActLightlyActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Lightly active'**
+  String get onboardingActLightlyActive;
+
+  /// No description provided for @onboardingActLightlyActiveDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Walks or light exercise 1–3 days a week'**
+  String get onboardingActLightlyActiveDesc;
+
+  /// No description provided for @onboardingActModeratelyActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderately active'**
+  String get onboardingActModeratelyActive;
+
+  /// No description provided for @onboardingActModeratelyActiveDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise 3–5 days a week'**
+  String get onboardingActModeratelyActiveDesc;
+
+  /// No description provided for @onboardingActActiveDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Hard exercise 6–7 days a week'**
+  String get onboardingActActiveDesc;
+
+  /// No description provided for @onboardingActVeryActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Very active'**
+  String get onboardingActVeryActive;
+
+  /// No description provided for @onboardingActVeryActiveDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Physical job or training twice a day'**
+  String get onboardingActVeryActiveDesc;
+
+  /// No description provided for @onboardingGoalLoseWeightLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Lose weight'**
+  String get onboardingGoalLoseWeightLabel;
+
+  /// No description provided for @onboardingGoalLoseWeightDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Eat a bit less than you burn (about 0.5 kg a week)'**
+  String get onboardingGoalLoseWeightDetail;
+
+  /// No description provided for @onboardingGoalBuildMuscleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Build muscle'**
+  String get onboardingGoalBuildMuscleLabel;
+
+  /// No description provided for @onboardingGoalBuildMuscleDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Eat a bit more than you burn, and do strength training'**
+  String get onboardingGoalBuildMuscleDetail;
+
+  /// No description provided for @onboardingGoalStayLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay at my weight'**
+  String get onboardingGoalStayLabel;
+
+  /// No description provided for @onboardingGoalStayDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Eat about what you burn'**
+  String get onboardingGoalStayDetail;
+
+  /// No description provided for @onboardingOffsetLose.
+  ///
+  /// In en, this message translates to:
+  /// **'500 kcal less than you burn on a typical day'**
+  String get onboardingOffsetLose;
+
+  /// No description provided for @onboardingOffsetGain.
+  ///
+  /// In en, this message translates to:
+  /// **'300 kcal more than you burn on a typical day'**
+  String get onboardingOffsetGain;
+
+  /// No description provided for @onboardingOffsetSame.
+  ///
+  /// In en, this message translates to:
+  /// **'The same as you burn on a typical day'**
+  String get onboardingOffsetSame;
+
+  /// No description provided for @onboardingDailyGoalCaption.
+  ///
+  /// In en, this message translates to:
+  /// **'Your daily calorie goal'**
+  String get onboardingDailyGoalCaption;
+
+  /// No description provided for @newWorkoutCouldNotLoadExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load exercises. {error}'**
+  String newWorkoutCouldNotLoadExercises(String error);
+
+  /// No description provided for @workoutModeSimpleSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Simple mode: log activities you did'**
+  String get workoutModeSimpleSemantics;
+
+  /// No description provided for @workoutModeAdvancedSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced mode: weekly gym plans'**
+  String get workoutModeAdvancedSemantics;
+
+  /// No description provided for @workoutSimpleIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Did some exercise? Find the activity and log it to count the calories you burned.'**
+  String get workoutSimpleIntro;
+
+  /// No description provided for @workoutSearchActivitiesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search activities (e.g. walking)'**
+  String get workoutSearchActivitiesHint;
+
+  /// No description provided for @workoutCategoryAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get workoutCategoryAll;
+
+  /// No description provided for @workoutActivitiesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} activity} other{{count} activities}}'**
+  String workoutActivitiesCount(int count);
+
+  /// No description provided for @workoutActivitiesLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load activities'**
+  String get workoutActivitiesLoadError;
+
+  /// No description provided for @workoutNoActivitiesAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No activities available'**
+  String get workoutNoActivitiesAvailable;
+
+  /// No description provided for @workoutNoActivitiesMatchSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'No activities match your search'**
+  String get workoutNoActivitiesMatchSearch;
+
+  /// No description provided for @workoutKcalPerHour.
+  ///
+  /// In en, this message translates to:
+  /// **'≈ {kcal} kcal per hour'**
+  String workoutKcalPerHour(int kcal);
+
+  /// No description provided for @workoutKcalPerHourPerKg.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} kcal per hour per kg of body weight'**
+  String workoutKcalPerHourPerKg(String value);
+
+  /// No description provided for @progressLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your weight log. {error}'**
+  String progressLoadError(String error);
+
+  /// No description provided for @progressSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save this entry. {error}'**
+  String progressSaveError(String error);
+
+  /// No description provided for @achievementCouldNotLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load achievements. {error}'**
+  String achievementCouldNotLoad(String error);
+
+  /// No description provided for @achievementTypeMeals.
+  ///
+  /// In en, this message translates to:
+  /// **'MEALS'**
+  String get achievementTypeMeals;
+
+  /// No description provided for @achievementTypeStreak.
+  ///
+  /// In en, this message translates to:
+  /// **'STREAK'**
+  String get achievementTypeStreak;
+
+  /// No description provided for @achievementTypeCalories.
+  ///
+  /// In en, this message translates to:
+  /// **'CALORIES'**
+  String get achievementTypeCalories;
+
+  /// No description provided for @achievementTypeWorkouts.
+  ///
+  /// In en, this message translates to:
+  /// **'WORKOUTS'**
+  String get achievementTypeWorkouts;
+
+  /// No description provided for @achievementTypeCardio.
+  ///
+  /// In en, this message translates to:
+  /// **'CARDIO'**
+  String get achievementTypeCardio;
+
+  /// No description provided for @achievementTypeProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'PROGRESS'**
+  String get achievementTypeProgress;
+
+  /// No description provided for @achievementTypeWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'WEIGHT'**
+  String get achievementTypeWeight;
+
+  /// No description provided for @achievementTypeMuscle.
+  ///
+  /// In en, this message translates to:
+  /// **'MUSCLE'**
+  String get achievementTypeMuscle;
+
+  /// No description provided for @foodsProductNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t find that product. Try searching by name, or add it yourself with the + button.'**
+  String get foodsProductNotFound;
+
+  /// No description provided for @foodsScanFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t scan the barcode. {error}'**
+  String foodsScanFailed(String error);
+
+  /// No description provided for @foodsAddToMealTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to {meal}'**
+  String foodsAddToMealTitle(String meal);
+
+  /// No description provided for @foodsTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get foodsTryAgain;
+
+  /// No description provided for @foodsKcalPer100g.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} kcal per 100 g'**
+  String foodsKcalPer100g(int value);
+
+  /// No description provided for @foodsNoMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'No foods match your search.'**
+  String get foodsNoMatch;
+
+  /// No description provided for @foodsAddOwnFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your own food'**
+  String get foodsAddOwnFood;
+
+  /// No description provided for @foodsNewFoodButton.
+  ///
+  /// In en, this message translates to:
+  /// **'New food'**
+  String get foodsNewFoodButton;
+
+  /// No description provided for @foodsProteinPer100g.
+  ///
+  /// In en, this message translates to:
+  /// **'Protein: {value} per 100 g'**
+  String foodsProteinPer100g(String value);
+
+  /// No description provided for @foodsCarbsPer100g.
+  ///
+  /// In en, this message translates to:
+  /// **'Carbs: {value} per 100 g'**
+  String foodsCarbsPer100g(String value);
+
+  /// No description provided for @foodsFatPer100g.
+  ///
+  /// In en, this message translates to:
+  /// **'Fat: {value} per 100 g'**
+  String foodsFatPer100g(String value);
+
+  /// No description provided for @foodsProteinPill.
+  ///
+  /// In en, this message translates to:
+  /// **'Protein {value}'**
+  String foodsProteinPill(String value);
+
+  /// No description provided for @foodsCarbsPill.
+  ///
+  /// In en, this message translates to:
+  /// **'Carbs {value}'**
+  String foodsCarbsPill(String value);
+
+  /// No description provided for @foodsFatPill.
+  ///
+  /// In en, this message translates to:
+  /// **'Fat {value}'**
+  String foodsFatPill(String value);
+
+  /// No description provided for @foodsSearchFoodsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search foods'**
+  String get foodsSearchFoodsHint;
+
+  /// No description provided for @foodsScanTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan a barcode'**
+  String get foodsScanTooltip;
+
+  /// No description provided for @foodDetailsMealNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please type a name for this meal.'**
+  String get foodDetailsMealNameRequired;
+
+  /// No description provided for @foodDetailsGramsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter how many grams you ate.'**
+  String get foodDetailsGramsRequired;
+
+  /// No description provided for @foodDetailsAddedSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Added {grams} g of {name} to {meal} ({kcal} kcal)'**
+  String foodDetailsAddedSnack(int grams, String name, String meal, int kcal);
+
+  /// No description provided for @foodDetailsAddFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t add this food. {error}'**
+  String foodDetailsAddFailed(String error);
+
+  /// No description provided for @foodDetailsFavoritesFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t update favorites. {error}'**
+  String foodDetailsFavoritesFailed(String error);
+
+  /// No description provided for @foodDetailsNutritionPer100g.
+  ///
+  /// In en, this message translates to:
+  /// **'Nutrition per 100 g'**
+  String get foodDetailsNutritionPer100g;
+
+  /// No description provided for @foodDetailsHowMuch.
+  ///
+  /// In en, this message translates to:
+  /// **'How much did you eat?'**
+  String get foodDetailsHowMuch;
+
+  /// No description provided for @foodDetailsAmountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get foodDetailsAmountLabel;
+
+  /// No description provided for @foodDetailsGramsSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'grams'**
+  String get foodDetailsGramsSuffix;
+
+  /// No description provided for @foodDetailsPortionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Not sure? A slice of bread is about 30 g, an apple about 150 g, a cup of cooked rice about 160 g.'**
+  String get foodDetailsPortionHint;
+
+  /// No description provided for @foodDetailsEnterAmountForCalories.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount to see the calories'**
+  String get foodDetailsEnterAmountForCalories;
+
+  /// No description provided for @foodDetailsLiveTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'{grams} g = {kcal} kcal  ·  Protein {protein} g  ·  Carbs {carbs} g  ·  Fat {fat} g'**
+  String foodDetailsLiveTotal(
+    String grams,
+    int kcal,
+    String protein,
+    String carbs,
+    String fat,
+  );
+
+  /// No description provided for @foodDetailsWhichMeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Which meal?'**
+  String get foodDetailsWhichMeal;
+
+  /// No description provided for @foodDetailsSnackChip.
+  ///
+  /// In en, this message translates to:
+  /// **'Snack'**
+  String get foodDetailsSnackChip;
+
+  /// No description provided for @foodDetailsOtherMeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Other…'**
+  String get foodDetailsOtherMeal;
+
+  /// No description provided for @foodDetailsMealNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Meal name'**
+  String get foodDetailsMealNameLabel;
+
+  /// No description provided for @foodDetailsMealNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Pre-workout, Late night'**
+  String get foodDetailsMealNameHint;
+
+  /// No description provided for @foodDetailsChangeDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Change date'**
+  String get foodDetailsChangeDate;
+
+  /// No description provided for @foodDetailsAddToMealButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to meal'**
+  String get foodDetailsAddToMealButton;
+
+  /// No description provided for @foodDetailsAddToButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to {meal}'**
+  String foodDetailsAddToButton(String meal);
+
+  /// No description provided for @mealDetailRemoveFoodTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove food'**
+  String get mealDetailRemoveFoodTooltip;
+
+  /// No description provided for @mealHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Past days'**
+  String get mealHistoryTitle;
+
+  /// No description provided for @mealHistoryEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No meals logged on earlier days yet.'**
+  String get mealHistoryEmpty;
+
+  /// No description provided for @mealHistoryKcalEaten.
+  ///
+  /// In en, this message translates to:
+  /// **'{kcal} kcal eaten'**
+  String mealHistoryKcalEaten(int kcal);
+
+  /// No description provided for @homeHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What do these mean?'**
+  String get homeHelpTitle;
+
+  /// No description provided for @homeHelpBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Calories (kcal) measure the energy in food. Eating about your daily goal helps you reach your target weight.\n\nProtein, carbs and fat are the three nutrients that give food its calories. Protein helps build and repair muscle, carbs give you energy, and fat supports your body in many ways.\n\nYou don\'t need to hit every number exactly. Focus on calories first, then try to get enough protein.'**
+  String get homeHelpBody;
+
+  /// No description provided for @homeHelpGotIt.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get homeHelpGotIt;
+
+  /// No description provided for @homeHelpTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'What do these numbers mean?'**
+  String get homeHelpTooltip;
+
+  /// No description provided for @homeYourMealsHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Your meals'**
+  String get homeYourMealsHeading;
+
+  /// No description provided for @homeSeePastDays.
+  ///
+  /// In en, this message translates to:
+  /// **'See past days'**
+  String get homeSeePastDays;
+
+  /// No description provided for @homeLoadErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load today\'s data'**
+  String get homeLoadErrorTitle;
+
+  /// No description provided for @homeTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get homeTryAgain;
+
+  /// No description provided for @homeSemanticsEatenToday.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} calories eaten today'**
+  String homeSemanticsEatenToday(int count);
+
+  /// No description provided for @homeSemanticsOverGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} calories over your goal today'**
+  String homeSemanticsOverGoal(int count);
+
+  /// No description provided for @homeSemanticsLeftToday.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} calories left today'**
+  String homeSemanticsLeftToday(int count);
+
+  /// No description provided for @homeKcalEaten.
+  ///
+  /// In en, this message translates to:
+  /// **'kcal eaten'**
+  String get homeKcalEaten;
+
+  /// No description provided for @homeKcalOver.
+  ///
+  /// In en, this message translates to:
+  /// **'kcal over'**
+  String get homeKcalOver;
+
+  /// No description provided for @homeKcalLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'kcal left'**
+  String get homeKcalLeft;
+
+  /// No description provided for @homeSummaryGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal'**
+  String get homeSummaryGoal;
+
+  /// No description provided for @homeSummaryEaten.
+  ///
+  /// In en, this message translates to:
+  /// **'Eaten'**
+  String get homeSummaryEaten;
+
+  /// No description provided for @homeSummaryExercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise'**
+  String get homeSummaryExercise;
+
+  /// No description provided for @homeSummaryLabelKcal.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} (kcal)'**
+  String homeSummaryLabelKcal(String label);
+
+  /// No description provided for @homeFinishProfileForGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish your profile on the Me tab to get a daily calorie goal.'**
+  String get homeFinishProfileForGoal;
+
+  /// No description provided for @homeExerciseAddedToGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s exercise is already added to your goal.'**
+  String get homeExerciseAddedToGoal;
+
+  /// No description provided for @homeNutrientOfGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'{eaten} of {goal} g'**
+  String homeNutrientOfGoal(int eaten, int goal);
+
+  /// No description provided for @homeNothingAddedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing added yet'**
+  String get homeNothingAddedYet;
+
+  /// No description provided for @homeFoodsAndMore.
+  ///
+  /// In en, this message translates to:
+  /// **'{names} and {count} more'**
+  String homeFoodsAndMore(String names, int count);
+
+  /// No description provided for @homeAddFoodToMeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Add food to {meal}'**
+  String homeAddFoodToMeal(String meal);
+
+  /// No description provided for @homeAddButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get homeAddButton;
+
+  /// No description provided for @profileLogoutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Log out?'**
+  String get profileLogoutTitle;
+
+  /// No description provided for @profileLogoutConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to log out of your account?'**
+  String get profileLogoutConfirm;
+
+  /// No description provided for @profileLogOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Log out'**
+  String get profileLogOut;
+
+  /// No description provided for @profileChangePhotoTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Change profile photo'**
+  String get profileChangePhotoTooltip;
+
+  /// No description provided for @profileHowActive.
+  ///
+  /// In en, this message translates to:
+  /// **'How active you are'**
+  String get profileHowActive;
+
+  /// No description provided for @profileYourGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Your goal'**
+  String get profileYourGoal;
+
+  /// No description provided for @profileEditDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit my details'**
+  String get profileEditDetails;
+
+  /// No description provided for @profileWeightLog.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight log'**
+  String get profileWeightLog;
+
+  /// No description provided for @profileTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get profileTryAgain;
+
+  /// No description provided for @notificationPromptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Want a reminder?'**
+  String get notificationPromptTitle;
+
+  /// No description provided for @notificationPromptBody.
+  ///
+  /// In en, this message translates to:
+  /// **'We can nudge you when you haven\'t logged a meal or a workout, and tell you when you unlock a badge. You can change this any time in Settings.'**
+  String get notificationPromptBody;
+
+  /// No description provided for @notificationPromptNotNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get notificationPromptNotNow;
+
+  /// No description provided for @notificationPromptTurnOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on reminders'**
+  String get notificationPromptTurnOn;
+
+  /// No description provided for @settingsCouldNotSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save. {reason}'**
+  String settingsCouldNotSave(String reason);
+
+  /// No description provided for @settingsCouldNotDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t delete your account. {reason}'**
+  String settingsCouldNotDelete(String reason);
+
+  /// No description provided for @labelNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get labelNotSet;
+
+  /// No description provided for @labelActivitySedentary.
+  ///
+  /// In en, this message translates to:
+  /// **'Mostly sitting'**
+  String get labelActivitySedentary;
+
+  /// No description provided for @labelActivityLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Lightly active'**
+  String get labelActivityLight;
+
+  /// No description provided for @labelActivityModerate.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderately active'**
+  String get labelActivityModerate;
+
+  /// No description provided for @labelActivityActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get labelActivityActive;
+
+  /// No description provided for @labelActivityVeryActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Very active'**
+  String get labelActivityVeryActive;
+
+  /// No description provided for @labelGoalWeightLoss.
+  ///
+  /// In en, this message translates to:
+  /// **'Lose weight'**
+  String get labelGoalWeightLoss;
+
+  /// No description provided for @labelGoalMuscleGain.
+  ///
+  /// In en, this message translates to:
+  /// **'Build muscle'**
+  String get labelGoalMuscleGain;
+
+  /// No description provided for @labelGoalMaintenance.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay at my weight'**
+  String get labelGoalMaintenance;
+
+  /// No description provided for @labelGenderMale.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get labelGenderMale;
+
+  /// No description provided for @labelGenderFemale.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get labelGenderFemale;
+
+  /// No description provided for @labelMealBreakfast.
+  ///
+  /// In en, this message translates to:
+  /// **'Breakfast'**
+  String get labelMealBreakfast;
+
+  /// No description provided for @labelMealLunch.
+  ///
+  /// In en, this message translates to:
+  /// **'Lunch'**
+  String get labelMealLunch;
+
+  /// No description provided for @labelMealDinner.
+  ///
+  /// In en, this message translates to:
+  /// **'Dinner'**
+  String get labelMealDinner;
+
+  /// No description provided for @labelMealSnacks.
+  ///
+  /// In en, this message translates to:
+  /// **'Snacks'**
+  String get labelMealSnacks;
+
+  /// No description provided for @labelIntensityVigorous.
+  ///
+  /// In en, this message translates to:
+  /// **'Vigorous'**
+  String get labelIntensityVigorous;
+
+  /// No description provided for @labelIntensityModerate.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderate'**
+  String get labelIntensityModerate;
+
+  /// No description provided for @labelIntensityLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get labelIntensityLight;
+
+  /// No description provided for @errorTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Please try again.'**
+  String get errorTryAgain;
+
+  /// No description provided for @errorNoConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t reach the server. Check your internet connection and try again.'**
+  String get errorNoConnection;
+
+  /// No description provided for @errorSessionEnded.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session has ended. Please log in again.'**
+  String get errorSessionEnded;
+
+  /// No description provided for @apiCheckDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Please check your details and try again.'**
+  String get apiCheckDetails;
+
+  /// No description provided for @apiTooManyAttempts.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many attempts. Please wait a minute and try again.'**
+  String get apiTooManyAttempts;
+
+  /// No description provided for @apiWrongCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong email or password. Please try again.'**
+  String get apiWrongCredentials;
+
+  /// No description provided for @apiAccountDeactivated.
+  ///
+  /// In en, this message translates to:
+  /// **'This account has been deactivated.'**
+  String get apiAccountDeactivated;
+
+  /// No description provided for @apiInvalidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email address.'**
+  String get apiInvalidEmail;
+
+  /// No description provided for @apiResetCodeInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'This code is wrong or has expired. Ask for a new one.'**
+  String get apiResetCodeInvalid;
+
+  /// No description provided for @achievementTargetMeals.
+  ///
+  /// In en, this message translates to:
+  /// **'Log {target} meal(s)'**
+  String achievementTargetMeals(int target);
+
+  /// No description provided for @achievementTargetStreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintain a streak for {target} days'**
+  String achievementTargetStreak(int target);
+
+  /// No description provided for @achievementTargetCalories.
+  ///
+  /// In en, this message translates to:
+  /// **'Reach {target} calories'**
+  String achievementTargetCalories(int target);
+
+  /// No description provided for @achievementTargetWorkouts.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete {target} workout(s)'**
+  String achievementTargetWorkouts(int target);
+
+  /// No description provided for @achievementTargetCardio.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete {target} cardio session(s)'**
+  String achievementTargetCardio(int target);
+
+  /// No description provided for @achievementTargetProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Log {target} progress update(s)'**
+  String achievementTargetProgress(int target);
+
+  /// No description provided for @achievementTargetWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Lose {target} kg'**
+  String achievementTargetWeight(int target);
+
+  /// No description provided for @achievementTargetMuscle.
+  ///
+  /// In en, this message translates to:
+  /// **'Gain {target} kg of muscle'**
+  String achievementTargetMuscle(int target);
+
+  /// No description provided for @achievementTargetTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete {target} tasks'**
+  String achievementTargetTasks(int target);
+
+  /// No description provided for @achievementTargetCaloriesK.
+  ///
+  /// In en, this message translates to:
+  /// **'Reach {thousands}k calories'**
+  String achievementTargetCaloriesK(String thousands);
 }
 
 class _AppLocalizationsDelegate

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
 import '../../services/workout_export_service.dart';
 import '../../services/workout_file_io.dart';
+import '../../l10n/app_localizations.dart';
 
 class WorkoutDetailScreen extends StatefulWidget {
   final int workoutId;
@@ -44,10 +45,13 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
         contents: json,
       );
       if (!mounted || !saved) return;
-      _showSnack('Workout exported successfully');
+      _showSnack(AppLocalizations.of(context)!.workoutDetailScreenExportedSuccess);
     } catch (e) {
       if (!mounted) return;
-      _showSnack("Couldn't export this workout. ${friendlyError(e)}", isError: true);
+      _showSnack(
+        AppLocalizations.of(context)!.workoutDetailScreenExportWorkoutFailed(friendlyError(e)),
+        isError: true,
+      );
     }
   }
 
@@ -67,11 +71,12 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Workout Details',
+        title: Text(
+          l10n.workoutDetailScreenTitle,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         elevation: 0,
@@ -93,7 +98,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
               ),
             ),
           IconButton(
-            tooltip: 'Refresh',
+            tooltip: l10n.workoutDetailScreenRefresh,
             icon: const Icon(Icons.refresh),
             onPressed: _fetchWorkoutDetails,
           ),
@@ -111,7 +116,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Couldn't load this workout. ${friendlyError(snapshot.error!)}"),
+                  Text(l10n.workoutDetailScreenLoadFailed(friendlyError(snapshot.error!))),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: _fetchWorkoutDetails,
@@ -119,7 +124,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                       backgroundColor: colorScheme.primary,
                       foregroundColor: colorScheme.onPrimary,
                     ),
-                    child: const Text('Retry'),
+                    child: Text(l10n.retry),
                   ),
                 ],
               ),
@@ -129,7 +134,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('No workout details available'),
+                  Text(l10n.workoutDetailScreenNoDetails),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: _fetchWorkoutDetails,
@@ -137,7 +142,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                       backgroundColor: colorScheme.primary,
                       foregroundColor: colorScheme.onPrimary,
                     ),
-                    child: const Text('Refresh'),
+                    child: Text(l10n.workoutDetailScreenRefresh),
                   ),
                 ],
               ),
@@ -170,11 +175,11 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                           ),
                           IconButton(
                             icon: Icon(Icons.ios_share, color: colorScheme.primary),
-                            tooltip: 'Export workout',
+                            tooltip: l10n.workoutDetailScreenExportTooltip,
                             onPressed: _exportWorkout,
                           ),
                           IconButton(
-                            tooltip: 'Edit workout',
+                            tooltip: l10n.workoutDetailScreenEditTooltip,
                             icon: Icon(Icons.edit, color: colorScheme.primary),
                             onPressed: () async {
                               await Navigator.push(
@@ -192,7 +197,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        workout['description'] ?? 'No description available',
+                        workout['description'] ?? l10n.workoutDetailScreenNoDescription,
                         style: TextStyle(
                           fontSize: 16,
                           color: colorScheme.onSurfaceVariant,
@@ -203,13 +208,13 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                         spacing: 8,
                         children: [
                           Chip(
-                            label: Text('${exercises.length} Exercises'),
+                            label: Text(l10n.workoutDetailScreenExercisesCount(exercises.length)),
                             backgroundColor:
                                 colorScheme.primary.withValues(alpha: 0.1),
                             labelStyle: TextStyle(color: colorScheme.primary),
                           ),
                           Chip(
-                            label: Text(_calculateTotalTime(exercises)),
+                            label: Text(l10n.workoutDetailScreenMinutes(_calculateTotalMinutes(exercises))),
                             backgroundColor:
                                 colorScheme.primary.withValues(alpha: 0.1),
                             labelStyle: TextStyle(color: colorScheme.primary),
@@ -218,7 +223,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                       ),
                       const Divider(height: 32),
                       Text(
-                        'Exercises',
+                        l10n.newWorkoutExercisesTitle,
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -253,7 +258,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
     );
   }
 
-  String _calculateTotalTime(List<dynamic> exercises) {
+  int _calculateTotalMinutes(List<dynamic> exercises) {
     int totalTimeInSeconds = 0;
 
     for (var exercise in exercises) {
@@ -273,8 +278,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
     }
 
     totalTimeInSeconds += (exercises.length - 1) * 5 * 60;
-    int minutes = totalTimeInSeconds ~/ 60;
-    return '$minutes min';
+    return totalTimeInSeconds ~/ 60;
   }
 }
 
@@ -297,6 +301,7 @@ class ExerciseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -321,12 +326,12 @@ class ExerciseCard extends StatelessWidget {
             Wrap(
               spacing: 8,
               children: [
-                _buildDetailChip(colorScheme, Icons.replay, '$sets sets'),
+                _buildDetailChip(colorScheme, Icons.replay, l10n.workoutDetailScreenSetsCount(sets)),
                 if (reps != null)
-                  _buildDetailChip(colorScheme, Icons.fitness_center, '$reps reps')
+                  _buildDetailChip(colorScheme, Icons.fitness_center, l10n.workoutDetailScreenRepsCount(reps!))
                 else if (duration != null)
-                  _buildDetailChip(colorScheme, Icons.timer, '${duration}s'),
-                _buildDetailChip(colorScheme, Icons.hourglass_bottom, '${rest}s rest'),
+                  _buildDetailChip(colorScheme, Icons.timer, l10n.workoutDetailScreenDurationSeconds(duration!)),
+                _buildDetailChip(colorScheme, Icons.hourglass_bottom, l10n.workoutDetailScreenRestSeconds(rest)),
               ],
             ),
           ],
@@ -338,7 +343,7 @@ class ExerciseCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Description:',
+                  l10n.workoutDetailScreenDescriptionLabel,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
@@ -347,7 +352,7 @@ class ExerciseCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  exercise['description'] ?? 'No description available',
+                  exercise['description'] ?? l10n.workoutDetailScreenNoDescription,
                   style: TextStyle(
                     fontSize: 14,
                     color: colorScheme.onSurfaceVariant,
@@ -358,14 +363,14 @@ class ExerciseCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Equipment: ${exercise['equipment']}',
+                      l10n.workoutDetailScreenEquipmentLabel('${exercise['equipment']}'),
                       style: TextStyle(
                         fontSize: 14,
                         color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                     Text(
-                      'Level: ${exercise['level']}',
+                      l10n.workoutDetailScreenLevelLabel('${exercise['level']}'),
                       style: TextStyle(
                         fontSize: 14,
                         color: colorScheme.onSurfaceVariant,

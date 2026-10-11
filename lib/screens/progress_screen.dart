@@ -1,6 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../utils/adaptive.dart';
 import '../utils/friendly_error.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -17,6 +18,8 @@ class ProgressScreen extends StatefulWidget {
 class _ProgressScreenState extends State<ProgressScreen> {
   final ApiService _apiService = ApiService();
   bool _isLoading = true;
+  // Plain-language reason the log failed to load; the full sentence is
+  // built in the current language when shown.
   String? _errorMessage;
   List<dynamic> _progressEntries = [];
 
@@ -41,7 +44,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
     } catch (error) {
       if (mounted) {
         setState(() {
-          _errorMessage = "Couldn't load your weight log. ${friendlyError(error)}";
+          _errorMessage = friendlyError(error);
           _isLoading = false;
         });
       }
@@ -49,17 +52,18 @@ class _ProgressScreenState extends State<ProgressScreen> {
   }
 
   Future<void> _addProgress() async {
+    final l10n = AppLocalizations.of(context)!;
     final date = _dateController.text.trim();
     final weightText = _weightController.text.trim();
 
     if (date.isEmpty || weightText.isEmpty) {
-      _showSnackBar("Please fill in all fields");
+      _showSnackBar(l10n.progressFillAllFields);
       return;
     }
 
     final weight = double.tryParse(weightText);
     if (weight == null) {
-      _showSnackBar("Invalid weight value");
+      _showSnackBar(l10n.progressInvalidWeight);
       return;
     }
 
@@ -68,9 +72,9 @@ class _ProgressScreenState extends State<ProgressScreen> {
       _dateController.clear();
       _weightController.clear();
       await _fetchProgress();
-      _showSnackBar("Progress added successfully!");
+      _showSnackBar(l10n.progressAddedSuccess);
     } catch (error) {
-      _showSnackBar("Couldn't save this entry. ${friendlyError(error)}");
+      _showSnackBar(l10n.progressSaveError(friendlyError(error)));
     }
   }
 
@@ -105,11 +109,12 @@ class _ProgressScreenState extends State<ProgressScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     final textColor = colorScheme.onSurfaceVariant;
     final gridColor = colorScheme.outlineVariant;
+    final l10n = AppLocalizations.of(context)!;
 
     if (spots.isEmpty) {
       return Center(
         child: Text(
-          "No progress data available",
+          l10n.progressNoDataAvailable,
           style: TextStyle(
             color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
           ),
@@ -125,7 +130,8 @@ class _ProgressScreenState extends State<ProgressScreen> {
               return touchedSpots.map((spot) {
                 final entry = sorted[spot.spotIndex];
                 return LineTooltipItem(
-                  "Date: ${entry['date']}\nWeight: ${entry['weight']} kg",
+                  l10n.progressTooltip(
+                      '${entry['date']}', '${entry['weight']}'),
                   TextStyle(color: Theme.of(context).colorScheme.onSurface),
                 );
               }).toList();
@@ -149,8 +155,14 @@ class _ProgressScreenState extends State<ProgressScreen> {
                 if (index >= 0 && index < sorted.length) {
                   final date = sorted[index]['date'];
                   final parts = date.split('-');
-                  final formattedDate =
-                      parts.length == 3 ? "${parts[1]}/${parts[2]}" : date;
+                  // Day first in French (31/12), month first in English (12/31).
+                  final dayFirst =
+                      Localizations.localeOf(context).languageCode == 'fr';
+                  final formattedDate = parts.length == 3
+                      ? (dayFirst
+                          ? "${parts[2]}/${parts[1]}"
+                          : "${parts[1]}/${parts[2]}")
+                      : date;
                   return Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Text(
@@ -229,10 +241,11 @@ class _ProgressScreenState extends State<ProgressScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Progress Tracker",
+        title: Text(
+          l10n.progressTitle,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         elevation: 0,
@@ -249,7 +262,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
               : _errorMessage != null
               ? Center(
                 child: Text(
-                  _errorMessage!,
+                  l10n.progressLoadError(_errorMessage!),
                   style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
               )
@@ -273,6 +286,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
   }
 
   Widget _buildProgressEntryForm() {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -280,7 +294,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              "Add Progress Entry",
+              l10n.progressAddEntryTitle,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -316,7 +330,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                 }
               },
               decoration: InputDecoration(
-                labelText: "Date",
+                labelText: l10n.progressDateLabel,
                 labelStyle: TextStyle(
                   color: Theme.of(
                     context,
@@ -355,7 +369,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
             TextField(
               controller: _weightController,
               decoration: InputDecoration(
-                labelText: "Weight (kg)",
+                labelText: l10n.onboardingWeightLabel,
                 labelStyle: TextStyle(
                   color: Theme.of(
                     context,
@@ -403,8 +417,8 @@ class _ProgressScreenState extends State<ProgressScreen> {
                 elevation: 0,
               ),
               onPressed: _addProgress,
-              child: const Text(
-                "Add Your Progress",
+              child: Text(
+                l10n.progressAddYourProgress,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
@@ -415,6 +429,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
   }
 
   Widget _buildProgressChart() {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -422,7 +437,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              "Progress Chart",
+              l10n.progressChartTitle,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,

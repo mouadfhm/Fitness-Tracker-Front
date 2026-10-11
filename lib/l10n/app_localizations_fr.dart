@@ -1558,4 +1558,1185 @@ class AppLocalizationsFr extends AppLocalizations {
   String newWorkoutCycleNoWorkoutsMatch(String query) {
     return 'Aucune séance ne correspond à « $query »';
   }
+
+  @override
+  String get workoutCalendarExportedPlan => 'Programme d\'entraînement exporté';
+
+  @override
+  String workoutCalendarExportPlanFailed(String error) {
+    return 'Impossible d\'exporter votre programme. $error';
+  }
+
+  @override
+  String workoutCalendarImportPlanFailed(String error) {
+    return 'Impossible d\'importer ce programme. $error';
+  }
+
+  @override
+  String get workoutCalendarImportFileHint =>
+      'Vérifiez que le fichier est un programme d\'entraînement exporté depuis cette application.';
+
+  @override
+  String get workoutCalendarImportedPlan => 'Programme d\'entraînement importé';
+
+  @override
+  String workoutCalendarLoadWorkoutsFailed(String error) {
+    return 'Impossible de charger vos entraînements. $error';
+  }
+
+  @override
+  String get workoutCalendarSimpleModeSemantics =>
+      'Mode simple : enregistrez les activités que vous avez faites';
+
+  @override
+  String get workoutCalendarAdvancedModeSemantics =>
+      'Mode avancé : programmes de musculation hebdomadaires';
+
+  @override
+  String get workoutCalendarReadyMadePlans =>
+      'Programmes prêts à l\'emploi et enregistrés';
+
+  @override
+  String get workoutCalendarExportMyPlan => 'Exporter mon programme';
+
+  @override
+  String get workoutCalendarImportPlan => 'Importer un programme';
+
+  @override
+  String workoutCalendarLoadPlanFailed(String error) {
+    return 'Impossible de charger votre programme. $error';
+  }
+
+  @override
+  String get workoutCalendarNoPlanYet =>
+      'Vous n\'avez pas encore de programme d\'entraînement';
+
+  @override
+  String get workoutCalendarNothingPlannedThisWeek =>
+      'Rien de prévu cette semaine';
+
+  @override
+  String get workoutCalendarThisWeek => 'Cette semaine';
+
+  @override
+  String get workoutCalendarNextWeekRelative => 'La semaine prochaine';
+
+  @override
+  String get workoutCalendarLastWeek => 'La semaine dernière';
+
+  @override
+  String get workoutCalendarAddToDayTooltip => 'Ajouter à ce jour';
+
+  @override
+  String workoutCalendarAddWorkoutFailed(String error) {
+    return 'Impossible d\'ajouter cet entraînement. $error';
+  }
+
+  @override
+  String workoutCalendarPlanStartsWeekOf(String date) {
+    return 'Votre programme commence la semaine du $date.';
+  }
+
+  @override
+  String get workoutCalendarShowThatWeek => 'Afficher cette semaine';
+
+  @override
+  String get workoutCalendarNewToWorkingOut => 'Vous débutez ?';
+
+  @override
+  String get workoutCalendarReadyMadePitch =>
+      'Commencez avec un programme prêt à l\'emploi. Full Body, c\'est 3 jours par semaine, et nous choisissons les exercices pour vous.';
+
+  @override
+  String get workoutCalendarChooseReadyMadePlan =>
+      'Choisir un programme prêt à l\'emploi';
+
+  @override
+  String get workoutCalendarBuildOwnPlan => 'Créer mon propre programme';
+
+  @override
+  String workoutDetailScreenExportWorkoutFailed(String error) {
+    return 'Impossible d\'exporter cet entraînement. $error';
+  }
+
+  @override
+  String workoutDetailScreenLoadFailed(String error) {
+    return 'Impossible de charger cet entraînement. $error';
+  }
+
+  @override
+  String get workoutDetailScreenEditTooltip => 'Modifier l\'entraînement';
+
+  @override
+  String workoutDetailScreenDurationSeconds(int seconds) {
+    return '$seconds s';
+  }
+
+  @override
+  String get workoutDetailsIntensityLight => 'Légère';
+
+  @override
+  String get workoutDetailsIntensityModerate => 'Modérée';
+
+  @override
+  String get workoutDetailsIntensityVigorous => 'Intense';
+
+  @override
+  String get workoutDetailsEnterMinutes =>
+      'Indiquez combien de minutes vous avez fait de l\'exercice';
+
+  @override
+  String workoutDetailsLoggedSuccess(int minutes) {
+    return 'Bravo ! $minutes min enregistrées. Vous les verrez dans l\'onglet Aujourd\'hui.';
+  }
+
+  @override
+  String workoutDetailsLogFailed(String error) {
+    return 'Erreur : impossible d\'enregistrer cette activité. $error';
+  }
+
+  @override
+  String get workoutDetailsAboutActivity => 'À propos de cette activité';
+
+  @override
+  String get workoutDetailsBurnsAbout => 'Brûle environ';
+
+  @override
+  String workoutDetailsKcalPerHour(String kcal) {
+    return '$kcal kcal/heure';
+  }
+
+  @override
+  String get workoutDetailsLogActivity => 'Enregistrer cette activité';
+
+  @override
+  String get workoutDetailsWhenTapToChange => 'Quand (touchez pour modifier)';
+
+  @override
+  String get workoutDetailsHowManyMinutes => 'Combien de minutes ?';
+
+  @override
+  String workoutDetailsAboutKcalBurned(int kcal) {
+    return 'Environ $kcal kcal brûlées';
+  }
+
+  @override
+  String get workoutDetailsIDidThis => 'Je l\'ai fait';
+
+  @override
+  String get exerciseSelectionAllBodyParts => 'Toutes';
+
+  @override
+  String get savedCyclesSuggestedFullBodyName => 'Corps entier';
+
+  @override
+  String get savedCyclesSuggestedFullBodyDescription =>
+      'Tout le corps, 3 jours par semaine avec des jours de repos entre les séances. Idéal pour commencer.';
+
+  @override
+  String get savedCyclesSuggestedUpperLowerName => 'Haut / Bas';
+
+  @override
+  String get savedCyclesSuggestedUpperLowerDescription =>
+      'Le haut du corps un jour, les jambes le lendemain. À essayer quand 3 jours par semaine vous semblent faciles.';
+
+  @override
+  String get savedCyclesSuggestedPushPullLegsName => 'Poussée Tirage Jambes';
+
+  @override
+  String get savedCyclesSuggestedPushPullLegsDescription =>
+      'Des muscles différents chaque jour. Pour ceux qui s\'entraînent déjà souvent.';
+
+  @override
+  String savedCyclesStartPlanFailed(String error) {
+    return 'Impossible de démarrer ce programme. $error';
+  }
+
+  @override
+  String get savedCyclesDeletePlanTitle => 'Supprimer le programme enregistré';
+
+  @override
+  String get savedCyclesThisPlan => 'ce programme';
+
+  @override
+  String savedCyclesDeletePlanFailed(String error) {
+    return 'Impossible de supprimer ce programme. $error';
+  }
+
+  @override
+  String get savedCyclesReadyMadeTitle => 'Programmes prêts à l\'emploi';
+
+  @override
+  String get savedCyclesReadyMadeSubtitle =>
+      'Choisissez-en un et nous ajouterons les exercices pour chaque jour d\'entraînement. Vous hésitez ? Commencez par Corps entier.';
+
+  @override
+  String get savedCyclesBeginnerBadge => 'Débutant';
+
+  @override
+  String savedCyclesDaysAWeekWeeks(int days, int weeks) {
+    return '$days jours par semaine · $weeks semaines';
+  }
+
+  @override
+  String get savedCyclesPlansTitle => 'Programmes d\'entraînement';
+
+  @override
+  String savedCyclesLoadPlansFailed(String error) {
+    return 'Impossible de charger vos programmes. $error';
+  }
+
+  @override
+  String get savedCyclesYourPlans => 'Vos programmes enregistrés';
+
+  @override
+  String get savedCyclesNoPlansYet =>
+      'Aucun programme enregistré pour l\'instant';
+
+  @override
+  String get savedCyclesPlansAutoSavedHint =>
+      'Chaque programme que vous créez est enregistré ici pour que vous puissiez le réutiliser plus tard.';
+
+  @override
+  String get savedCyclesUnnamedPlan => 'Programme sans nom';
+
+  @override
+  String get newWorkoutCycleRefreshWorkoutListTooltip =>
+      'Actualiser la liste des séances';
+
+  @override
+  String get newWorkoutCyclePlanNameLabel => 'Nom du programme';
+
+  @override
+  String get newWorkoutCyclePlanNameHint => 'ex. Poussée Tirage Jambes';
+
+  @override
+  String get newWorkoutCyclePlanNameSubtitle =>
+      'Donnez-lui un nom pour pouvoir enregistrer et réutiliser ce programme plus tard';
+
+  @override
+  String get newWorkoutCycleDescriptionOptionalLabel =>
+      'Description (facultatif)';
+
+  @override
+  String get newWorkoutCycleDescriptionExampleHint =>
+      'ex. 3 jours par semaine pour gagner en force';
+
+  @override
+  String get newWorkoutCyclePlanStartHint =>
+      'Votre programme commencera à cette date';
+
+  @override
+  String get newWorkoutCycleNumberOfWeeksLabel => 'Nombre de semaines';
+
+  @override
+  String newWorkoutCyclePlanRepeatsFor(int weeks) {
+    String _temp0 = intl.Intl.pluralLogic(
+      weeks,
+      locale: localeName,
+      other:
+          'Votre programme se répétera chaque semaine pendant $weeks semaines',
+      one: 'Votre programme se répétera chaque semaine pendant $weeks semaine',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get newWorkoutCycleWorkoutScheduleTitle => 'Planning des séances';
+
+  @override
+  String get newWorkoutCycleWorkoutScheduleSubtitle =>
+      'Choisissez les séances pour chaque jour de la semaine';
+
+  @override
+  String newWorkoutCycleTemplateSuggestsDays(int total, int pending) {
+    return 'Ce modèle propose $total jour(s) d\'entraînement, indiqués ci-dessous. Choisissez une séance pour le(s) $pending jour(s) encore surligné(s) en orange — les autres jours restent des jours de repos, sauf si vous les modifiez.';
+  }
+
+  @override
+  String get newWorkoutCycleAllSuggestedDaysAssigned =>
+      'Tous les jours d\'entraînement proposés ont une séance attribuée.';
+
+  @override
+  String get newWorkoutCycleLoadingCustomWorkouts =>
+      'Chargement de vos séances personnalisées...';
+
+  @override
+  String get newWorkoutCycleNoCustomWorkoutsFound =>
+      'Aucune séance personnalisée trouvée';
+
+  @override
+  String get newWorkoutCycleCreateWorkoutFirstHint =>
+      'Créez d\'abord une séance, puis ajoutez-la à votre programme';
+
+  @override
+  String newWorkoutCycleDeleteWorkoutRestDayConfirm(String name) {
+    return 'Supprimer « $name » ? Les jours qui l\'utilisent deviendront des jours de repos.';
+  }
+
+  @override
+  String newWorkoutCycleDeleteThisWorkoutFailed(String error) {
+    return 'Impossible de supprimer cette séance. $error';
+  }
+
+  @override
+  String get newWorkoutCycleNoCustomWorkoutsYetShort =>
+      'Aucune séance personnalisée pour l\'instant';
+
+  @override
+  String get newWorkoutCycleRecommendedTrainingDay =>
+      'Jour d\'entraînement recommandé';
+
+  @override
+  String get newWorkoutCycleChooseWorkout => 'Choisir une séance';
+
+  @override
+  String get newWorkoutCycleAddNewWorkout => 'Ajouter une séance';
+
+  @override
+  String get newWorkoutCycleCreatePlanButton => 'Créer le programme';
+
+  @override
+  String get newWorkoutCycleCreatingPlan =>
+      'Création de votre programme d\'entraînement...';
+
+  @override
+  String get newWorkoutCycleCreatePlanFailedTitle =>
+      'Impossible de créer votre programme';
+
+  @override
+  String newWorkoutCycleLoadWorkoutsFailed(String error) {
+    return 'Impossible de charger vos séances. $error';
+  }
+
+  @override
+  String get loginCouldNotLogIn => 'Connexion impossible. Veuillez réessayer.';
+
+  @override
+  String get loginForgotPassword => 'Mot de passe oublié ?';
+
+  @override
+  String get loginLogIn => 'Se connecter';
+
+  @override
+  String get loginCreateOne => 'Créez-en un';
+
+  @override
+  String get registerCouldNotCreate =>
+      'Impossible de créer votre compte. Veuillez réessayer.';
+
+  @override
+  String get registerPrivacyAgreement =>
+      'En créant un compte, vous acceptez notre politique de confidentialité';
+
+  @override
+  String get forgotPasswordTitle => 'Réinitialiser le mot de passe';
+
+  @override
+  String get forgotPasswordIntro =>
+      'Saisissez l\'adresse e-mail de votre compte et nous vous enverrons un code pour réinitialiser votre mot de passe.';
+
+  @override
+  String forgotPasswordCodeSentIntro(String email) {
+    return 'Si $email correspond à un compte, nous y avons envoyé un code à 6 chiffres. Saisissez-le ci-dessous avec votre nouveau mot de passe.';
+  }
+
+  @override
+  String get forgotPasswordCodeLabel => 'Code';
+
+  @override
+  String get forgotPasswordCodeInvalid =>
+      'Saisissez le code à 6 chiffres reçu par e-mail';
+
+  @override
+  String get forgotPasswordNewPasswordLabel => 'Nouveau mot de passe';
+
+  @override
+  String get forgotPasswordConfirmNewPasswordLabel =>
+      'Confirmer le nouveau mot de passe';
+
+  @override
+  String get forgotPasswordChangeButton => 'Changer le mot de passe';
+
+  @override
+  String get forgotPasswordSendCode => 'Envoyer le code';
+
+  @override
+  String get forgotPasswordResend => 'Rien reçu ? Envoyer un nouveau code';
+
+  @override
+  String get forgotPasswordSendFailed =>
+      'Impossible d\'envoyer le code. Veuillez réessayer.';
+
+  @override
+  String get forgotPasswordChangeFailed =>
+      'Impossible de changer votre mot de passe. Veuillez réessayer.';
+
+  @override
+  String get forgotPasswordChanged =>
+      'Mot de passe modifié. Vous pouvez maintenant vous connecter.';
+
+  @override
+  String get helpCommonQuestions => 'Questions fréquentes';
+
+  @override
+  String get helpFaqLogFoodQ => 'Comment enregistrer ce que j\'ai mangé ?';
+
+  @override
+  String get helpFaqLogFoodA =>
+      'Dans l\'onglet Aujourd\'hui, appuyez sur « Ajouter » à côté du repas (petit-déjeuner, déjeuner, dîner ou collations). Recherchez l\'aliment, indiquez combien de grammes vous avez mangé et appuyez sur « Ajouter ». Vous pouvez aussi scanner un code-barres dans l\'onglet Aliments.';
+
+  @override
+  String get helpFaqNoScaleQ =>
+      'Je ne pèse pas mes aliments. Que dois-je saisir ?';
+
+  @override
+  String get helpFaqNoScaleA =>
+      'Une estimation approximative suffit. Une tranche de pain pèse environ 30 g, une pomme environ 150 g, une tasse de riz cuit environ 160 g et un blanc de poulet environ 170 g. Servez-vous des boutons rapides (50, 100, 150, 200 g) comme point de départ.';
+
+  @override
+  String get helpFaqKcalLeftQ => 'Que signifie « kcal restantes » ?';
+
+  @override
+  String get helpFaqKcalLeftA =>
+      'C\'est le nombre de calories que vous pouvez encore manger aujourd\'hui tout en restant sur la bonne voie pour votre objectif. Si vous le dépassez, le nombre devient rouge. Un jour de dépassement n\'est pas grave ; ce qui compte, c\'est la plupart des jours.';
+
+  @override
+  String get helpFaqMacrosQ =>
+      'Que sont les protéines, les glucides et les lipides ?';
+
+  @override
+  String get helpFaqMacrosA =>
+      'Ce sont les trois nutriments qui apportent les calories des aliments. Les protéines aident à construire et réparer les muscles, les glucides sont votre principale source d\'énergie et les lipides soutiennent votre corps de bien des façons. Concentrez-vous d\'abord sur les calories, puis sur un apport suffisant en protéines.';
+
+  @override
+  String get helpFaqCalorieGoalQ =>
+      'Comment mon objectif calorique quotidien est-il calculé ?';
+
+  @override
+  String get helpFaqCalorieGoalA =>
+      'À partir de votre âge, votre poids, votre taille, votre sexe et votre niveau d\'activité, nous estimons combien de calories vous brûlez lors d\'une journée normale. Ensuite, nous retirons 500 pour perdre du poids, ajoutons 300 pour prendre du muscle, ou gardons la même valeur. L\'exercice que vous enregistrez s\'ajoute pour la journée.';
+
+  @override
+  String get helpFaqLogExerciseQ =>
+      'Comment enregistrer une activité physique ?';
+
+  @override
+  String get helpFaqLogExerciseA =>
+      'Allez dans l\'onglet Entraînements. En mode Simple, trouvez l\'activité (marche, vélo, …), appuyez dessus, choisissez le nombre de minutes et appuyez sur « Je l\'ai fait ».';
+
+  @override
+  String get helpFaqAdvancedModeQ => 'Qu\'est-ce que le mode Avancé ?';
+
+  @override
+  String get helpFaqAdvancedModeA =>
+      'Le mode Avancé sert à planifier vos séances de salle semaine par semaine. Si vous débutez, choisissez un programme tout prêt : Full Body, c\'est 3 jours par semaine et nous ajoutons les exercices pour vous.';
+
+  @override
+  String get helpFaqChangeGoalQ =>
+      'Comment modifier mon poids ou mon objectif ?';
+
+  @override
+  String get helpFaqChangeGoalA =>
+      'Allez dans l\'onglet Moi et appuyez sur le bouton de modification en haut. Pour suivre votre poids au fil du temps, utilisez « Suivi du poids » dans le même onglet.';
+
+  @override
+  String get helpDisclaimer =>
+      'Les objectifs caloriques, les calories brûlées et l\'IMC affichés dans cette application sont des estimations pour vous guider, pas un avis médical. Si vous avez un problème de santé, êtes enceinte ou prévoyez un changement important d\'alimentation ou d\'activité physique, consultez d\'abord un médecin.';
+
+  @override
+  String get helpEmailUs => 'Toujours bloqué ? Écrivez-nous';
+
+  @override
+  String helpNoEmailApp(String email) {
+    return 'Aucune application de messagerie trouvée. Vous pouvez écrire à $email.';
+  }
+
+  @override
+  String get appTextFieldHidePassword => 'Masquer le mot de passe';
+
+  @override
+  String get appTextFieldShowPassword => 'Afficher le mot de passe';
+
+  @override
+  String get adaptiveDone => 'OK';
+
+  @override
+  String privacyPolicyOpenFailed(String url) {
+    return 'Impossible d\'ouvrir la politique de confidentialité. Elle se trouve à l\'adresse $url';
+  }
+
+  @override
+  String onboardingSaveFailed(String error) {
+    return 'Impossible d\'enregistrer vos informations. $error';
+  }
+
+  @override
+  String get onboardingBodyStatsSubtitle =>
+      'Nous les utilisons uniquement pour calculer combien vous devriez manger chaque jour. Vous pouvez les modifier à tout moment.';
+
+  @override
+  String get onboardingUnitsMetric => 'kg / cm';
+
+  @override
+  String get onboardingUnitsImperial => 'lb / ft';
+
+  @override
+  String get onboardingWeightLbLabel => 'Poids (lb)';
+
+  @override
+  String get onboardingWeightLbHint => 'ex. 155';
+
+  @override
+  String get onboardingHeightFtLabel => 'Taille (ft)';
+
+  @override
+  String get onboardingHeightFtHint => 'ex. 5';
+
+  @override
+  String get onboardingHeightInLabel => '(in)';
+
+  @override
+  String get onboardingHeightInHint => 'ex. 9';
+
+  @override
+  String get onboardingFillStats =>
+      'Veuillez indiquer votre âge, votre poids et votre taille';
+
+  @override
+  String get onboardingBmiCardLabel =>
+      'IMC (votre poids par rapport à votre taille)';
+
+  @override
+  String get onboardingGenderSubtitle =>
+      'Les hommes et les femmes brûlent les calories à un rythme légèrement différent';
+
+  @override
+  String get onboardingBmrCaption =>
+      'Calories brûlées par votre corps au repos';
+
+  @override
+  String get onboardingBmrFootnote =>
+      'Même si vous restiez au lit toute la journée';
+
+  @override
+  String onboardingKcalValue(String value) {
+    return '$value kcal';
+  }
+
+  @override
+  String onboardingKcalPerDayValue(String value) {
+    return '$value kcal/jour';
+  }
+
+  @override
+  String get onboardingTdeeCaption =>
+      'Calories brûlées lors d\'une journée type';
+
+  @override
+  String get onboardingTdeeFootnote => 'Activité quotidienne comprise';
+
+  @override
+  String get onboardingActMostlySitting => 'Plutôt assis';
+
+  @override
+  String get onboardingActMostlySittingDesc =>
+      'Travail de bureau, peu ou pas d\'exercice';
+
+  @override
+  String get onboardingActLightlyActive => 'Légèrement actif';
+
+  @override
+  String get onboardingActLightlyActiveDesc =>
+      'Marche ou exercice léger 1 à 3 jours par semaine';
+
+  @override
+  String get onboardingActModeratelyActive => 'Modérément actif';
+
+  @override
+  String get onboardingActModeratelyActiveDesc =>
+      'Exercice 3 à 5 jours par semaine';
+
+  @override
+  String get onboardingActActiveDesc =>
+      'Exercice intense 6 à 7 jours par semaine';
+
+  @override
+  String get onboardingActVeryActive => 'Très actif';
+
+  @override
+  String get onboardingActVeryActiveDesc =>
+      'Travail physique ou entraînement deux fois par jour';
+
+  @override
+  String get onboardingGoalLoseWeightLabel => 'Perdre du poids';
+
+  @override
+  String get onboardingGoalLoseWeightDetail =>
+      'Manger un peu moins que ce que vous brûlez (environ 0,5 kg par semaine)';
+
+  @override
+  String get onboardingGoalBuildMuscleLabel => 'Prendre du muscle';
+
+  @override
+  String get onboardingGoalBuildMuscleDetail =>
+      'Manger un peu plus que ce que vous brûlez et faire de la musculation';
+
+  @override
+  String get onboardingGoalStayLabel => 'Garder mon poids';
+
+  @override
+  String get onboardingGoalStayDetail => 'Manger à peu près ce que vous brûlez';
+
+  @override
+  String get onboardingOffsetLose =>
+      '500 kcal de moins que ce que vous brûlez lors d\'une journée type';
+
+  @override
+  String get onboardingOffsetGain =>
+      '300 kcal de plus que ce que vous brûlez lors d\'une journée type';
+
+  @override
+  String get onboardingOffsetSame =>
+      'Autant que ce que vous brûlez lors d\'une journée type';
+
+  @override
+  String get onboardingDailyGoalCaption => 'Votre objectif calorique quotidien';
+
+  @override
+  String newWorkoutCouldNotLoadExercises(String error) {
+    return 'Impossible de charger les exercices. $error';
+  }
+
+  @override
+  String get workoutModeSimpleSemantics =>
+      'Mode simple : enregistrez les activités que vous avez faites';
+
+  @override
+  String get workoutModeAdvancedSemantics =>
+      'Mode avancé : programmes de musculation hebdomadaires';
+
+  @override
+  String get workoutSimpleIntro =>
+      'Vous avez fait du sport ? Trouvez l\'activité et enregistrez-la pour compter les calories brûlées.';
+
+  @override
+  String get workoutSearchActivitiesHint =>
+      'Rechercher une activité (ex. marche)';
+
+  @override
+  String get workoutCategoryAll => 'Toutes';
+
+  @override
+  String workoutActivitiesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count activités',
+      one: '$count activité',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get workoutActivitiesLoadError =>
+      'Impossible de charger les activités';
+
+  @override
+  String get workoutNoActivitiesAvailable => 'Aucune activité disponible';
+
+  @override
+  String get workoutNoActivitiesMatchSearch =>
+      'Aucune activité ne correspond à votre recherche';
+
+  @override
+  String workoutKcalPerHour(int kcal) {
+    return '≈ $kcal kcal par heure';
+  }
+
+  @override
+  String workoutKcalPerHourPerKg(String value) {
+    return '$value kcal par heure et par kg de poids corporel';
+  }
+
+  @override
+  String progressLoadError(String error) {
+    return 'Impossible de charger votre suivi du poids. $error';
+  }
+
+  @override
+  String progressSaveError(String error) {
+    return 'Impossible d\'enregistrer cette entrée. $error';
+  }
+
+  @override
+  String achievementCouldNotLoad(String error) {
+    return 'Impossible de charger les succès. $error';
+  }
+
+  @override
+  String get achievementTypeMeals => 'REPAS';
+
+  @override
+  String get achievementTypeStreak => 'SÉRIE';
+
+  @override
+  String get achievementTypeCalories => 'CALORIES';
+
+  @override
+  String get achievementTypeWorkouts => 'ENTRAÎNEMENTS';
+
+  @override
+  String get achievementTypeCardio => 'CARDIO';
+
+  @override
+  String get achievementTypeProgress => 'PROGRÈS';
+
+  @override
+  String get achievementTypeWeight => 'POIDS';
+
+  @override
+  String get achievementTypeMuscle => 'MUSCULATION';
+
+  @override
+  String get foodsProductNotFound =>
+      'Produit introuvable. Essayez de le rechercher par son nom, ou ajoutez-le vous-même avec le bouton +.';
+
+  @override
+  String foodsScanFailed(String error) {
+    return 'Impossible de scanner le code-barres. $error';
+  }
+
+  @override
+  String foodsAddToMealTitle(String meal) {
+    return 'Ajouter au repas : $meal';
+  }
+
+  @override
+  String get foodsTryAgain => 'Réessayer';
+
+  @override
+  String foodsKcalPer100g(int value) {
+    return '$value kcal pour 100 g';
+  }
+
+  @override
+  String get foodsNoMatch => 'Aucun aliment ne correspond à votre recherche.';
+
+  @override
+  String get foodsAddOwnFood => 'Ajouter votre propre aliment';
+
+  @override
+  String get foodsNewFoodButton => 'Nouvel aliment';
+
+  @override
+  String foodsProteinPer100g(String value) {
+    return 'Protéines : $value pour 100 g';
+  }
+
+  @override
+  String foodsCarbsPer100g(String value) {
+    return 'Glucides : $value pour 100 g';
+  }
+
+  @override
+  String foodsFatPer100g(String value) {
+    return 'Lipides : $value pour 100 g';
+  }
+
+  @override
+  String foodsProteinPill(String value) {
+    return 'Protéines $value';
+  }
+
+  @override
+  String foodsCarbsPill(String value) {
+    return 'Glucides $value';
+  }
+
+  @override
+  String foodsFatPill(String value) {
+    return 'Lipides $value';
+  }
+
+  @override
+  String get foodsSearchFoodsHint => 'Rechercher des aliments';
+
+  @override
+  String get foodsScanTooltip => 'Scanner un code-barres';
+
+  @override
+  String get foodDetailsMealNameRequired =>
+      'Veuillez saisir un nom pour ce repas.';
+
+  @override
+  String get foodDetailsGramsRequired =>
+      'Veuillez indiquer combien de grammes vous avez mangé.';
+
+  @override
+  String foodDetailsAddedSnack(int grams, String name, String meal, int kcal) {
+    return '$grams g de $name ajoutés au repas : $meal ($kcal kcal)';
+  }
+
+  @override
+  String foodDetailsAddFailed(String error) {
+    return 'Impossible d\'ajouter cet aliment. $error';
+  }
+
+  @override
+  String foodDetailsFavoritesFailed(String error) {
+    return 'Impossible de mettre à jour les favoris. $error';
+  }
+
+  @override
+  String get foodDetailsNutritionPer100g =>
+      'Valeurs nutritionnelles pour 100 g';
+
+  @override
+  String get foodDetailsHowMuch => 'Quelle quantité avez-vous mangée ?';
+
+  @override
+  String get foodDetailsAmountLabel => 'Quantité';
+
+  @override
+  String get foodDetailsGramsSuffix => 'grammes';
+
+  @override
+  String get foodDetailsPortionHint =>
+      'Vous hésitez ? Une tranche de pain pèse environ 30 g, une pomme environ 150 g, une tasse de riz cuit environ 160 g.';
+
+  @override
+  String get foodDetailsEnterAmountForCalories =>
+      'Saisissez une quantité pour voir les calories';
+
+  @override
+  String foodDetailsLiveTotal(
+    String grams,
+    int kcal,
+    String protein,
+    String carbs,
+    String fat,
+  ) {
+    return '$grams g = $kcal kcal  ·  Protéines $protein g  ·  Glucides $carbs g  ·  Lipides $fat g';
+  }
+
+  @override
+  String get foodDetailsWhichMeal => 'Quel repas ?';
+
+  @override
+  String get foodDetailsSnackChip => 'Collation';
+
+  @override
+  String get foodDetailsOtherMeal => 'Autre…';
+
+  @override
+  String get foodDetailsMealNameLabel => 'Nom du repas';
+
+  @override
+  String get foodDetailsMealNameHint => 'ex. Avant l\'entraînement, En soirée';
+
+  @override
+  String get foodDetailsChangeDate => 'Changer la date';
+
+  @override
+  String get foodDetailsAddToMealButton => 'Ajouter au repas';
+
+  @override
+  String foodDetailsAddToButton(String meal) {
+    return 'Ajouter ($meal)';
+  }
+
+  @override
+  String get mealDetailRemoveFoodTooltip => 'Retirer l\'aliment';
+
+  @override
+  String get mealHistoryTitle => 'Jours précédents';
+
+  @override
+  String get mealHistoryEmpty =>
+      'Aucun repas enregistré les jours précédents pour l\'instant.';
+
+  @override
+  String mealHistoryKcalEaten(int kcal) {
+    return '$kcal kcal consommées';
+  }
+
+  @override
+  String get homeHelpTitle => 'Que signifient ces chiffres ?';
+
+  @override
+  String get homeHelpBody =>
+      'Les calories (kcal) mesurent l\'énergie contenue dans les aliments. Manger à peu près votre objectif quotidien vous aide à atteindre votre poids cible.\n\nLes protéines, les glucides et les lipides sont les trois nutriments qui apportent les calories. Les protéines aident à construire et réparer les muscles, les glucides vous donnent de l\'énergie, et les lipides soutiennent votre corps de bien des façons.\n\nPas besoin d\'atteindre chaque chiffre exactement. Concentrez-vous d\'abord sur les calories, puis essayez de manger assez de protéines.';
+
+  @override
+  String get homeHelpGotIt => 'Compris';
+
+  @override
+  String get homeHelpTooltip => 'Que signifient ces chiffres ?';
+
+  @override
+  String get homeYourMealsHeading => 'Vos repas';
+
+  @override
+  String get homeSeePastDays => 'Voir les jours précédents';
+
+  @override
+  String get homeLoadErrorTitle => 'Impossible de charger les données du jour';
+
+  @override
+  String get homeTryAgain => 'Réessayer';
+
+  @override
+  String homeSemanticsEatenToday(int count) {
+    return '$count calories consommées aujourd\'hui';
+  }
+
+  @override
+  String homeSemanticsOverGoal(int count) {
+    return '$count calories au-dessus de votre objectif aujourd\'hui';
+  }
+
+  @override
+  String homeSemanticsLeftToday(int count) {
+    return '$count calories restantes aujourd\'hui';
+  }
+
+  @override
+  String get homeKcalEaten => 'kcal consommées';
+
+  @override
+  String get homeKcalOver => 'kcal en trop';
+
+  @override
+  String get homeKcalLeft => 'kcal restantes';
+
+  @override
+  String get homeSummaryGoal => 'Objectif';
+
+  @override
+  String get homeSummaryEaten => 'Consommé';
+
+  @override
+  String get homeSummaryExercise => 'Exercice';
+
+  @override
+  String homeSummaryLabelKcal(String label) {
+    return '$label (kcal)';
+  }
+
+  @override
+  String get homeFinishProfileForGoal =>
+      'Complétez votre profil dans l\'onglet Moi pour obtenir un objectif calorique quotidien.';
+
+  @override
+  String get homeExerciseAddedToGoal =>
+      'L\'exercice du jour est déjà ajouté à votre objectif.';
+
+  @override
+  String homeNutrientOfGoal(int eaten, int goal) {
+    return '$eaten sur $goal g';
+  }
+
+  @override
+  String get homeNothingAddedYet => 'Rien d\'ajouté pour l\'instant';
+
+  @override
+  String homeFoodsAndMore(String names, int count) {
+    return '$names et $count de plus';
+  }
+
+  @override
+  String homeAddFoodToMeal(String meal) {
+    return 'Ajouter un aliment au repas : $meal';
+  }
+
+  @override
+  String get homeAddButton => 'Ajouter';
+
+  @override
+  String get profileLogoutTitle => 'Se déconnecter ?';
+
+  @override
+  String get profileLogoutConfirm =>
+      'Voulez-vous vraiment vous déconnecter de votre compte ?';
+
+  @override
+  String get profileLogOut => 'Se déconnecter';
+
+  @override
+  String get profileChangePhotoTooltip => 'Changer la photo de profil';
+
+  @override
+  String get profileHowActive => 'Votre niveau d\'activité';
+
+  @override
+  String get profileYourGoal => 'Votre objectif';
+
+  @override
+  String get profileEditDetails => 'Modifier mes informations';
+
+  @override
+  String get profileWeightLog => 'Suivi du poids';
+
+  @override
+  String get profileTryAgain => 'Réessayer';
+
+  @override
+  String get notificationPromptTitle => 'Envie d\'un rappel ?';
+
+  @override
+  String get notificationPromptBody =>
+      'Nous pouvons vous faire signe quand vous n\'avez pas enregistré de repas ou d\'entraînement, et vous prévenir quand vous débloquez un badge. Vous pouvez modifier cela à tout moment dans les Paramètres.';
+
+  @override
+  String get notificationPromptNotNow => 'Pas maintenant';
+
+  @override
+  String get notificationPromptTurnOn => 'Activer les rappels';
+
+  @override
+  String settingsCouldNotSave(String reason) {
+    return 'Enregistrement impossible. $reason';
+  }
+
+  @override
+  String settingsCouldNotDelete(String reason) {
+    return 'Impossible de supprimer votre compte. $reason';
+  }
+
+  @override
+  String get labelNotSet => 'Non renseigné';
+
+  @override
+  String get labelActivitySedentary => 'Plutôt assis';
+
+  @override
+  String get labelActivityLight => 'Légèrement actif';
+
+  @override
+  String get labelActivityModerate => 'Modérément actif';
+
+  @override
+  String get labelActivityActive => 'Actif';
+
+  @override
+  String get labelActivityVeryActive => 'Très actif';
+
+  @override
+  String get labelGoalWeightLoss => 'Perdre du poids';
+
+  @override
+  String get labelGoalMuscleGain => 'Prendre du muscle';
+
+  @override
+  String get labelGoalMaintenance => 'Garder mon poids';
+
+  @override
+  String get labelGenderMale => 'Homme';
+
+  @override
+  String get labelGenderFemale => 'Femme';
+
+  @override
+  String get labelMealBreakfast => 'Petit-déjeuner';
+
+  @override
+  String get labelMealLunch => 'Déjeuner';
+
+  @override
+  String get labelMealDinner => 'Dîner';
+
+  @override
+  String get labelMealSnacks => 'Collations';
+
+  @override
+  String get labelIntensityVigorous => 'Intense';
+
+  @override
+  String get labelIntensityModerate => 'Modérée';
+
+  @override
+  String get labelIntensityLight => 'Légère';
+
+  @override
+  String get errorTryAgain => 'Veuillez réessayer.';
+
+  @override
+  String get errorNoConnection =>
+      'Impossible de joindre le serveur. Vérifiez votre connexion Internet et réessayez.';
+
+  @override
+  String get errorSessionEnded =>
+      'Votre session a expiré. Veuillez vous reconnecter.';
+
+  @override
+  String get apiCheckDetails => 'Vérifiez vos informations et réessayez.';
+
+  @override
+  String get apiTooManyAttempts =>
+      'Trop de tentatives. Patientez une minute et réessayez.';
+
+  @override
+  String get apiWrongCredentials =>
+      'E-mail ou mot de passe incorrect. Veuillez réessayer.';
+
+  @override
+  String get apiAccountDeactivated => 'Ce compte a été désactivé.';
+
+  @override
+  String get apiInvalidEmail => 'Veuillez saisir une adresse e-mail valide.';
+
+  @override
+  String get apiResetCodeInvalid =>
+      'Ce code est incorrect ou a expiré. Demandez-en un nouveau.';
+
+  @override
+  String achievementTargetMeals(int target) {
+    return 'Enregistrer $target repas';
+  }
+
+  @override
+  String achievementTargetStreak(int target) {
+    return 'Garder une série de $target jours';
+  }
+
+  @override
+  String achievementTargetCalories(int target) {
+    return 'Atteindre $target calories';
+  }
+
+  @override
+  String achievementTargetWorkouts(int target) {
+    return 'Terminer $target séance(s)';
+  }
+
+  @override
+  String achievementTargetCardio(int target) {
+    return 'Terminer $target séance(s) de cardio';
+  }
+
+  @override
+  String achievementTargetProgress(int target) {
+    return 'Enregistrer $target mise(s) à jour de progrès';
+  }
+
+  @override
+  String achievementTargetWeight(int target) {
+    return 'Perdre $target kg';
+  }
+
+  @override
+  String achievementTargetMuscle(int target) {
+    return 'Prendre $target kg de muscle';
+  }
+
+  @override
+  String achievementTargetTasks(int target) {
+    return 'Terminer $target tâches';
+  }
+
+  @override
+  String achievementTargetCaloriesK(String thousands) {
+    return 'Atteindre ${thousands}k calories';
+  }
 }

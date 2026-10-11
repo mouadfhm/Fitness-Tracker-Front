@@ -2,6 +2,7 @@ import 'package:fitness_tracker_app/models/food.dart';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import 'food_details_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class NewFoodScreen extends StatefulWidget {
   const NewFoodScreen({super.key});
@@ -19,7 +20,7 @@ class _NewFoodScreenState extends State<NewFoodScreen> {
   final TextEditingController _fatsController = TextEditingController();
 
   bool _isLoading = false;
-  String? _errorMessage;
+  bool _addFailed = false;
   final _apiService = ApiService();
 
   void _addFood() async {
@@ -27,7 +28,7 @@ class _NewFoodScreenState extends State<NewFoodScreen> {
 
     setState(() {
       _isLoading = true;
-      _errorMessage = null;
+      _addFailed = false;
     });
 
     try {
@@ -51,7 +52,7 @@ class _NewFoodScreenState extends State<NewFoodScreen> {
       _formKey.currentState!.reset();
     } catch (error) {
       setState(() {
-        _errorMessage = "Failed to add food. Please try again.";
+        _addFailed = true;
       });
     } finally {
       setState(() {
@@ -68,6 +69,7 @@ class _NewFoodScreenState extends State<NewFoodScreen> {
     required Color color,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
@@ -103,11 +105,11 @@ class _NewFoodScreenState extends State<NewFoodScreen> {
         ),
         validator: (value) {
           if (value == null || value.isEmpty) {
-            return 'Please enter $labelText';
+            return l10n.appTextFieldRequired(labelText);
           }
           final number = double.tryParse(value);
           if (number == null || number < 0) {
-            return 'Please enter a valid number';
+            return l10n.newFoodInvalidNumber;
           }
           return null;
         },
@@ -118,12 +120,13 @@ class _NewFoodScreenState extends State<NewFoodScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Add New Food',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          l10n.newFoodTitle,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         elevation: 0,
@@ -152,10 +155,10 @@ class _NewFoodScreenState extends State<NewFoodScreen> {
                       controller: _nameController,
                       style: TextStyle(color: colorScheme.onSurface),
                       decoration: InputDecoration(
-                        labelText: 'Food Name',
+                        labelText: l10n.newFoodNameLabel,
                         labelStyle:
                             TextStyle(color: colorScheme.onSurfaceVariant),
-                        hintText: 'Enter food name',
+                        hintText: l10n.newFoodNameHint,
                         hintStyle:
                             TextStyle(color: colorScheme.onSurfaceVariant),
                         prefixIcon: Icon(Icons.restaurant,
@@ -171,7 +174,7 @@ class _NewFoodScreenState extends State<NewFoodScreen> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter food name';
+                          return l10n.newFoodNameRequired;
                         }
                         return null;
                       },
@@ -181,35 +184,35 @@ class _NewFoodScreenState extends State<NewFoodScreen> {
                   // Nutrition Fields (macro colors are intentional semantic colors)
                   _buildNutritionField(
                     controller: _caloriesController,
-                    labelText: 'Calories',
+                    labelText: l10n.homeMacroCalories,
                     unit: 'kcal',
                     icon: Icons.local_fire_department,
                     color: Colors.red.shade400,
                   ),
                   _buildNutritionField(
                     controller: _proteinController,
-                    labelText: 'Protein',
+                    labelText: l10n.homeMacroProtein,
                     unit: 'g',
                     icon: Icons.fitness_center,
                     color: Colors.blue.shade400,
                   ),
                   _buildNutritionField(
                     controller: _carbsController,
-                    labelText: 'Carbohydrates',
+                    labelText: l10n.newFoodCarbohydrates,
                     unit: 'g',
                     icon: Icons.grain,
                     color: Colors.green.shade400,
                   ),
                   _buildNutritionField(
                     controller: _fatsController,
-                    labelText: 'Fats',
+                    labelText: l10n.foodDetailsFatsLabel,
                     unit: 'g',
                     icon: Icons.water_drop,
                     color: Colors.orange.shade400,
                   ),
 
                   // Error Message
-                  if (_errorMessage != null)
+                  if (_addFailed)
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       child: Container(
@@ -219,7 +222,7 @@ class _NewFoodScreenState extends State<NewFoodScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          _errorMessage!,
+                          l10n.newFoodAddFailed,
                           style: TextStyle(
                             color: colorScheme.onErrorContainer,
                             fontWeight: FontWeight.w500,
@@ -250,9 +253,9 @@ class _NewFoodScreenState extends State<NewFoodScreen> {
                               strokeWidth: 2.5,
                             ),
                           )
-                        : const Text(
-                            'Add Food',
-                            style: TextStyle(
+                        : Text(
+                            l10n.newFoodAddButton,
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),

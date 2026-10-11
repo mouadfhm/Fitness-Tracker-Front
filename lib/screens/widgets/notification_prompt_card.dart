@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/firebase_service.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Explains reminders before iOS shows its one-time notification prompt.
 ///
@@ -47,6 +48,7 @@ class _NotificationPromptCardState extends State<NotificationPromptCard> {
   Widget build(BuildContext context) {
     if (!_visible) return const SizedBox.shrink();
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       elevation: 0,
       color: colorScheme.secondaryContainer,
@@ -63,7 +65,7 @@ class _NotificationPromptCardState extends State<NotificationPromptCard> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Want a reminder?',
+                    l10n.notificationPromptTitle,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -75,16 +77,14 @@ class _NotificationPromptCardState extends State<NotificationPromptCard> {
             ),
             const SizedBox(height: 8),
             Text(
-              "We can nudge you when you haven't logged a meal or a workout, "
-              "and tell you when you unlock a badge. You can change this any "
-              "time in Settings.",
+              l10n.notificationPromptBody,
               style: TextStyle(fontSize: 15, height: 1.4, color: colorScheme.onSecondaryContainer),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                TextButton(onPressed: _notNow, child: const Text('Not now')),
-                FilledButton(onPressed: _turnOn, child: const Text('Turn on reminders')),
+                TextButton(onPressed: _notNow, child: Text(l10n.notificationPromptNotNow)),
+                FilledButton(onPressed: _turnOn, child: Text(l10n.notificationPromptTurnOn)),
               ],
             ),
           ],

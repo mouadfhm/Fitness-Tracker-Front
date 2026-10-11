@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:fitness_tracker_app/utils/friendly_error.dart';
+import 'package:fitness_tracker_app/services/locale_service.dart';
 import 'package:fitness_tracker_app/utils/labels.dart';
 
 void main() {
@@ -55,5 +56,13 @@ void main() {
     expect(intensityLabel(2.0), 'Light'); // slow walk
     expect(intensityLabel(3.5), 'Moderate'); // brisk walk
     expect(intensityLabel(8.5), 'Vigorous'); // mountain biking
+  });
+
+  test('labels follow the app language', () {
+    LocaleService.languageCode = 'fr';
+    addTearDown(() => LocaleService.languageCode = 'en');
+    expect(goalLabel('weight_loss'), 'Perdre du poids');
+    expect(mealTimeLabel('snack'), 'Collations');
+    expect(friendlyError(Exception('x')), 'Veuillez réessayer.');
   });
 }

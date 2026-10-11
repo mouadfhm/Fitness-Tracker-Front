@@ -16,6 +16,7 @@ import '../../services/workout_export_service.dart';
 import '../../services/workout_file_io.dart';
 import '../../services/workout_import_service.dart';
 import 'import_confirmation_dialog.dart';
+import '../../l10n/app_localizations.dart';
 
 class WorkoutCalendarScreen extends StatefulWidget {
   final VoidCallback? onModeToggle;
@@ -30,16 +31,33 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
   late Future<Map<String, dynamic>> _weeklyPlanFuture;
   final ApiService _apiService = ApiService();
   int _currentWeekNumber = DateTime.now().weekOfYear;
-  final List<String> _dayAbbreviations = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-  final List<String> _dayNames = [
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-    'Sunday',
-  ];
+
+  /// One-letter day initials (M T W ... in English, L M M ... in French).
+  String _dayAbbreviation(int index) {
+    // 2024-01-01 was a Monday.
+    return DateFormat('EEEEE', Localizations.localeOf(context).toString())
+        .format(DateTime(2024, 1, 1 + index));
+  }
+
+  String _dayName(AppLocalizations l10n, int index) {
+    switch (index) {
+      case 0:
+        return l10n.dayMonday;
+      case 1:
+        return l10n.dayTuesday;
+      case 2:
+        return l10n.dayWednesday;
+      case 3:
+        return l10n.dayThursday;
+      case 4:
+        return l10n.dayFriday;
+      case 5:
+        return l10n.daySaturday;
+      default:
+        return l10n.daySunday;
+    }
+  }
+
   final List<String> _dayKeys = [
     'mon',
     'tue',
@@ -54,6 +72,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
   int _selectedDayIndex = DateTime.now().weekday - 1;
 
   bool _isLoading = false;
+  // Holds the friendly reason only; the localized prefix is added in build.
   String? _errorMessage;
   List<Map<String, dynamic>> _workouts = [];
   bool _hasCycle = false;
@@ -103,7 +122,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
       final weeksList = weeklyPlan['weeks'] as List<dynamic>?;
       if (weeksList == null || weeksList.isEmpty) {
         if (!mounted) return;
-        _showSnack('No workout plan to export');
+        _showSnack(AppLocalizations.of(context)!.workoutCalendarNoExportPlan);
         return;
       }
 
@@ -127,10 +146,13 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
       );
 
       if (!mounted || !saved) return;
-      _showSnack('Workout plan exported');
+      _showSnack(AppLocalizations.of(context)!.workoutCalendarExportedPlan);
     } catch (e) {
       if (!mounted) return;
-      _showSnack("Couldn't export your plan. ${friendlyError(e)}", isError: true);
+      _showSnack(
+        AppLocalizations.of(context)!.workoutCalendarExportPlanFailed(friendlyError(e)),
+        isError: true,
+      );
     }
   }
 
@@ -163,7 +185,13 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
       _showSnack(e.message, isError: true);
     } catch (e) {
       if (!mounted) return;
-      _showSnack("Couldn't import that plan. ${friendlyError(e, fallback: 'Check that the file is a workout plan exported from this app.')}", isError: true);
+      final l10n = AppLocalizations.of(context)!;
+      _showSnack(
+        l10n.workoutCalendarImportPlanFailed(
+          friendlyError(e, fallback: l10n.workoutCalendarImportFileHint),
+        ),
+        isError: true,
+      );
     }
   }
 
@@ -188,7 +216,8 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
     );
 
     if (!mounted) return;
-    _showSnack('Workout "${workoutJson['name']}" imported successfully');
+    _showSnack(AppLocalizations.of(context)!
+        .workoutListSingleImportedSuccess(workoutJson['name'] as String));
     await _fetchWorkouts();
   }
 
@@ -242,7 +271,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
     );
 
     if (!mounted) return;
-    _showSnack('Workout plan imported');
+    _showSnack(AppLocalizations.of(context)!.workoutCalendarImportedPlan);
     await _fetchWorkouts();
     _fetchWeeklyPlan();
   }
@@ -285,7 +314,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _errorMessage = "Couldn't load your workouts. ${friendlyError(e)}";
+          _errorMessage = friendlyError(e);
           _isLoading = false;
         });
       }
@@ -294,6 +323,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
 
   Widget _buildModeToggle(BuildContext context, {required bool isSimple}) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerHighest,
@@ -303,8 +333,20 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _toggleSegment(context, label: 'Simple', active: isSimple, onTap: widget.onModeToggle),
-          _toggleSegment(context, label: 'Advanced', active: !isSimple, onTap: null),
+          _toggleSegment(
+            context,
+            label: l10n.workoutModeSimple,
+            semanticsLabel: l10n.workoutCalendarSimpleModeSemantics,
+            active: isSimple,
+            onTap: widget.onModeToggle,
+          ),
+          _toggleSegment(
+            context,
+            label: l10n.workoutModeAdvanced,
+            semanticsLabel: l10n.workoutCalendarAdvancedModeSemantics,
+            active: !isSimple,
+            onTap: null,
+          ),
         ],
       ),
     );
@@ -312,6 +354,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
 
   Widget _toggleSegment(BuildContext context, {
     required String label,
+    required String semanticsLabel,
     required bool active,
     required VoidCallback? onTap,
   }) {
@@ -319,9 +362,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
     return Semantics(
       button: true,
       selected: active,
-      label: label == 'Simple'
-          ? 'Simple mode: log activities you did'
-          : 'Advanced mode: weekly gym plans',
+      label: semanticsLabel,
       excludeSemantics: true,
       child: GestureDetector(
       onTap: onTap,
@@ -349,11 +390,12 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'My Workouts',
+        title: Text(
+          l10n.workoutCalendarTitle,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         elevation: 0,
@@ -367,7 +409,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
             ),
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert),
-            tooltip: 'Workout program options',
+            tooltip: l10n.workoutCalendarOptionsTooltip,
             onSelected: (value) {
               if (value == 'export') {
                 _exportCycle();
@@ -378,34 +420,34 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'saved',
                 child: Row(
                   children: [
-                    Icon(Icons.bookmark_border, size: 20),
-                    SizedBox(width: 12),
-                    Text('Ready-made and saved plans'),
+                    const Icon(Icons.bookmark_border, size: 20),
+                    const SizedBox(width: 12),
+                    Text(l10n.workoutCalendarReadyMadePlans),
                   ],
                 ),
               ),
               if (_hasCycle)
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'export',
                   child: Row(
                     children: [
-                      Icon(Icons.ios_share, size: 20),
-                      SizedBox(width: 12),
-                      Text('Export my plan'),
+                      const Icon(Icons.ios_share, size: 20),
+                      const SizedBox(width: 12),
+                      Text(l10n.workoutCalendarExportMyPlan),
                     ],
                   ),
                 ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'import',
                 child: Row(
                   children: [
-                    Icon(Icons.file_upload_outlined, size: 20),
-                    SizedBox(width: 12),
-                    Text('Import a plan'),
+                    const Icon(Icons.file_upload_outlined, size: 20),
+                    const SizedBox(width: 12),
+                    Text(l10n.workoutCalendarImportPlan),
                   ],
                 ),
               ),
@@ -422,21 +464,22 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
               child: CircularProgressIndicator(color: colorScheme.primary),
             );
           } else if (snapshot.hasError) {
-            return _buildErrorState("Couldn't load your plan. ${friendlyError(snapshot.error!)}");
+            return _buildErrorState(
+                l10n.workoutCalendarLoadPlanFailed(friendlyError(snapshot.error!)));
           } else if (!snapshot.hasData || snapshot.data == null) {
-            return _buildEmptyState("You don't have a workout plan yet");
+            return _buildEmptyState(l10n.workoutCalendarNoPlanYet);
           }
 
           final weeklyPlan = snapshot.data!;
 
           if (!weeklyPlan.containsKey('weeks') || weeklyPlan['weeks'] == null) {
-            return _buildEmptyState("You don't have a workout plan yet");
+            return _buildEmptyState(l10n.workoutCalendarNoPlanYet);
           }
 
           final weeksList = weeklyPlan['weeks'] as List<dynamic>?;
 
           if (weeksList == null || weeksList.isEmpty) {
-            return _buildEmptyState("You don't have a workout plan yet");
+            return _buildEmptyState(l10n.workoutCalendarNoPlanYet);
           }
 
           Map<String, dynamic>? currentWeekData;
@@ -462,7 +505,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
               }
             }
             return _buildEmptyState(
-              'Nothing planned for this week',
+              l10n.workoutCalendarNothingPlannedThisWeek,
               showWeekNavigation: true,
               nextPlannedWeek: nextWeekStart,
             );
@@ -487,6 +530,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
 
   Widget _buildWeekNavigation(ThemeData theme) {
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -497,7 +541,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
-            tooltip: 'Previous week',
+            tooltip: l10n.workoutCalendarPreviousWeek,
             icon: const Icon(Icons.arrow_back_ios_new, size: 18),
             style: IconButton.styleFrom(
               foregroundColor: colorScheme.primary,
@@ -535,7 +579,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
             ],
           ),
           IconButton(
-            tooltip: 'Next week',
+            tooltip: l10n.workoutCalendarNextWeek,
             icon: const Icon(Icons.arrow_forward_ios, size: 18),
             style: IconButton.styleFrom(
               foregroundColor: colorScheme.primary,
@@ -573,15 +617,16 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
   String _weekRangeLabel() {
     final monday = _shownMonday;
     final sunday = DateTime(monday.year, monday.month, monday.day + 6);
-    final fmt = DateFormat('MMM d');
+    final fmt = DateFormat.MMMd(Localizations.localeOf(context).toString());
     return '${fmt.format(monday)} – ${fmt.format(sunday)}';
   }
 
   String _relativeWeekLabel() {
+    final l10n = AppLocalizations.of(context)!;
     final offset = _currentWeekNumber - DateTime.now().weekOfYear;
-    if (offset == 0) return 'This week';
-    if (offset == 1) return 'Next week';
-    if (offset == -1) return 'Last week';
+    if (offset == 0) return l10n.workoutCalendarThisWeek;
+    if (offset == 1) return l10n.workoutCalendarNextWeekRelative;
+    if (offset == -1) return l10n.workoutCalendarLastWeek;
     return _shownMonday.year.toString();
   }
 
@@ -649,7 +694,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      _dayAbbreviations[index],
+                      _dayAbbreviation(index),
                       style: theme.textTheme.titleSmall?.copyWith(
                         color: textColor,
                         fontWeight:
@@ -677,8 +722,9 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
 
   Widget _buildWorkoutsList(ThemeData theme, Map<String, dynamic> weekData) {
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     final selectedDayKey = _dayKeys[_selectedDayIndex];
-    final selectedDayName = _dayNames[_selectedDayIndex];
+    final selectedDayName = _dayName(l10n, _selectedDayIndex);
     final dayData = weekData[selectedDayKey] as Map<String, dynamic>?;
     final workouts = dayData?['workouts'] as List<dynamic>? ?? [];
 
@@ -695,7 +741,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                'No workouts for $selectedDayName',
+                l10n.workoutCalendarNoWorkoutsForDay(selectedDayName),
                 style: theme.textTheme.titleMedium?.copyWith(
                   color: colorScheme.primary.withValues(alpha: 0.7),
                 ),
@@ -709,7 +755,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                   Icons.add,
                   color: colorScheme.onPrimary,
                 ),
-                label: const Text('Add Workout'),
+                label: Text(l10n.workoutCalendarAddWorkoutButton),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: colorScheme.primary,
                   foregroundColor: colorScheme.onPrimary,
@@ -739,7 +785,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Workouts for $selectedDayName',
+                  l10n.workoutCalendarWorkoutsForDay(selectedDayName),
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: colorScheme.primary,
@@ -750,7 +796,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                   onPressed: () {
                     _showWorkoutSelectionDialog(selectedDayKey);
                   },
-                  tooltip: 'Add more workouts',
+                  tooltip: l10n.workoutCalendarAddMoreTooltip,
                 ),
               ],
             ),
@@ -793,6 +839,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
       builder: (context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setModalState) {
+            final l10n = AppLocalizations.of(context)!;
             return Container(
               height: MediaQuery.of(context).size.height * 0.8,
               padding: const EdgeInsets.all(16),
@@ -802,7 +849,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                   Row(
                     children: [
                       Text(
-                        'Add Workout',
+                        l10n.workoutCalendarAddWorkoutButton,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: colorScheme.primary,
@@ -810,7 +857,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                       ),
                       const Spacer(),
                       IconButton(
-                        tooltip: 'Close',
+                        tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
                         icon: const Icon(Icons.close),
                         onPressed: () => Navigator.pop(context),
                       ),
@@ -830,7 +877,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                       });
                     },
                     icon: Icon(Icons.add, color: colorScheme.onPrimary),
-                    label: const Text('Create New Workout'),
+                    label: Text(l10n.workoutListCreateNewWorkout),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: colorScheme.primary,
                       foregroundColor: colorScheme.onPrimary,
@@ -843,7 +890,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                   const SizedBox(height: 16),
                   TextField(
                     decoration: InputDecoration(
-                      hintText: 'Search workouts...',
+                      hintText: l10n.workoutCalendarSearchWorkoutsHint,
                       hintStyle: TextStyle(
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -885,7 +932,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Available Workouts',
+                    l10n.workoutCalendarAvailableWorkouts,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: colorScheme.primary,
@@ -902,7 +949,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                         : _errorMessage != null
                         ? Center(
                             child: Text(
-                              _errorMessage!,
+                              l10n.workoutCalendarLoadWorkoutsFailed(_errorMessage!),
                               style: TextStyle(
                                 color: colorScheme.error,
                               ),
@@ -920,7 +967,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                                 ),
                                 const SizedBox(height: 16),
                                 Text(
-                                  'No matching workouts found',
+                                  l10n.workoutCalendarNoMatchingWorkouts,
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleMedium
@@ -943,7 +990,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                                 ),
                                 const SizedBox(height: 16),
                                 Text(
-                                  'No workouts available',
+                                  l10n.workoutNoneAvailable,
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleMedium
@@ -953,7 +1000,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  'Create your first workout',
+                                  l10n.workoutCalendarCreateFirstWorkout,
                                   style: TextStyle(
                                     color: colorScheme.onSurfaceVariant,
                                   ),
@@ -1005,7 +1052,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                                       )
                                     : null,
                                 trailing: IconButton(
-                                  tooltip: 'Add to this day',
+                                  tooltip: l10n.workoutCalendarAddToDayTooltip,
                                   icon: const Icon(Icons.add_circle_outline),
                                   color: colorScheme.primary,
                                   onPressed: () {
@@ -1060,7 +1107,8 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Couldn't add this workout. ${friendlyError(e)}"),
+            content: Text(AppLocalizations.of(context)!
+                .workoutCalendarAddWorkoutFailed(friendlyError(e))),
             backgroundColor: Colors.red,
           ),
         );
@@ -1075,6 +1123,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
 
   Widget _buildWorkoutCard(ThemeData theme, dynamic workout) {
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     final workoutData = workout['workout'];
 
     if (workoutData is! Map || workoutData['name'] is! String) {
@@ -1167,7 +1216,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                       size: 16,
                       color: colorScheme.primary,
                     ),
-                    label: const Text('Details'),
+                    label: Text(l10n.workoutCalendarDetailsButton),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
@@ -1180,7 +1229,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                   IconButton(
                     icon: const Icon(Icons.delete_outline, color: Colors.red),
                     onPressed: () => _deleteScheduleWorkout(workout['id']),
-                    tooltip: 'Remove exercise',
+                    tooltip: l10n.workoutCalendarRemoveExerciseTooltip,
                   ),
                 ],
               ),
@@ -1193,6 +1242,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
 
   Widget _buildMalformedWorkoutCard(ThemeData theme, dynamic workout) {
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
@@ -1210,7 +1260,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                'This workout entry couldn\'t be loaded.',
+                l10n.workoutCalendarMalformedEntry,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: colorScheme.error,
                 ),
@@ -1219,7 +1269,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
             IconButton(
               icon: Icon(Icons.delete_outline, color: colorScheme.error),
               onPressed: () => _deleteScheduleWorkout(workout['id']),
-              tooltip: 'Remove entry',
+              tooltip: l10n.workoutCalendarRemoveEntryTooltip,
             ),
           ],
         ),
@@ -1259,6 +1309,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
 
   Widget _buildErrorState(String error) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -1266,7 +1317,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
           Icon(Icons.error_outline, size: 64, color: colorScheme.error),
           const SizedBox(height: 16),
           Text(
-            'Error loading workouts',
+            l10n.workoutLoadError,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -1283,7 +1334,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
           ElevatedButton.icon(
             onPressed: _fetchWeeklyPlan,
             icon: const Icon(Icons.refresh),
-            label: const Text('Try Again'),
+            label: Text(l10n.workoutTryAgain),
             style: ElevatedButton.styleFrom(
               backgroundColor: colorScheme.primary,
               foregroundColor: colorScheme.onPrimary,
@@ -1301,6 +1352,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
   }) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     return ListView(
       padding: EdgeInsets.zero,
       children: [
@@ -1327,7 +1379,10 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
               const SizedBox(height: 24),
               if (nextPlannedWeek != null) ...[
                 Text(
-                  'Your plan starts the week of ${DateFormat('MMMM d').format(nextPlannedWeek)}.',
+                  l10n.workoutCalendarPlanStartsWeekOf(
+                    DateFormat.MMMMd(Localizations.localeOf(context).toString())
+                        .format(nextPlannedWeek),
+                  ),
                   style: TextStyle(fontSize: 16, color: colorScheme.onSurfaceVariant),
                   textAlign: TextAlign.center,
                 ),
@@ -1335,7 +1390,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                 FilledButton.icon(
                   onPressed: () => setState(() => _currentWeekNumber = nextPlannedWeek.weekOfYear),
                   icon: const Icon(Icons.arrow_forward),
-                  label: const Text('Show that week'),
+                  label: Text(l10n.workoutCalendarShowThatWeek),
                 ),
               ] else ...[
               // One clear starting point for beginners instead of a wall of
@@ -1350,7 +1405,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'New to working out?',
+                        l10n.workoutCalendarNewToWorkingOut,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -1359,8 +1414,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        'Start with a ready-made plan. Full Body is 3 days a week '
-                        'and we fill in the exercises for you.',
+                        l10n.workoutCalendarReadyMadePitch,
                         style: TextStyle(fontSize: 15, color: colorScheme.onPrimaryContainer),
                       ),
                       const SizedBox(height: 16),
@@ -1369,7 +1423,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                         child: FilledButton.icon(
                           onPressed: _openSavedCycles,
                           icon: const Icon(Icons.play_arrow),
-                          label: const Text('Choose a ready-made plan'),
+                          label: Text(l10n.workoutCalendarChooseReadyMadePlan),
                         ),
                       ),
                     ],
@@ -1387,7 +1441,7 @@ class _WorkoutCalendarScreenState extends State<WorkoutCalendarScreen> {
                   ).then((_) => _fetchWeeklyPlan());
                 },
                 icon: const Icon(Icons.edit_calendar),
-                label: const Text('Build my own plan'),
+                label: Text(l10n.workoutCalendarBuildOwnPlan),
               ),
               ],
             ],

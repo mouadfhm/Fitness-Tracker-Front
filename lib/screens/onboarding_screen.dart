@@ -4,6 +4,7 @@ import '../utils/friendly_error.dart';
 import 'package:provider/provider.dart';
 import '../providers/profile_provider.dart';
 import 'main_shell.dart';
+import '../l10n/app_localizations.dart';
 
 class OnboardingScreen extends StatefulWidget {
   final Map<String, dynamic> initialData;
@@ -182,7 +183,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            "Couldn't save your details. ${friendlyError(e)}",
+            AppLocalizations.of(context)!.onboardingSaveFailed(friendlyError(e)),
             style: TextStyle(color: Theme.of(context).colorScheme.onError),
           ),
           backgroundColor: Theme.of(context).colorScheme.error,
@@ -242,19 +243,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _buildStep1() {
+    final l10n = AppLocalizations.of(context)!;
     return _buildStepShell(
-      title: 'Your body stats',
-      subtitle:
-          'We only use these to work out how much you should eat each day. You can change them any time.',
+      title: l10n.onboardingStep1Title,
+      subtitle: l10n.onboardingBodyStatsSubtitle,
       infoCard: _buildBmiCard(),
       content: Column(
         children: [
           Align(
             alignment: Alignment.centerLeft,
             child: SegmentedButton<bool>(
-              segments: const [
-                ButtonSegment(value: false, label: Text('kg / cm')),
-                ButtonSegment(value: true, label: Text('lb / ft')),
+              segments: [
+                ButtonSegment(value: false, label: Text(l10n.onboardingUnitsMetric)),
+                ButtonSegment(value: true, label: Text(l10n.onboardingUnitsImperial)),
               ],
               selected: {_imperial},
               onSelectionChanged: (v) => _setUnits(v.first),
@@ -264,16 +265,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           _buildNumberField(
             key: const Key('age_field'),
             controller: _ageController,
-            label: 'Age',
-            hint: 'e.g. 25',
+            label: l10n.onboardingAgeLabel,
+            hint: l10n.onboardingAgeHint,
             icon: Icons.cake_outlined,
           ),
           const SizedBox(height: 12),
           _buildNumberField(
             key: const Key('weight_field'),
             controller: _weightController,
-            label: _imperial ? 'Weight (lb)' : 'Weight (kg)',
-            hint: _imperial ? 'e.g. 155' : 'e.g. 70',
+            label: _imperial ? l10n.onboardingWeightLbLabel : l10n.onboardingWeightLabel,
+            hint: _imperial ? l10n.onboardingWeightLbHint : l10n.onboardingWeightHint,
             icon: Icons.monitor_weight_outlined,
           ),
           const SizedBox(height: 12),
@@ -284,8 +285,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: _buildNumberField(
                     key: const Key('height_ft_field'),
                     controller: _heightFtController,
-                    label: 'Height (ft)',
-                    hint: 'e.g. 5',
+                    label: l10n.onboardingHeightFtLabel,
+                    hint: l10n.onboardingHeightFtHint,
                     icon: Icons.height,
                   ),
                 ),
@@ -294,8 +295,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: _buildNumberField(
                     key: const Key('height_in_field'),
                     controller: _heightInController,
-                    label: '(in)',
-                    hint: 'e.g. 9',
+                    label: l10n.onboardingHeightInLabel,
+                    hint: l10n.onboardingHeightInHint,
                     icon: Icons.straighten,
                   ),
                 ),
@@ -305,8 +306,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             _buildNumberField(
               key: const Key('height_field'),
               controller: _heightController,
-              label: 'Height (cm)',
-              hint: 'e.g. 175',
+              label: l10n.onboardingHeightLabel,
+              hint: l10n.onboardingHeightHint,
               icon: Icons.height,
             ),
         ],
@@ -319,8 +320,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             weight <= 0 || weight > 500 ||
             height <= 0 || height > 300) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Please fill in your age, weight and height'),
+            SnackBar(
+              content: Text(l10n.onboardingFillStats),
             ),
           );
           return;
@@ -331,23 +332,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _buildBmiCard() {
+    final l10n = AppLocalizations.of(context)!;
     final bmi = _bmi;
     String label;
     Color color;
     if (bmi <= 0) {
-      label = 'Enter your stats';
+      label = l10n.onboardingBmiEnterStats;
       color = Theme.of(context).colorScheme.outlineVariant;
     } else if (bmi < 18.5) {
-      label = 'Underweight';
+      label = l10n.onboardingBmiUnderweight;
       color = Colors.amber;
     } else if (bmi < 25) {
-      label = 'Healthy Range';
+      label = l10n.onboardingBmiHealthy;
       color = Colors.green;
     } else if (bmi < 30) {
-      label = 'Overweight';
+      label = l10n.onboardingBmiOverweight;
       color = Colors.orange;
     } else {
-      label = 'Obese';
+      label = l10n.onboardingBmiObese;
       color = Colors.red;
     }
 
@@ -359,7 +361,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         children: [
           Text(
-            'BMI (your weight compared to your height)',
+            l10n.onboardingBmiCardLabel,
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
@@ -393,25 +395,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _buildStep2() {
+    final l10n = AppLocalizations.of(context)!;
     final bmr = _bmr;
     return _buildStepShell(
-      title: "What's your gender?",
-      subtitle: 'Men and women burn calories at slightly different rates',
+      title: l10n.onboardingStep2Title,
+      subtitle: l10n.onboardingGenderSubtitle,
       infoCard: _buildInfoCard(
         gradient: [const Color(0xFFFEF3C7), const Color(0xFFFDE68A)],
         child: Column(children: [
-          const Text(
-            'Calories your body burns resting',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF92400E)),
+          Text(
+            l10n.onboardingBmrCaption,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF92400E)),
           ),
           const SizedBox(height: 4),
           Text(
-            bmr > 0 ? '${bmr.toStringAsFixed(0)} kcal' : '—',
+            bmr > 0 ? l10n.onboardingKcalValue(bmr.toStringAsFixed(0)) : '—',
             style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFF78350F)),
           ),
-          const Text(
-            'Even if you stayed in bed all day',
-            style: TextStyle(fontSize: 13, color: Color(0xFF92400E)),
+          Text(
+            l10n.onboardingBmrFootnote,
+            style: const TextStyle(fontSize: 13, color: Color(0xFF92400E)),
           ),
         ]),
       ),
@@ -419,7 +422,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         _buildSelectCard(
           value: 'male',
           currentValue: _gender,
-          label: 'Male',
+          label: l10n.onboardingGenderMaleLabel,
           description: '',
           emoji: '👨',
           onTap: () => setState(() => _gender = 'male'),
@@ -427,7 +430,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         _buildSelectCard(
           value: 'female',
           currentValue: _gender,
-          label: 'Female',
+          label: l10n.onboardingGenderFemaleLabel,
           description: '',
           emoji: '👩',
           onTap: () => setState(() => _gender = 'female'),
@@ -439,32 +442,33 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _buildStep3() {
+    final l10n = AppLocalizations.of(context)!;
     final tdee = _tdee;
     final activities = [
-      ('sedentary', '🛋️', 'Mostly sitting', 'Desk job, little or no exercise'),
-      ('light', '🚶', 'Lightly active', 'Walks or light exercise 1–3 days a week'),
-      ('Moderate', '🏃', 'Moderately active', 'Exercise 3–5 days a week'),
-      ('active', '⚡', 'Active', 'Hard exercise 6–7 days a week'),
-      ('very_active', '🔥', 'Very active', 'Physical job or training twice a day'),
+      ('sedentary', '🛋️', l10n.onboardingActMostlySitting, l10n.onboardingActMostlySittingDesc),
+      ('light', '🚶', l10n.onboardingActLightlyActive, l10n.onboardingActLightlyActiveDesc),
+      ('Moderate', '🏃', l10n.onboardingActModeratelyActive, l10n.onboardingActModeratelyActiveDesc),
+      ('active', '⚡', l10n.onboardingActivityActive, l10n.onboardingActActiveDesc),
+      ('very_active', '🔥', l10n.onboardingActVeryActive, l10n.onboardingActVeryActiveDesc),
     ];
     return _buildStepShell(
-      title: 'How active are you?',
-      subtitle: 'Pick what describes a typical week for you',
+      title: l10n.onboardingStep3Title,
+      subtitle: l10n.onboardingStep3Subtitle,
       infoCard: _buildInfoCard(
         gradient: [const Color(0xFFDCFCE7), const Color(0xFFBBF7D0)],
         child: Column(children: [
-          const Text(
-            'Calories you burn on a typical day',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF166534)),
+          Text(
+            l10n.onboardingTdeeCaption,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF166534)),
           ),
           const SizedBox(height: 4),
           Text(
-            tdee > 0 ? '${tdee.toStringAsFixed(0)} kcal/day' : '—',
+            tdee > 0 ? l10n.onboardingKcalPerDayValue(tdee.toStringAsFixed(0)) : '—',
             style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFF15803D)),
           ),
-          const Text(
-            'Including your daily activity',
-            style: TextStyle(fontSize: 13, color: Color(0xFF166534)),
+          Text(
+            l10n.onboardingTdeeFootnote,
+            style: const TextStyle(fontSize: 13, color: Color(0xFF166534)),
           ),
         ]),
       ),
@@ -486,31 +490,32 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _buildStep4() {
+    final l10n = AppLocalizations.of(context)!;
     final target = _dailyTarget;
     final tdee = _tdee;
     final goals = [
-      ('weight_loss', '🔥', 'Lose weight', 'Eat a bit less than you burn (about 0.5 kg a week)'),
-      ('muscle_gain', '💪', 'Build muscle', 'Eat a bit more than you burn, and do strength training'),
-      ('maintenance', '⚖️', 'Stay at my weight', 'Eat about what you burn'),
+      ('weight_loss', '🔥', l10n.onboardingGoalLoseWeightLabel, l10n.onboardingGoalLoseWeightDetail),
+      ('muscle_gain', '💪', l10n.onboardingGoalBuildMuscleLabel, l10n.onboardingGoalBuildMuscleDetail),
+      ('maintenance', '⚖️', l10n.onboardingGoalStayLabel, l10n.onboardingGoalStayDetail),
     ];
     final offset = _fitnessGoal == 'weight_loss'
-        ? '500 kcal less than you burn on a typical day'
+        ? l10n.onboardingOffsetLose
         : _fitnessGoal == 'muscle_gain'
-            ? '300 kcal more than you burn on a typical day'
-            : 'The same as you burn on a typical day';
+            ? l10n.onboardingOffsetGain
+            : l10n.onboardingOffsetSame;
     return _buildStepShell(
-      title: "What's your goal?",
-      subtitle: "We'll adjust your daily target accordingly",
+      title: l10n.onboardingStep4Title,
+      subtitle: l10n.onboardingStep4Subtitle,
       infoCard: _buildInfoCard(
         gradient: [const Color(0xFFFEE2E2), const Color(0xFFFECACA)],
         child: Column(children: [
-          const Text(
-            'Your daily calorie goal',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF991B1B)),
+          Text(
+            l10n.onboardingDailyGoalCaption,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF991B1B)),
           ),
           const SizedBox(height: 4),
           Text(
-            target > 0 ? '${target.toStringAsFixed(0)} kcal' : '—',
+            target > 0 ? l10n.onboardingKcalValue(target.toStringAsFixed(0)) : '—',
             style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFFDC2626)),
           ),
           if (tdee > 0)
@@ -549,6 +554,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     bool isFinal = false,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -573,7 +579,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    child: const Text('Back'),
+                    child: Text(l10n.onboardingBack),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -594,7 +600,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           child: CircularProgressIndicator(strokeWidth: 2, color: colorScheme.onPrimary),
                         )
                       : Text(
-                          isFinal ? "Let's Go!" : 'Next',
+                          isFinal ? l10n.onboardingLetsGo : l10n.onboardingNext,
                           style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                         ),
                 ),

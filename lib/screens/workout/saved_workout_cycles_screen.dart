@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import '../../utils/adaptive.dart';
 import 'package:intl/intl.dart';
+import '../../l10n/app_localizations.dart';
 import '../../services/api_service.dart';
 import '../../utils/friendly_error.dart';
 import 'new_workout_cycle_screen.dart';
@@ -108,9 +109,12 @@ const _fullBodyDay = _SuggestedWorkoutTemplate(
   ],
 );
 
+/// Which ready-made plan a card is, so its name and description can be
+/// shown in the current language.
+enum _SuggestedCycleId { fullBody, upperLower, pushPullLegs }
+
 class _SuggestedCycle {
-  final String name;
-  final String description;
+  final _SuggestedCycleId id;
   final int weeks;
   final bool beginnerFriendly;
 
@@ -120,20 +124,39 @@ class _SuggestedCycle {
   final Map<String, _SuggestedWorkoutTemplate> dayTemplates;
 
   const _SuggestedCycle({
-    required this.name,
-    required this.description,
+    required this.id,
     required this.weeks,
     required this.dayTemplates,
     this.beginnerFriendly = false,
   });
+
+  String name(AppLocalizations l10n) {
+    switch (id) {
+      case _SuggestedCycleId.fullBody:
+        return l10n.savedCyclesSuggestedFullBodyName;
+      case _SuggestedCycleId.upperLower:
+        return l10n.savedCyclesSuggestedUpperLowerName;
+      case _SuggestedCycleId.pushPullLegs:
+        return l10n.savedCyclesSuggestedPushPullLegsName;
+    }
+  }
+
+  String description(AppLocalizations l10n) {
+    switch (id) {
+      case _SuggestedCycleId.fullBody:
+        return l10n.savedCyclesSuggestedFullBodyDescription;
+      case _SuggestedCycleId.upperLower:
+        return l10n.savedCyclesSuggestedUpperLowerDescription;
+      case _SuggestedCycleId.pushPullLegs:
+        return l10n.savedCyclesSuggestedPushPullLegsDescription;
+    }
+  }
 }
 
 // Ordered easiest first: the first card is what a beginner sees.
 const List<_SuggestedCycle> _suggestedCycles = [
   _SuggestedCycle(
-    name: 'Full Body',
-    description:
-        'Whole body, 3 days a week with rest days in between. The best place to start.',
+    id: _SuggestedCycleId.fullBody,
     weeks: 8,
     beginnerFriendly: true,
     dayTemplates: {
@@ -143,9 +166,7 @@ const List<_SuggestedCycle> _suggestedCycles = [
     },
   ),
   _SuggestedCycle(
-    name: 'Upper / Lower',
-    description:
-        'Upper body one day, legs the next. Try it once 3 days feels easy.',
+    id: _SuggestedCycleId.upperLower,
     weeks: 6,
     dayTemplates: {
       'mon': _upperDay,
@@ -155,9 +176,7 @@ const List<_SuggestedCycle> _suggestedCycles = [
     },
   ),
   _SuggestedCycle(
-    name: 'Push Pull Legs',
-    description:
-        'Different muscles each day. For people who already train often.',
+    id: _SuggestedCycleId.pushPullLegs,
     weeks: 6,
     dayTemplates: {
       'mon': _pushDay,
@@ -181,7 +200,7 @@ class SavedWorkoutCyclesScreen extends StatefulWidget {
 class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
   final ApiService _apiService = ApiService();
   late Future<List<dynamic>> _plansFuture;
-  String? _creatingSuggestionName;
+  _SuggestedCycleId? _creatingSuggestionId;
   Object? _reusingPlanId;
 
   final List<String> _dayLabels = const [
@@ -245,7 +264,9 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('"${plan['name'] ?? 'Cycle'}" scheduled')),
+        SnackBar(
+            content: Text(AppLocalizations.of(context)!.savedCyclesScheduled(
+                '${plan['name'] ?? AppLocalizations.of(context)!.savedCyclesDefaultName}'))),
       );
       Navigator.pop(context, true);
     } catch (e) {
@@ -254,7 +275,9 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
         _reusingPlanId = null;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Couldn't start this plan. ${friendlyError(e)}")),
+        SnackBar(
+            content: Text(AppLocalizations.of(context)!
+                .savedCyclesStartPlanFailed(friendlyError(e)))),
       );
     }
   }
@@ -262,21 +285,24 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
   Future<void> _deletePlan(Map<String, dynamic> plan) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog.adaptive(
-        title: const Text('Delete saved plan'),
-        content: Text(
-            'Delete "${plan['name'] ?? 'this plan'}"? This cannot be undone.'),
-        actions: [
-          AdaptiveDialogAction(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          AdaptiveDialogAction(isDestructive: true,
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
+      builder: (context) {
+        final l10n = AppLocalizations.of(context)!;
+        return AlertDialog.adaptive(
+          title: Text(l10n.savedCyclesDeletePlanTitle),
+          content: Text(l10n.savedCyclesDeleteConfirm(
+              '${plan['name'] ?? l10n.savedCyclesThisPlan}')),
+          actions: [
+            AdaptiveDialogAction(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(l10n.cancel),
+            ),
+            AdaptiveDialogAction(isDestructive: true,
+              onPressed: () => Navigator.pop(context, true),
+              child: Text(l10n.delete),
+            ),
+          ],
+        );
+      },
     );
 
     if (confirmed != true || !mounted) return;
@@ -287,7 +313,9 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Couldn't delete this plan. ${friendlyError(e)}")),
+        SnackBar(
+            content: Text(AppLocalizations.of(context)!
+                .savedCyclesDeletePlanFailed(friendlyError(e)))),
       );
     }
   }
@@ -344,7 +372,7 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
 
   Future<void> _useSuggestion(_SuggestedCycle suggestion) async {
     setState(() {
-      _creatingSuggestionName = suggestion.name;
+      _creatingSuggestionId = suggestion.id;
     });
 
     Map<String, int?> daysPattern = {};
@@ -413,8 +441,8 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Could not set up workouts automatically (${friendlyError(e)}) '
-            'Pick a workout for each highlighted day instead.',
+            AppLocalizations.of(context)!
+                .savedCyclesAutoSetupFailed(friendlyError(e)),
           ),
         ),
       );
@@ -427,15 +455,17 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
     if (!mounted) return;
 
     setState(() {
-      _creatingSuggestionName = null;
+      _creatingSuggestionId = null;
     });
+
+    final l10n = AppLocalizations.of(context)!;
 
     final created = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
         builder: (context) => NewWorkoutCycleScreen(
-          initialName: suggestion.name,
-          initialDescription: suggestion.description,
+          initialName: suggestion.name(l10n),
+          initialDescription: suggestion.description(l10n),
           initialWeeks: suggestion.weeks,
           initialDaysPattern: daysPattern,
           initialActiveDayKeys: stillNeedsWorkout,
@@ -449,13 +479,14 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
   }
 
   Widget _buildSuggestedCycles(ThemeData theme, ColorScheme colorScheme) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Ready-made plans',
+            l10n.savedCyclesReadyMadeTitle,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: colorScheme.onSurface,
@@ -463,7 +494,7 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-            'Pick one and we\'ll fill in the exercises for each training day. Not sure? Start with Full Body.',
+            l10n.savedCyclesReadyMadeSubtitle,
             style: theme.textTheme.bodySmall,
           ),
           const SizedBox(height: 12),
@@ -475,8 +506,8 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
               separatorBuilder: (context, index) => const SizedBox(width: 12),
               itemBuilder: (context, index) {
                 final suggestion = _suggestedCycles[index];
-                final isCreating = _creatingSuggestionName == suggestion.name;
-                final isBusy = _creatingSuggestionName != null;
+                final isCreating = _creatingSuggestionId == suggestion.id;
+                final isBusy = _creatingSuggestionId != null;
 
                 return SizedBox(
                   width: 220,
@@ -503,7 +534,7 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
                                   children: [
                                     Flexible(
                                       child: Text(
-                                        suggestion.name,
+                                        suggestion.name(l10n),
                                         style: theme.textTheme.titleSmall?.copyWith(
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -520,7 +551,7 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
                                           borderRadius: BorderRadius.circular(6),
                                         ),
                                         child: Text(
-                                          'Beginner',
+                                          l10n.savedCyclesBeginnerBadge,
                                           style: TextStyle(
                                             fontSize: 12,
                                             fontWeight: FontWeight.bold,
@@ -534,14 +565,16 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
                                 const SizedBox(height: 4),
                                 Expanded(
                                   child: Text(
-                                    suggestion.description,
+                                    suggestion.description(l10n),
                                     style: theme.textTheme.bodySmall,
                                     maxLines: 3,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                                 Text(
-                                  '${suggestion.dayTemplates.length} days a week · ${suggestion.weeks} weeks',
+                                  l10n.savedCyclesDaysAWeekWeeks(
+                                      suggestion.dayTemplates.length,
+                                      suggestion.weeks),
                                   style: theme.textTheme.bodySmall?.copyWith(
                                     color: colorScheme.primary,
                                     fontWeight: FontWeight.w600,
@@ -573,7 +606,7 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    'Setting up workouts…',
+                                    l10n.savedCyclesSettingUp,
                                     style: theme.textTheme.bodySmall,
                                     textAlign: TextAlign.center,
                                   ),
@@ -597,12 +630,13 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Workout plans',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          l10n.savedCyclesPlansTitle,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         elevation: 0,
         backgroundColor: colorScheme.surface,
@@ -624,7 +658,8 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(32.0),
                 child: Text(
-                  "Couldn't load your plans. ${friendlyError(snapshot.error!)}",
+                  l10n.savedCyclesLoadPlansFailed(
+                      friendlyError(snapshot.error!)),
                   textAlign: TextAlign.center,
                   style: TextStyle(color: colorScheme.error),
                 ),
@@ -644,7 +679,7 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                   child: Text(
-                    'Your saved plans',
+                    l10n.savedCyclesYourPlans,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: colorScheme.onSurface,
@@ -664,7 +699,7 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          'No saved plans yet',
+                          l10n.savedCyclesNoPlansYet,
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: colorScheme.onSurface,
@@ -673,7 +708,7 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Every plan you create is saved here so you can reuse it later.',
+                          l10n.savedCyclesPlansAutoSavedHint,
                           style: theme.textTheme.bodyMedium,
                           textAlign: TextAlign.center,
                         ),
@@ -707,7 +742,7 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
                                       Expanded(
                                         child: Text(
                                           (name == null || name.isEmpty)
-                                              ? 'Unnamed plan'
+                                              ? l10n.savedCyclesUnnamedPlan
                                               : name,
                                           style: theme.textTheme.titleMedium
                                               ?.copyWith(
@@ -718,7 +753,7 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
                                       IconButton(
                                         icon: Icon(Icons.delete_outline,
                                             color: colorScheme.error),
-                                        tooltip: 'Delete',
+                                        tooltip: l10n.delete,
                                         onPressed: () => _deletePlan(plan),
                                       ),
                                     ],
@@ -733,7 +768,9 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
                                   ],
                                   const SizedBox(height: 4),
                                   Text(
-                                    '${plan['weeks']} week${plan['weeks'] == 1 ? '' : 's'} · $activeDays workout day${activeDays == 1 ? '' : 's'}/week',
+                                    l10n.savedCyclesWeeksAndDaysSummary(
+                                        int.tryParse('${plan['weeks']}') ?? 0,
+                                        activeDays),
                                     style: theme.textTheme.bodySmall,
                                   ),
                                   const SizedBox(height: 12),
@@ -753,7 +790,7 @@ class _SavedWorkoutCyclesScreenState extends State<SavedWorkoutCyclesScreen> {
                                               ),
                                             )
                                           : const Icon(Icons.replay),
-                                      label: const Text('Reuse'),
+                                      label: Text(l10n.savedCyclesReuseButton),
                                       style: FilledButton.styleFrom(
                                         backgroundColor: colorScheme.primary,
                                         foregroundColor:

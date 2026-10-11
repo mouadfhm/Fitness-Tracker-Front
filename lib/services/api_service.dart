@@ -7,6 +7,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'token_service.dart';
 import 'navigation_service.dart';
+import '../utils/l10n.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ApiService {
@@ -82,10 +83,10 @@ class ApiService {
       return data;
     } else if (response.statusCode == 422) {
       throw UserFacingException(
-        _serverMessage(response) ?? 'Please check your details and try again.',
+        _serverMessage(response) ?? appL10n.apiCheckDetails,
       );
     } else if (response.statusCode == 429) {
-      throw const UserFacingException(_tooManyAttempts);
+      throw UserFacingException(appL10n.apiTooManyAttempts);
     } else {
       throw Exception("Failed to register: ${response.body}");
     }
@@ -107,20 +108,17 @@ class ApiService {
       }
       return data;
     } else if (response.statusCode == 422) {
-      throw const UserFacingException('Wrong email or password. Please try again.');
+      throw UserFacingException(appL10n.apiWrongCredentials);
     } else if (response.statusCode == 403) {
       throw UserFacingException(
-        _serverMessage(response) ?? 'This account has been deactivated.',
+        _serverMessage(response) ?? appL10n.apiAccountDeactivated,
       );
     } else if (response.statusCode == 429) {
-      throw const UserFacingException(_tooManyAttempts);
+      throw UserFacingException(appL10n.apiTooManyAttempts);
     } else {
       throw Exception("Failed to login: ${response.body}");
     }
   }
-
-  static const _tooManyAttempts =
-      'Too many attempts. Please wait a minute and try again.';
 
   /// Emails a 6-digit reset code. The server answers the same way whether or
   /// not the email has an account, so this succeeds for any valid address.
@@ -132,10 +130,10 @@ class ApiService {
     );
     if (response.statusCode == 200) return;
     if (response.statusCode == 429) {
-      throw const UserFacingException(_tooManyAttempts);
+      throw UserFacingException(appL10n.apiTooManyAttempts);
     }
     if (response.statusCode == 422) {
-      throw const UserFacingException('Please enter a valid email address.');
+      throw UserFacingException(appL10n.apiInvalidEmail);
     }
     throw Exception("Failed to request a reset code: ${response.body}");
   }
@@ -160,11 +158,11 @@ class ApiService {
     );
     if (response.statusCode == 200) return;
     if (response.statusCode == 429) {
-      throw const UserFacingException(_tooManyAttempts);
+      throw UserFacingException(appL10n.apiTooManyAttempts);
     }
     if (response.statusCode == 422) {
       throw UserFacingException(
-        _serverMessage(response) ?? 'This code is wrong or has expired. Ask for a new one.',
+        _serverMessage(response) ?? appL10n.apiResetCodeInvalid,
       );
     }
     throw Exception("Failed to reset password: ${response.body}");

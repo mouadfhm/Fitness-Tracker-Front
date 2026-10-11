@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../utils/friendly_error.dart';
 import '../services/api_service.dart';
+import '../services/locale_service.dart';
+import '../utils/l10n.dart';
+import 'package:intl/intl.dart';
 
 class AchievementsProvider with ChangeNotifier {
   final ApiService _apiService = ApiService();
@@ -88,42 +91,35 @@ class AchievementsProvider with ChangeNotifier {
   String formatDate(String dateString) {
     try {
       final date = DateTime.parse(dateString);
-      return '${date.day} ${_getMonthName(date.month)} ${date.year}';
+      return DateFormat('d MMMM y', LocaleService.languageCode).format(date);
     } catch (e) {
       return dateString.substring(0, 10); // Fallback to simple substring
     }
   }
 
-  String _getMonthName(int month) {
-    const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-    return months[month - 1];
-  }
-
   String getTargetDescription(String type, int target) {
+    final l = appL10n;
     switch (type) {
       case 'meals':
-        return 'Log $target meal(s)';
+        return l.achievementTargetMeals(target);
       case 'streak':
-        return 'Maintain a streak for $target days';
+        return l.achievementTargetStreak(target);
       case 'calories':
         return target > 1000
-            ? 'Reach ${target / 1000}k calories'
-            : 'Reach $target calories';
+            ? l.achievementTargetCaloriesK('${target / 1000}')
+            : l.achievementTargetCalories(target);
       case 'workouts':
-        return 'Complete $target workout(s)';
+        return l.achievementTargetWorkouts(target);
       case 'cardio':
-        return 'Complete $target cardio session(s)';
+        return l.achievementTargetCardio(target);
       case 'progress':
-        return 'Log $target progress update(s)';
+        return l.achievementTargetProgress(target);
       case 'weight':
-        return 'Lose $target kg';
+        return l.achievementTargetWeight(target);
       case 'muscle':
-        return 'Gain $target kg of muscle';
+        return l.achievementTargetMuscle(target);
       default:
-        return 'Complete $target tasks';
+        return l.achievementTargetTasks(target);
     }
   }
 }

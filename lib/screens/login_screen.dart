@@ -6,6 +6,7 @@ import 'register_screen.dart';
 import 'forgot_password_screen.dart';
 import 'widgets/app_text_field.dart';
 import '../utils/friendly_error.dart';
+import '../l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -58,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(friendlyError(e, fallback: "Couldn't log you in. Please try again.")),
+          content: Text(friendlyError(e, fallback: AppLocalizations.of(context)!.loginCouldNotLogIn)),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -77,9 +78,10 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Welcome Back', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(l10n.loginTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
         elevation: 0,
         backgroundColor: colorScheme.surface,
@@ -96,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'Hello Again!',
+                    l10n.loginHeading,
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -106,33 +108,33 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Login to continue your fitness journey',
+                    l10n.loginSubtitle,
                     style: TextStyle(fontSize: 16, color: colorScheme.onSurfaceVariant),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 32),
                   AppTextField(
                     controller: _emailController,
-                    labelText: 'Email',
+                    labelText: l10n.emailLabel,
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) {
-                      if (value == null || value.isEmpty) return 'Please enter your email';
+                      if (value == null || value.isEmpty) return l10n.emailRequired;
                       final emailRegex = RegExp(
                         r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
                       );
-                      if (!emailRegex.hasMatch(value)) return 'Please enter a valid email address';
+                      if (!emailRegex.hasMatch(value)) return l10n.emailInvalid;
                       return null;
                     },
                   ),
                   const SizedBox(height: 16),
                   AppTextField(
                     controller: _passwordController,
-                    labelText: 'Password',
+                    labelText: l10n.passwordLabel,
                     obscureText: _obscurePassword,
                     showObscureToggle: _obscurePassword,
                     onObscureToggle: () => setState(() => _obscurePassword = !_obscurePassword),
                     validator: (value) {
-                      if (value == null || value.isEmpty) return 'Please enter your password';
+                      if (value == null || value.isEmpty) return l10n.loginPasswordRequired;
                       return null;
                     },
                   ),
@@ -140,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     alignment: Alignment.centerRight,
                     child: TextButton(
                       onPressed: _goToForgotPassword,
-                      child: const Text('Forgot password?'),
+                      child: Text(l10n.loginForgotPassword),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -156,9 +158,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     child: _isLoading
                         ? CircularProgressIndicator(color: colorScheme.onPrimary)
-                        : const Text(
-                            'Log in',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        : Text(
+                            l10n.loginLogIn,
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                   ),
                   const SizedBox(height: 16),
@@ -166,14 +168,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Don't have an account? ",
+                        l10n.loginNoAccount,
                         style: TextStyle(color: colorScheme.onSurfaceVariant),
                       ),
                       TextButton(
                         onPressed: _goToRegister,
-                        child: const Text(
-                          'Create one',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                        child: Text(
+                          l10n.loginCreateOne,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],

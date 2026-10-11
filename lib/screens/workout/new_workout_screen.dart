@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:fitness_tracker_app/utils/friendly_error.dart';
+import '../../l10n/app_localizations.dart';
 import '../../services/api_service.dart';
 
 class NewWorkoutScreen extends StatefulWidget {
@@ -24,6 +25,9 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
   bool _isLoading = false;
   bool _isLoadingExercises = true;
   String? _errorMessage;
+  // True when _errorMessage holds the detail of a failed exercise load, so
+  // the full sentence is built in the current language at display time.
+  bool _errorIsExerciseLoad = false;
 
   @override
   void initState() {
@@ -42,6 +46,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
     setState(() {
       _isLoadingExercises = true;
       _errorMessage = null;
+      _errorIsExerciseLoad = false;
     });
 
     try {
@@ -62,7 +67,8 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
       });
     } catch (e) {
       setState(() {
-        _errorMessage = "Couldn't load exercises. ${friendlyError(e)}";
+        _errorMessage = friendlyError(e);
+        _errorIsExerciseLoad = true;
         _isLoadingExercises = false;
       });
     }
@@ -74,7 +80,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
     if (_selectedExercises.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Please add at least one exercise to your workout'),
+          content: Text(AppLocalizations.of(context)!.newWorkoutNeedExercise),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -84,6 +90,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
+      _errorIsExerciseLoad = false;
     });
 
     try {
@@ -139,12 +146,13 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
-          'Create New Workout',
+          l10n.newWorkoutTitle,
           style: TextStyle(fontWeight: FontWeight.bold, color: colorScheme.onSurface),
         ),
         elevation: 0,
@@ -170,7 +178,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
           IconButton(
             icon: Icon(Icons.refresh, color: colorScheme.primary),
             onPressed: _fetchGymExercises,
-            tooltip: 'Refresh exercise list',
+            tooltip: l10n.newWorkoutRefreshExercisesTooltip,
           ),
         ],
       ),
@@ -201,11 +209,12 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
   }
 
   Widget _buildBasicInfoSection(ThemeData theme, ColorScheme colorScheme) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Workout Details',
+          l10n.newWorkoutDetailsTitle,
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
             color: colorScheme.primary,
@@ -216,9 +225,9 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
           controller: _nameController,
           style: TextStyle(color: colorScheme.onSurface),
           decoration: InputDecoration(
-            labelText: 'Workout Name',
+            labelText: l10n.newWorkoutNameLabel,
             labelStyle: TextStyle(color: colorScheme.onSurfaceVariant),
-            hintText: 'e.g., Upper Body Strength',
+            hintText: l10n.newWorkoutNameHint,
             hintStyle: TextStyle(color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7)),
             filled: true,
             fillColor: colorScheme.surfaceContainerHighest,
@@ -238,7 +247,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
           ),
           validator: (value) {
             if (value == null || value.trim().isEmpty) {
-              return 'Please enter a workout name';
+              return l10n.newWorkoutNameRequired;
             }
             return null;
           },
@@ -248,9 +257,9 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
           controller: _descriptionController,
           style: TextStyle(color: colorScheme.onSurface),
           decoration: InputDecoration(
-            labelText: 'Description',
+            labelText: l10n.newWorkoutDescriptionLabel,
             labelStyle: TextStyle(color: colorScheme.onSurfaceVariant),
-            hintText: 'Focus of this workout, target muscle groups, etc.',
+            hintText: l10n.newWorkoutDescriptionHint,
             hintStyle: TextStyle(color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7)),
             filled: true,
             fillColor: colorScheme.surfaceContainerHighest,
@@ -270,7 +279,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
           ),
           validator: (value) {
             if (value == null || value.trim().isEmpty) {
-              return 'Please enter a description';
+              return l10n.newWorkoutDescriptionRequired;
             }
             return null;
           },
@@ -281,6 +290,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
   }
 
   Widget _buildExercisesSection(ThemeData theme, ColorScheme colorScheme) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -288,7 +298,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Exercises',
+              l10n.newWorkoutExercisesTitle,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: colorScheme.primary,
@@ -297,13 +307,13 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
             TextButton.icon(
               onPressed: () => _showExerciseSelector(context),
               icon: Icon(Icons.add, color: colorScheme.primary),
-              label: Text('Add Exercise', style: TextStyle(color: colorScheme.primary)),
+              label: Text(l10n.newWorkoutAddExercise, style: TextStyle(color: colorScheme.primary)),
             ),
           ],
         ),
         const SizedBox(height: 8),
         Text(
-          'Add exercises and configure sets, reps, and rest periods',
+          l10n.newWorkoutExercisesSubtitle,
           style: TextStyle(color: colorScheme.onSurfaceVariant),
         ),
         const SizedBox(height: 16),
@@ -324,6 +334,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
   }
 
   Widget _buildEmptyExercisesState(ThemeData theme, ColorScheme colorScheme) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 32),
@@ -336,7 +347,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'No exercises added yet',
+              l10n.newWorkoutNoExercisesYet,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: colorScheme.primary,
@@ -345,7 +356,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Add exercises to create your custom workout',
+              l10n.newWorkoutAddExercisesPrompt,
               style: TextStyle(color: colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
@@ -361,6 +372,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
     Map<String, dynamic> exercise,
     int index,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -392,7 +404,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
                 IconButton(
                   icon: Icon(Icons.delete_outline, color: colorScheme.error),
                   onPressed: () => _removeExercise(index),
-                  tooltip: 'Remove exercise',
+                  tooltip: l10n.workoutCalendarRemoveExerciseTooltip,
                 ),
               ],
             ),
@@ -404,7 +416,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Sets',
+                        l10n.newWorkoutSetsLabel,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: colorScheme.onSurface,
@@ -428,7 +440,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Reps',
+                        l10n.newWorkoutRepsLabel,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: colorScheme.onSurface,
@@ -452,7 +464,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Rest (sec)',
+                        l10n.newWorkoutRestLabel,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: colorScheme.onSurface,
@@ -523,6 +535,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
       builder: (context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setModalState) {
+            final l10n = AppLocalizations.of(context)!;
             final filteredExercises = _gymExercises.where((exercise) =>
               exercise['name'].toLowerCase().contains(exerciseSearchTerm.toLowerCase()) ||
               exercise['body_part'].toLowerCase().contains(exerciseSearchTerm.toLowerCase()) ||
@@ -540,7 +553,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
                   Row(
                     children: [
                       Text(
-                        'Select Exercises',
+                        l10n.newWorkoutSelectExercisesTitle,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: colorScheme.primary,
@@ -548,7 +561,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
                       ),
                       const Spacer(),
                       IconButton(
-                        tooltip: 'Close',
+                        tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
                         icon: Icon(Icons.close, color: colorScheme.onSurface),
                         onPressed: () => Navigator.pop(context),
                       ),
@@ -558,7 +571,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
                   TextField(
                     style: TextStyle(color: colorScheme.onSurface),
                     decoration: InputDecoration(
-                      hintText: 'Search exercises...',
+                      hintText: l10n.newWorkoutSearchExercisesHint,
                       hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                       prefixIcon: Icon(Icons.search, color: colorScheme.primary),
                       border: OutlineInputBorder(
@@ -593,7 +606,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
                         : filteredExercises.isEmpty
                         ? Center(
                             child: Text(
-                              'No exercises found',
+                              l10n.newWorkoutNoExercisesFound,
                               style: TextStyle(color: colorScheme.primary),
                             ),
                           )
@@ -621,7 +634,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
                                 trailing: isAlreadyAdded
                                     ? const Icon(Icons.check_circle, color: Colors.green)
                                     : IconButton(
-                                        tooltip: 'Add exercise',
+                                        tooltip: l10n.newWorkoutAddExercise,
                                         icon: const Icon(Icons.add_circle_outline),
                                         color: colorScheme.primary,
                                         onPressed: () {
@@ -649,6 +662,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
   }
 
   Widget _buildBottomBar(ColorScheme colorScheme) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -666,7 +680,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
                 ),
                 side: BorderSide(color: colorScheme.primary),
               ),
-              child: Text('Cancel', style: TextStyle(color: colorScheme.primary)),
+              child: Text(l10n.cancel, style: TextStyle(color: colorScheme.primary)),
             ),
           ),
           const SizedBox(width: 16),
@@ -680,7 +694,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
                 ),
                 backgroundColor: colorScheme.primary,
               ),
-              child: const Text('Save Workout'),
+              child: Text(l10n.newWorkoutSaveButton),
             ),
           ),
         ],
@@ -689,6 +703,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
   }
 
   Widget _buildLoadingState(ColorScheme colorScheme) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -696,7 +711,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
           CircularProgressIndicator(color: colorScheme.primary),
           const SizedBox(height: 16),
           Text(
-            'Saving your workout...',
+            l10n.newWorkoutSaving,
             style: TextStyle(color: colorScheme.primary),
           ),
         ],
@@ -705,6 +720,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
   }
 
   Widget _buildErrorState(ColorScheme colorScheme) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -712,7 +728,7 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
           Icon(Icons.error_outline, size: 64, color: colorScheme.error),
           const SizedBox(height: 16),
           Text(
-            'Error Creating Workout',
+            l10n.newWorkoutErrorCreating,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -723,7 +739,11 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Text(
-              _errorMessage ?? 'An unknown error occurred',
+              _errorMessage == null
+                  ? l10n.workoutListUnknownError
+                  : _errorIsExerciseLoad
+                      ? l10n.newWorkoutCouldNotLoadExercises(_errorMessage!)
+                      : _errorMessage!,
               style: TextStyle(color: colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
@@ -733,10 +753,11 @@ class _NewWorkoutScreenState extends State<NewWorkoutScreen> {
             onPressed: () {
               setState(() {
                 _errorMessage = null;
+                _errorIsExerciseLoad = false;
               });
             },
             icon: const Icon(Icons.refresh),
-            label: const Text('Try Again'),
+            label: Text(l10n.workoutTryAgain),
             style: ElevatedButton.styleFrom(
               backgroundColor: colorScheme.primary,
               foregroundColor: colorScheme.onPrimary,

@@ -11,6 +11,7 @@ import '../utils/ad_list_helper.dart';
 import '../utils/friendly_error.dart';
 import '../utils/food_search.dart';
 import '../utils/labels.dart';
+import '../l10n/app_localizations.dart';
 
 enum SortBy {
   default_,
@@ -88,7 +89,8 @@ class _FoodsScreenState extends State<FoodsScreen>
       var scanResult = await BarcodeScanner.scan();
       String barcode = scanResult.rawContent;
       if (barcode.isEmpty) {
-        _showSnackBar('No barcode scanned.');
+        if (!mounted) return;
+        _showSnackBar(AppLocalizations.of(context)!.foodsNoBarcodeScanned);
         return;
       }
       setState(() {});
@@ -105,10 +107,11 @@ class _FoodsScreenState extends State<FoodsScreen>
         await _openFood(scannedFood);
         if (mounted) setState(() => _scannedFood = null);
       } else {
-        _showSnackBar("We couldn't find that product. Try searching by name, or add it yourself with the + button.");
+        _showSnackBar(AppLocalizations.of(context)!.foodsProductNotFound);
       }
     } catch (e) {
-      _showSnackBar("Couldn't scan the barcode. ${friendlyError(e)}");
+      if (!mounted) return;
+      _showSnackBar(AppLocalizations.of(context)!.foodsScanFailed(friendlyError(e)));
     }
   }
 
@@ -160,6 +163,7 @@ class _FoodsScreenState extends State<FoodsScreen>
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
+        final l10n = AppLocalizations.of(context)!;
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 20.0),
           child: Column(
@@ -168,7 +172,7 @@ class _FoodsScreenState extends State<FoodsScreen>
               Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
                 child: Text(
-                  'Sort Foods By',
+                  l10n.foodsSortByTitle,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -181,7 +185,7 @@ class _FoodsScreenState extends State<FoodsScreen>
                   color: _currentSortBy == SortBy.default_ 
                     ? Theme.of(context).colorScheme.primary
                     : null),
-                title: Text('Default',
+                title: Text(l10n.sortDefault,
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onSurface,
                   )),
@@ -196,7 +200,7 @@ class _FoodsScreenState extends State<FoodsScreen>
                   color: _currentSortBy == SortBy.calories 
                     ? Theme.of(context).colorScheme.error
                     : null),
-                title: Text('Calories',
+                title: Text(l10n.homeMacroCalories,
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onSurface,
                   )),
@@ -212,7 +216,7 @@ class _FoodsScreenState extends State<FoodsScreen>
                   color: _currentSortBy == SortBy.protein 
                     ? Colors.blue.shade700
                     : null),
-                title: Text('Protein',
+                title: Text(l10n.homeMacroProtein,
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onSurface,
                   )),
@@ -228,7 +232,7 @@ class _FoodsScreenState extends State<FoodsScreen>
                   color: _currentSortBy == SortBy.carbs
                     ? Colors.green.shade700
                     : null),
-                title: Text('Carbs',
+                title: Text(l10n.homeMacroCarbs,
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onSurface,
                   )),
@@ -244,7 +248,7 @@ class _FoodsScreenState extends State<FoodsScreen>
                   color: _currentSortBy == SortBy.fats
                     ? Colors.orange.shade700
                     : null),
-                title: Text('Fat',
+                title: Text(l10n.homeMacroFat,
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onSurface,
                   )),
@@ -296,6 +300,7 @@ class _FoodsScreenState extends State<FoodsScreen>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final colorScheme = Theme.of(context).colorScheme;
     
@@ -315,19 +320,19 @@ class _FoodsScreenState extends State<FoodsScreen>
         filteredFoods = _sortFoods(filteredFoods);
 
         // Get sort title to display
-        String sortTitle = _getSortTitle();
+        String sortTitle = _getSortTitle(l10n);
 
         return Scaffold(
           appBar: AppBar(
             title: Text(
-              _isPicker ? 'Add to ${mealTimeLabel(widget.addToMeal!)}' : 'Foods',
+              _isPicker ? l10n.foodsAddToMealTitle(mealTimeLabel(widget.addToMeal!)) : l10n.foodsTitle,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             actions: [
               IconButton(
                 icon: const Icon(Icons.sort),
                 onPressed: _showSortOptions,
-                tooltip: 'Sort foods',
+                tooltip: l10n.foodsSortTooltip,
               ),
             ],
           ),
@@ -352,7 +357,7 @@ class _FoodsScreenState extends State<FoodsScreen>
                             FilledButton.icon(
                               onPressed: foodProvider.refreshFoods,
                               icon: const Icon(Icons.refresh),
-                              label: const Text('Try again'),
+                              label: Text(l10n.foodsTryAgain),
                             ),
                           ],
                         ),
@@ -368,7 +373,7 @@ class _FoodsScreenState extends State<FoodsScreen>
                           child: Row(
                             children: [
                               Text(
-                                'Sorting by: $sortTitle',
+                                l10n.foodsSortingBy(sortTitle),
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: colorScheme.onSurfaceVariant,
@@ -394,7 +399,7 @@ class _FoodsScreenState extends State<FoodsScreen>
                             child: ListTile(
                               title: Text(_scannedFood!.name),
                               subtitle: Text(
-                                '${_scannedFood!.calories.round()} kcal per 100 g',
+                                l10n.foodsKcalPer100g(_scannedFood!.calories.round()),
                               ),
                               trailing: Icon(Icons.arrow_forward_ios,
                                 color: colorScheme.primary),
@@ -412,7 +417,7 @@ class _FoodsScreenState extends State<FoodsScreen>
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Text(
-                                            'No foods match your search.',
+                                            l10n.foodsNoMatch,
                                             style: TextStyle(fontSize: 16, color: colorScheme.onSurfaceVariant),
                                             textAlign: TextAlign.center,
                                           ),
@@ -420,7 +425,7 @@ class _FoodsScreenState extends State<FoodsScreen>
                                           OutlinedButton.icon(
                                             onPressed: _goToNewFood,
                                             icon: const Icon(Icons.add),
-                                            label: const Text('Add your own food'),
+                                            label: Text(l10n.foodsAddOwnFood),
                                           ),
                                         ],
                                       ),
@@ -479,7 +484,7 @@ class _FoodsScreenState extends State<FoodsScreen>
                                                             ),
                                                             const SizedBox(height: 2),
                                                             Text(
-                                                              '${food.calories.round()} kcal per 100 g',
+                                                              l10n.foodsKcalPer100g(food.calories.round()),
                                                               style: TextStyle(
                                                                 color: colorScheme.onSurfaceVariant,
                                                               ),
@@ -494,7 +499,7 @@ class _FoodsScreenState extends State<FoodsScreen>
                                                     ],
                                                   ),
                                                   const SizedBox(height: 12),
-                                                  _buildNutritionInfo(food, proteinColor, carbsColor, fatsColor, caloriesColor),
+                                                  _buildNutritionInfo(l10n, food, proteinColor, carbsColor, fatsColor, caloriesColor),
                                                 ],
                                               ),
                                             ),
@@ -513,7 +518,7 @@ class _FoodsScreenState extends State<FoodsScreen>
             foregroundColor: colorScheme.onPrimary,
             elevation: 0,
             icon: const Icon(Icons.add),
-            label: const Text('New food'),
+            label: Text(l10n.foodsNewFoodButton),
           ),
           bottomNavigationBar: _isPicker
               ? null
@@ -524,7 +529,7 @@ class _FoodsScreenState extends State<FoodsScreen>
   }
 
   // Build relevant nutrition info based on current sort
-  Widget _buildNutritionInfo(Food food, Color proteinColor, Color carbsColor, Color fatsColor, Color caloriesColor) {
+  Widget _buildNutritionInfo(AppLocalizations l10n, Food food, Color proteinColor, Color carbsColor, Color fatsColor, Color caloriesColor) {
     switch (_currentSortBy) {
       case SortBy.protein:
         return Container(
@@ -534,7 +539,7 @@ class _FoodsScreenState extends State<FoodsScreen>
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
-            'Protein: ${_grams(food.protein)} per 100 g',
+            l10n.foodsProteinPer100g(_grams(food.protein)),
             style: TextStyle(
               color: proteinColor,
               fontWeight: FontWeight.bold,
@@ -549,7 +554,7 @@ class _FoodsScreenState extends State<FoodsScreen>
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
-            'Carbs: ${_grams(food.carbs)} per 100 g',
+            l10n.foodsCarbsPer100g(_grams(food.carbs)),
             style: TextStyle(
               color: carbsColor,
               fontWeight: FontWeight.bold,
@@ -564,7 +569,7 @@ class _FoodsScreenState extends State<FoodsScreen>
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
-            'Fat: ${_grams(food.fats)} per 100 g',
+            l10n.foodsFatPer100g(_grams(food.fats)),
             style: TextStyle(
               color: fatsColor,
               fontWeight: FontWeight.bold,
@@ -579,7 +584,7 @@ class _FoodsScreenState extends State<FoodsScreen>
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
-            '${food.calories.round()} kcal per 100 g',
+            l10n.foodsKcalPer100g(food.calories.round()),
             style: TextStyle(
               color: caloriesColor,
               fontWeight: FontWeight.bold,
@@ -590,11 +595,11 @@ class _FoodsScreenState extends State<FoodsScreen>
         // Default shows all three macros as equal-width pills across the card.
         return Row(
           children: [
-            _macroPill('Protein ${_grams(food.protein)}', proteinColor),
+            _macroPill(l10n.foodsProteinPill(_grams(food.protein)), proteinColor),
             const SizedBox(width: 8),
-            _macroPill('Carbs ${_grams(food.carbs)}', carbsColor),
+            _macroPill(l10n.foodsCarbsPill(_grams(food.carbs)), carbsColor),
             const SizedBox(width: 8),
-            _macroPill('Fat ${_grams(food.fats)}', fatsColor),
+            _macroPill(l10n.foodsFatPill(_grams(food.fats)), fatsColor),
           ],
         );
     }
@@ -626,23 +631,24 @@ class _FoodsScreenState extends State<FoodsScreen>
       '${value == value.roundToDouble() ? value.round() : value.toStringAsFixed(1)} g';
 
   // Helper method to get readable sort title
-  String _getSortTitle() {
+  String _getSortTitle(AppLocalizations l10n) {
     switch (_currentSortBy) {
       case SortBy.default_:
-        return 'Default';
+        return l10n.sortDefault;
       case SortBy.calories:
-        return 'Calories';
+        return l10n.homeMacroCalories;
       case SortBy.protein:
-        return 'Protein';
+        return l10n.homeMacroProtein;
       case SortBy.carbs:
-        return 'Carbs';
+        return l10n.homeMacroCarbs;
       case SortBy.fats:
-        return 'Fat';
+        return l10n.homeMacroFat;
     }
   }
 
   Widget _buildSearchAndScanBar() {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -654,7 +660,7 @@ class _FoodsScreenState extends State<FoodsScreen>
               child: TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
-                  hintText: 'Search foods',
+                  hintText: l10n.foodsSearchFoodsHint,
                   hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                   prefixIcon: Icon(Icons.search, color: colorScheme.primary),
                   border: OutlineInputBorder(
@@ -685,7 +691,7 @@ class _FoodsScreenState extends State<FoodsScreen>
               aspectRatio: 1,
               child: IconButton.filled(
                 onPressed: _scanBarcode,
-                tooltip: 'Scan a barcode',
+                tooltip: l10n.foodsScanTooltip,
                 style: IconButton.styleFrom(
                   backgroundColor: colorScheme.primary,
                   foregroundColor: colorScheme.onPrimary,

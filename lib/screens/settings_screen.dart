@@ -131,7 +131,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            "Couldn't save. ${friendlyError(e)}",
+            AppLocalizations.of(context)!.settingsCouldNotSave(friendlyError(e)),
             style: TextStyle(color: Theme.of(context).colorScheme.onError),
           ),
           backgroundColor: Theme.of(context).colorScheme.error,
@@ -488,7 +488,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Couldn't delete your account. ${friendlyError(e)}", style: TextStyle(color: Theme.of(context).colorScheme.onError)),
+          content: Text(AppLocalizations.of(context)!.settingsCouldNotDelete(friendlyError(e)), style: TextStyle(color: Theme.of(context).colorScheme.onError)),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );

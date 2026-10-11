@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/workout_provider.dart';
 import '../../models/workout.dart';
+import '../../l10n/app_localizations.dart';
 import '../../utils/add_banner.dart';
 import '../../utils/ad_list_helper.dart';
 
@@ -49,8 +50,8 @@ class _ExerciseSelectionScreenState extends State<ExerciseSelectionScreen> {
   void _addExercise() {
     if (_selectedExercise == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select an exercise'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.exerciseSelectionPleaseSelect),
         ),
       );
       return;
@@ -62,8 +63,8 @@ class _ExerciseSelectionScreenState extends State<ExerciseSelectionScreen> {
     
     if (sets <= 0 || reps <= 0 || rest <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter valid values for sets, reps, and rest'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.exerciseSelectionInvalidValues),
         ),
       );
       return;
@@ -74,8 +75,8 @@ class _ExerciseSelectionScreenState extends State<ExerciseSelectionScreen> {
       duration = int.tryParse(_durationController.text);
       if (duration != null && duration <= 0) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please enter a valid duration or leave it empty'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.exerciseSelectionInvalidDuration),
           ),
         );
         return;
@@ -100,10 +101,11 @@ class _ExerciseSelectionScreenState extends State<ExerciseSelectionScreen> {
     final exercises = workoutProvider.exercises;
     final filteredExercises = _filterExercises(exercises);
     final bodyParts = _getUniqueBodyParts(exercises);
+    final l10n = AppLocalizations.of(context)!;
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Select Exercise',
+        title: Text(l10n.exerciseSelectionTitle,
             style: TextStyle(fontWeight: FontWeight.bold)),
         elevation: 0,
         backgroundColor: Theme.of(context).colorScheme.surface,
@@ -119,7 +121,7 @@ class _ExerciseSelectionScreenState extends State<ExerciseSelectionScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Filter by Body Part:'),
+                      Text(l10n.exerciseSelectionFilterByBodyPart),
                       const SizedBox(height: 8),
                       Container(
                         decoration: BoxDecoration(
@@ -141,7 +143,9 @@ class _ExerciseSelectionScreenState extends State<ExerciseSelectionScreen> {
                               .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
-                              child: Text(value),
+                              child: Text(value == 'All'
+                                  ? l10n.exerciseSelectionAllBodyParts
+                                  : value),
                             );
                           }).toList(),
                         ),
@@ -151,8 +155,8 @@ class _ExerciseSelectionScreenState extends State<ExerciseSelectionScreen> {
                 ),
                 Expanded(
                   child: filteredExercises.isEmpty
-                      ? const Center(
-                          child: Text('No exercises found'),
+                      ? Center(
+                          child: Text(l10n.newWorkoutNoExercisesFound),
                         )
                       : ListView.builder(
                           itemCount: effectiveItemCount(filteredExercises.length),
@@ -201,8 +205,8 @@ class _ExerciseSelectionScreenState extends State<ExerciseSelectionScreen> {
                             Expanded(
                               child: TextFormField(
                                 controller: _setsController,
-                                decoration: const InputDecoration(
-                                  labelText: 'Sets',
+                                decoration: InputDecoration(
+                                  labelText: l10n.newWorkoutSetsLabel,
                                 ),
                                 keyboardType: TextInputType.number,
                               ),
@@ -211,8 +215,8 @@ class _ExerciseSelectionScreenState extends State<ExerciseSelectionScreen> {
                             Expanded(
                               child: TextFormField(
                                 controller: _repsController,
-                                decoration: const InputDecoration(
-                                  labelText: 'Reps',
+                                decoration: InputDecoration(
+                                  labelText: l10n.newWorkoutRepsLabel,
                                 ),
                                 keyboardType: TextInputType.number,
                               ),
@@ -225,9 +229,9 @@ class _ExerciseSelectionScreenState extends State<ExerciseSelectionScreen> {
                             Expanded(
                               child: TextFormField(
                                 controller: _durationController,
-                                decoration: const InputDecoration(
-                                  labelText: 'Duration (sec)',
-                                  hintText: 'Optional',
+                                decoration: InputDecoration(
+                                  labelText: l10n.exerciseSelectionDurationLabel,
+                                  hintText: l10n.exerciseSelectionOptionalHint,
                                 ),
                                 keyboardType: TextInputType.number,
                               ),
@@ -236,8 +240,8 @@ class _ExerciseSelectionScreenState extends State<ExerciseSelectionScreen> {
                             Expanded(
                               child: TextFormField(
                                 controller: _restController,
-                                decoration: const InputDecoration(
-                                  labelText: 'Rest (sec)',
+                                decoration: InputDecoration(
+                                  labelText: l10n.newWorkoutRestLabel,
                                 ),
                                 keyboardType: TextInputType.number,
                               ),
@@ -249,7 +253,7 @@ class _ExerciseSelectionScreenState extends State<ExerciseSelectionScreen> {
                           width: double.infinity,
                           child: ElevatedButton(
                             onPressed: _addExercise,
-                            child: const Text('Add to Workout'),
+                            child: Text(l10n.exerciseSelectionAddToWorkout),
                           ),
                         ),
                       ],

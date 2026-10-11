@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
+
 /// iOS-style controls on iPhone, Material ones elsewhere, for the few places
 /// Flutter has no `.adaptive` constructor of its own.
 
@@ -123,11 +125,11 @@ Future<T?> _showCupertinoPickerSheet<T>({
               children: [
                 CupertinoButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Cancel'),
+                  child: Text(AppLocalizations.of(context)!.cancel),
                 ),
                 CupertinoButton(
                   onPressed: () => Navigator.of(context).pop(value),
-                  child: const Text('Done', style: TextStyle(fontWeight: FontWeight.w600)),
+                  child: Text(AppLocalizations.of(context)!.adaptiveDone, style: const TextStyle(fontWeight: FontWeight.w600)),
                 ),
               ],
             ),

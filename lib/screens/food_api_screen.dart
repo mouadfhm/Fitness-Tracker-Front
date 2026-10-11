@@ -3,6 +3,7 @@ import 'package:barcode_scan2/barcode_scan2.dart';
 import '../models/food.dart';
 import '../services/food_service.dart';
 import 'food_details_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class FoodScanScreen extends StatefulWidget {
   const FoodScanScreen({super.key});
@@ -15,12 +16,13 @@ class _FoodScanScreenState extends State<FoodScanScreen> {
   final FoodService _foodService = FoodService();
   Food? _scannedFood;
   bool _isLoading = false;
-  String _errorMessage = '';
+  /// Built at display time so it follows the current language.
+  String Function(AppLocalizations l10n)? _errorMessage;
 
   /// Initiates barcode scanning, fetches food info and updates UI.
   Future<void> _scanBarcode() async {
     setState(() {
-      _errorMessage = '';
+      _errorMessage = null;
       _isLoading = true;
       _scannedFood = null;
     });
@@ -30,7 +32,7 @@ class _FoodScanScreenState extends State<FoodScanScreen> {
       String barcode = scanResult.rawContent;
       if (barcode.isEmpty) {
         setState(() {
-          _errorMessage = 'No barcode scanned.';
+          _errorMessage = (l10n) => l10n.foodsNoBarcodeScanned;
           _isLoading = false;
         });
         return;
@@ -44,13 +46,13 @@ class _FoodScanScreenState extends State<FoodScanScreen> {
         });
       } else {
         setState(() {
-          _errorMessage = 'Food not found for barcode: $barcode';
+          _errorMessage = (l10n) => l10n.foodsNotFoundForBarcode(barcode);
           _isLoading = false;
         });
       }
     } catch (e) {
       setState(() {
-        _errorMessage = 'Error scanning barcode: $e';
+        _errorMessage = (l10n) => l10n.foodsScanError('$e');
         _isLoading = false;
       });
     }
@@ -70,10 +72,11 @@ class _FoodScanScreenState extends State<FoodScanScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Scan Food Barcode",
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(l10n.foodScanTitle,
+            style: const TextStyle(fontWeight: FontWeight.bold)),
         elevation: 0,
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
@@ -87,12 +90,12 @@ class _FoodScanScreenState extends State<FoodScanScreen> {
                   ElevatedButton.icon(
                     onPressed: _scanBarcode,
                     icon: const Icon(Icons.camera_alt),
-                    label: const Text("Scan Barcode"),
+                    label: Text(l10n.foodScanButton),
                   ),
                   const SizedBox(height: 20),
-                  if (_errorMessage.isNotEmpty)
+                  if (_errorMessage != null)
                     Text(
-                      _errorMessage,
+                      _errorMessage!(l10n),
                       style: TextStyle(color: Theme.of(context).colorScheme.error),
                     ),
                   if (_scannedFood != null)
@@ -108,14 +111,14 @@ class _FoodScanScreenState extends State<FoodScanScreen> {
                               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 10),
-                            Text("Calories: ${_scannedFood!.calories} kcal"),
-                            Text("Protein: ${_scannedFood!.protein} g"),
-                            Text("Carbs: ${_scannedFood!.carbs} g"),
-                            Text("Fats: ${_scannedFood!.fats} g"),
+                            Text(l10n.foodScanCalories('${_scannedFood!.calories}')),
+                            Text(l10n.foodScanProtein('${_scannedFood!.protein}')),
+                            Text(l10n.foodScanCarbs('${_scannedFood!.carbs}')),
+                            Text(l10n.foodScanFats('${_scannedFood!.fats}')),
                             const SizedBox(height: 10),
                             ElevatedButton(
                               onPressed: _goToFoodDetails,
-                              child: const Text("Add to Meal"),
+                              child: Text(l10n.foodScanAddToMeal),
                             ),
                           ],
                         ),

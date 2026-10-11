@@ -17,6 +17,7 @@ import 'screens/main_shell.dart';
 import 'services/token_service.dart';
 import 'services/navigation_service.dart';
 import 'services/api_service.dart';
+import 'services/locale_service.dart';
 import 'services/firebase_service.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'utils/ad_config.dart';
@@ -87,6 +88,13 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: themeProvider.themeMode,
+      // Keep the language used by code without a BuildContext (labels, error
+      // messages) in step with the one actually on screen, including when
+      // the app follows the phone's language.
+      builder: (context, child) {
+        LocaleService.languageCode = Localizations.localeOf(context).languageCode;
+        return child!;
+      },
       routes: {
         '/login': (_) => const LoginScreen(),
         '/home': (_) => const MainShell(),

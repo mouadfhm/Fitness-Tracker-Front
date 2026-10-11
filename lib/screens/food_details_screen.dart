@@ -7,6 +7,7 @@ import '../services/api_service.dart';
 import '../utils/friendly_error.dart';
 import '../utils/labels.dart';
 import 'package:intl/intl.dart';
+import '../l10n/app_localizations.dart';
 
 class FoodDetailsScreen extends StatefulWidget {
   final Food food;
@@ -29,7 +30,8 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
   final ApiService _apiService = ApiService();
   bool _isStoringMeal = false;
   bool _isTogglingFavorite = false;
-  String? _errorMessage;
+  /// Built at display time so it follows the current language.
+  String Function(AppLocalizations l10n)? _errorMessage;
   late String _mealTime;
   bool _isCustomMealTime = false;
   DateTime _selectedDate = DateTime.now();
@@ -71,13 +73,13 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
 
     final mealTime = _isCustomMealTime ? _customMealTimeController.text.trim() : _mealTime;
     if (mealTime.isEmpty) {
-      setState(() => _errorMessage = 'Please type a name for this meal.');
+      setState(() => _errorMessage = (l10n) => l10n.foodDetailsMealNameRequired);
       return;
     }
 
     final quantity = _grams;
     if (quantity == null || quantity <= 0) {
-      setState(() => _errorMessage = 'Please enter how many grams you ate.');
+      setState(() => _errorMessage = (l10n) => l10n.foodDetailsGramsRequired);
       return;
     }
 
@@ -93,11 +95,17 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
       final kcal = (widget.food.calories * quantity / 100).round();
       Navigator.pop(
         context,
-        'Added ${quantity.round()} g of $name to ${mealTimeLabel(mealTime.toLowerCase())} ($kcal kcal)',
+        AppLocalizations.of(context)!.foodDetailsAddedSnack(
+          quantity.round(),
+          name,
+          mealTimeLabel(mealTime.toLowerCase()),
+          kcal,
+        ),
       );
     } catch (error) {
       if (!mounted) return;
-      setState(() => _errorMessage = "Couldn't add this food. ${friendlyError(error)}");
+      final message = friendlyError(error);
+      setState(() => _errorMessage = (l10n) => l10n.foodDetailsAddFailed(message));
     } finally {
       if (mounted) setState(() => _isStoringMeal = false);
     }
@@ -113,10 +121,12 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
     try {
       if (_isFavorite) {
         await _apiService.removeFavoriteFood(widget.food.id);
-        _showFeedback("Removed from favorites");
+        if (!mounted) return;
+        _showFeedback(AppLocalizations.of(context)!.foodDetailsRemovedFromFavorites);
       } else {
         await _apiService.addFavoriteFood(widget.food.id);
-        _showFeedback("Added to favorites");
+        if (!mounted) return;
+        _showFeedback(AppLocalizations.of(context)!.foodDetailsAddedToFavorites);
       }
       if (!mounted) return;
       Provider.of<FoodProvider>(context, listen: false).refreshFoods();
@@ -124,8 +134,9 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
         _isFavorite = !_isFavorite;
       });
     } catch (error) {
+      if (!mounted) return;
       _showFeedback(
-        "Couldn't update favorites. ${friendlyError(error)}",
+        AppLocalizations.of(context)!.foodDetailsFavoritesFailed(friendlyError(error)),
         isError: true,
       );
     } finally {
@@ -149,7 +160,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
         duration: const Duration(seconds: 2),
         action: isError
             ? SnackBarAction(
-                label: 'Retry',
+                label: AppLocalizations.of(context)!.retry,
                 textColor: colorScheme.onError,
                 onPressed: toggleFavoriteFood,
               )
@@ -171,6 +182,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final food = widget.food;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
@@ -203,7 +215,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                     ),
             ),
             onPressed: _isTogglingFavorite ? null : toggleFavoriteFood,
-            tooltip: _isFavorite ? 'Remove from favorites' : 'Add to favorites',
+            tooltip: _isFavorite ? l10n.foodDetailsRemoveFromFavoritesTooltip : l10n.foodDetailsAddToFavoritesTooltip,
           ),
         ],
       ),
@@ -222,7 +234,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Nutrition per 100 g",
+                      l10n.foodDetailsNutritionPer100g,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -232,20 +244,20 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                     const SizedBox(height: 16),
                     Row(
                       children: [
-                        _nutritionItem(Icons.local_fire_department, "Calories",
+                        _nutritionItem(Icons.local_fire_department, l10n.homeMacroCalories,
                             "${_fmt(food.calories)} kcal", Colors.red.shade400, colorScheme.onSurfaceVariant),
                         const SizedBox(width: 12),
-                        _nutritionItem(Icons.fitness_center, "Protein", "${_fmt(food.protein)} g",
+                        _nutritionItem(Icons.fitness_center, l10n.homeMacroProtein, "${_fmt(food.protein)} g",
                             Colors.blue.shade400, colorScheme.onSurfaceVariant),
                       ],
                     ),
                     const SizedBox(height: 12),
                     Row(
                       children: [
-                        _nutritionItem(Icons.grain, "Carbs", "${_fmt(food.carbs)} g",
+                        _nutritionItem(Icons.grain, l10n.homeMacroCarbs, "${_fmt(food.carbs)} g",
                             Colors.green.shade400, colorScheme.onSurfaceVariant),
                         const SizedBox(width: 12),
-                        _nutritionItem(Icons.water_drop, "Fat", "${_fmt(food.fats)} g",
+                        _nutritionItem(Icons.water_drop, l10n.homeMacroFat, "${_fmt(food.fats)} g",
                             Colors.orange.shade400, colorScheme.onSurfaceVariant),
                       ],
                     ),
@@ -262,6 +274,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
   Widget _buildAddCard(ColorScheme colorScheme) {
     final grams = _grams;
     final food = widget.food;
+    final l10n = AppLocalizations.of(context)!;
 
     return Card(
       child: Padding(
@@ -270,7 +283,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'How much did you eat?',
+              l10n.foodDetailsHowMuch,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: colorScheme.onSurface),
             ),
             const SizedBox(height: 12),
@@ -280,8 +293,8 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
               onChanged: (_) => setState(() {}),
               style: const TextStyle(fontSize: 18),
               decoration: InputDecoration(
-                labelText: 'Amount',
-                suffixText: 'grams',
+                labelText: l10n.foodDetailsAmountLabel,
+                suffixText: l10n.foodDetailsGramsSuffix,
                 prefixIcon: const Icon(Icons.scale),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               ),
@@ -300,8 +313,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
             ),
             const SizedBox(height: 4),
             Text(
-              'Not sure? A slice of bread is about 30 g, an apple about 150 g, '
-              'a cup of cooked rice about 160 g.',
+              l10n.foodDetailsPortionHint,
               style: TextStyle(fontSize: 13, color: colorScheme.onSurfaceVariant),
             ),
             const SizedBox(height: 12),
@@ -315,17 +327,20 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
               ),
               child: Text(
                 grams == null || grams <= 0
-                    ? 'Enter an amount to see the calories'
-                    : '${_fmt(grams)} g = ${(food.calories * grams / 100).round()} kcal  ·  '
-                        'Protein ${_fmt(food.protein * grams / 100)} g  ·  '
-                        'Carbs ${_fmt(food.carbs * grams / 100)} g  ·  '
-                        'Fat ${_fmt(food.fats * grams / 100)} g',
+                    ? l10n.foodDetailsEnterAmountForCalories
+                    : l10n.foodDetailsLiveTotal(
+                        _fmt(grams),
+                        (food.calories * grams / 100).round(),
+                        _fmt(food.protein * grams / 100),
+                        _fmt(food.carbs * grams / 100),
+                        _fmt(food.fats * grams / 100),
+                      ),
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: colorScheme.onPrimaryContainer),
               ),
             ),
             const SizedBox(height: 20),
             Text(
-              'Which meal?',
+              l10n.foodDetailsWhichMeal,
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.onSurface),
             ),
             const SizedBox(height: 8),
@@ -334,7 +349,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
               runSpacing: 4,
               children: [
                 ...mainMealTimes.map((m) => ChoiceChip(
-                      label: Text(m == 'snack' ? 'Snack' : mealTimeLabel(m)),
+                      label: Text(m == 'snack' ? l10n.foodDetailsSnackChip : mealTimeLabel(m)),
                       selected: !_isCustomMealTime && _mealTime == m,
                       onSelected: (_) => setState(() {
                         _mealTime = m;
@@ -342,7 +357,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                       }),
                     )),
                 ChoiceChip(
-                  label: const Text('Other…'),
+                  label: Text(l10n.foodDetailsOtherMeal),
                   selected: _isCustomMealTime,
                   onSelected: (_) => setState(() {
                     _mealTime = 'custom';
@@ -356,8 +371,8 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
               TextField(
                 controller: _customMealTimeController,
                 decoration: InputDecoration(
-                  labelText: 'Meal name',
-                  hintText: 'e.g. Pre-workout, Late night',
+                  labelText: l10n.foodDetailsMealNameLabel,
+                  hintText: l10n.foodDetailsMealNameHint,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 ),
               ),
@@ -369,13 +384,15 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    _isToday ? 'Today' : DateFormat('EEEE, MMM d').format(_selectedDate),
+                    _isToday
+                        ? l10n.homeToday
+                        : DateFormat.MMMMEEEEd(Localizations.localeOf(context).toString()).format(_selectedDate),
                     style: TextStyle(fontSize: 16, color: colorScheme.onSurface),
                   ),
                 ),
                 TextButton(
                   onPressed: () => _selectDate(context),
-                  child: const Text('Change date'),
+                  child: Text(l10n.foodDetailsChangeDate),
                 ),
               ],
             ),
@@ -395,7 +412,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                         child: CircularProgressIndicator(strokeWidth: 2, color: colorScheme.onPrimary),
                       )
                     : Text(
-                        'Add to ${_isCustomMealTime ? 'meal' : mealTimeLabel(_mealTime)}',
+                        _isCustomMealTime ? l10n.foodDetailsAddToMealButton : l10n.foodDetailsAddToButton(mealTimeLabel(_mealTime)),
                         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
               ),
@@ -411,7 +428,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    _errorMessage!,
+                    _errorMessage!(l10n),
                     style: TextStyle(fontSize: 15, color: colorScheme.onErrorContainer),
                   ),
                 ),
