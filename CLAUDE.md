@@ -25,6 +25,9 @@ flutter test
 # Run a single test file
 flutter test test/widget_test.dart
 
+# iOS App Store build: run the "iOS release" workflow (.github/workflows/ios-release.yml)
+# from the Actions tab; it archives on a GitHub Mac and uploads to App Store Connect.
+
 # Generate app icons from lib/assets/fitnessTrackerLogo.png
 flutter pub run flutter_launcher_icons
 ```
@@ -76,6 +79,7 @@ On startup, `main.dart` calls `TokenService.getToken()`. If a token exists, the 
 - Token storage uses `FlutterSecureStorage` (mobile/desktop). Web localStorage code exists but is commented out throughout `token_service.dart` and related files.
 - Profile pictures are stored locally (file path in `SharedPreferences`), not uploaded to the server yet — the upload call is commented out in `ProfileProvider`.
 - Firebase and Google Mobile Ads are initialized but ads integration is commented out.
+- iOS minimum is 15.0 (Firebase iOS SDK 12, from firebase_core 4.x). `ios/Podfile` is committed with that platform.
 
 ### Assets
 - `lib/assets/` — images and `foods.json` (local food database)
