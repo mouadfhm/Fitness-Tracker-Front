@@ -1,0 +1,93 @@
+name: iOS release
+
+# Builds the iPhone app on a GitHub-hosted Mac and uploads it to App Store
+# Connect (it then shows under TestFlight and can be picked as the build for a
+# version). Run it from the Actions tab with "Run workflow".
+#
+# Signing is automatic: Xcode uses the App Store Connect API key to create or
+# fetch the distribution certificate and profile, so no certificates are
+# stored in the repo or in secrets.
+#
+# Repository secrets it needs:
+#   APP_STORE_CONNECT_KEY_ID       Key ID of an App Store Connect API key (Admin role)
+#   APP_STORE_CONNECT_ISSUER_ID    Issuer ID shown above the keys list
+#   APP_STORE_CONNECT_PRIVATE_KEY  Full contents of the AuthKey_XXXX.p8 file
+#   APPLE_TEAM_ID                  10-character Team ID
+#   ENV_PRODUCTION                 Full contents of .env.production
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-upload:
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Write env files
+        env:
+          ENV_PRODUCTION: ${{ secrets.ENV_PRODUCTION }}
+        run: |
+          if [ -z "$ENV_PRODUCTION" ]; then
+            echo "::error::The ENV_PRODUCTION secret is missing."
+            exit 1
+          fi
+          printf '%s\n' "$ENV_PRODUCTION" > .env.production
+          # main.dart loads .env.production; this one only has to exist.
+          cp .env.production .env.development
+
+      - name: Write App Store Connect API key
+        env:
+          PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+        run: |
+          key_path="$RUNNER_TEMP/AuthKey.p8"
+          printf '%s\n' "$PRIVATE_KEY" > "$key_path"
+          echo "ASC_KEY_PATH=$key_path" >> "$GITHUB_ENV"
+
+      # Each upload needs a higher build number than the last one; pubspec.yaml
+      # is at +10, so start above it.
+      - name: Pick build number
+        run: echo "BUILD_NUMBER=$((10 + GITHUB_RUN_NUMBER))" >> "$GITHUB_ENV"
+
+      - run: flutter pub get
+
+      # Generates the Xcode settings and runs pod install without compiling.
+      - run: flutter build ios --release --config-only --build-number="$BUILD_NUMBER"
+
+      - name: Archive
+        run: |
+          xcodebuild archive \
+            -workspace ios/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_PATH" \
+            -authenticationKeyID "${{ secrets.APP_STORE_CONNECT_KEY_ID }}" \
+            -authenticationKeyIssuerID "${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}" \
+            DEVELOPMENT_TEAM="${{ secrets.APPLE_TEAM_ID }}" \
+            CODE_SIGN_STYLE=Automatic
+
+      - name: Export and upload to App Store Connect
+        run: |
+          sed "s/TEAM_ID/${{ secrets.APPLE_TEAM_ID }}/" ios/ci/ExportOptions.plist > "$RUNNER_TEMP/ExportOptions.plist"
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -exportPath "$RUNNER_TEMP/export" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_PATH" \
+            -authenticationKeyID "${{ secrets.APP_STORE_CONNECT_KEY_ID }}" \
+            -authenticationKeyIssuerID "${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}"
+          echo "Uploaded build $BUILD_NUMBER. It appears in App Store Connect once Apple finishes processing it."
+
+      - name: Remove API key
+        if: always()
+        run: rm -f "$ASC_KEY_PATH" .env.production .env.development
