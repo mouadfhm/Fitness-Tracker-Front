@@ -58,7 +58,9 @@ jobs:
       - run: flutter pub get
 
       # Generates the Xcode settings and runs pod install without compiling.
-      - run: flutter build ios --release --config-only --build-number="$BUILD_NUMBER"
+      # Signing happens in the Archive step with the API key, so skip
+      # Flutter's own certificate check here.
+      - run: flutter build ios --release --config-only --no-codesign --build-number="$BUILD_NUMBER"
 
       - name: Archive
         run: |
