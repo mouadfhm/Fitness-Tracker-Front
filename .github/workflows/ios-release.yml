@@ -67,11 +67,14 @@ jobs:
       # Flutter's own certificate check here.
       - run: flutter build ios --release --config-only --no-codesign --build-number="$BUILD_NUMBER"
 
-      # Archive with an ad-hoc signature only. Automatic signing would ask
-      # Apple for a development profile, which needs a registered device, and
-      # it refuses a distribution identity. The export step below re-signs the
-      # app for the App Store with the API key. The ad-hoc signature still
-      # carries Runner.entitlements, so the export keeps push notifications.
+      # Archive unsigned. Automatic signing would ask Apple for a development
+      # profile, which needs a registered device, and it refuses a
+      # distribution identity; Xcode also refuses ad-hoc signing for iOS.
+      # The export step below signs the app for the App Store with the API
+      # key. It takes the entitlements from the app's existing signature, so
+      # first give the app a plain local signature carrying
+      # Runner.entitlements; otherwise the upload would lose push
+      # notifications.
       - name: Archive
         run: |
           xcodebuild archive \
@@ -80,15 +83,12 @@ jobs:
             -configuration Release \
             -destination 'generic/platform=iOS' \
             -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
-            DEVELOPMENT_TEAM="${{ secrets.APPLE_TEAM_ID }}" \
-            CODE_SIGN_STYLE=Manual \
-            CODE_SIGN_IDENTITY=- \
-            CODE_SIGNING_REQUIRED=NO \
-            PROVISIONING_PROFILE_SPECIFIER=
+            CODE_SIGNING_ALLOWED=NO
 
-      - name: Check the archive kept the push entitlement
+      - name: Carry the entitlements into the archive
         run: |
           app="$RUNNER_TEMP/Runner.xcarchive/Products/Applications/Runner.app"
+          codesign --force --sign - --entitlements ios/Runner/Runner.entitlements "$app"
           codesign -d --entitlements - "$app" 2>/dev/null | tee "$RUNNER_TEMP/entitlements.txt"
           grep -q aps-environment "$RUNNER_TEMP/entitlements.txt"
 
