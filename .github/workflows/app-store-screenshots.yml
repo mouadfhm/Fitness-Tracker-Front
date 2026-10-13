@@ -4,7 +4,8 @@ name: App Store screenshots
 # it runs integration_test/app_store_screenshots_test.dart on the iPhone 16
 # Pro Max simulator, once in English and once in French, and saves each
 # screen with `simctl io screenshot`. They are uploaded as the
-# "app-store-screenshots" artifact of the run.
+# "app-store-screenshots" artifact of the run, and also committed to the
+# app-store-screenshots branch, so they can be opened on GitHub directly.
 #
 # The app talks to a demo backend inside the test (integration_test/
 # demo_backend.dart) with a made-up account, so no server, account or
@@ -20,6 +21,8 @@ on:
 jobs:
   screenshots:
     runs-on: macos-15
+    permissions:
+      contents: write
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
@@ -108,3 +111,16 @@ jobs:
           path: |
             screenshots/
             test-*.log
+
+      # Replaces the branch each run, so it only ever holds the latest set.
+      - name: Commit screenshots to the app-store-screenshots branch
+        run: |
+          cd screenshots
+          git init -q -b app-store-screenshots
+          git add .
+          git -c user.name="github-actions[bot]" \
+            -c user.email="41898099+github-actions[bot]@users.noreply.github.com" \
+            commit -q -m "App Store screenshots from ${GITHUB_SHA::7}"
+          git push -f -q \
+            "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" \
+            app-store-screenshots
