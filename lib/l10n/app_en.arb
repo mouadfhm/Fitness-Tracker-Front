@@ -99,8 +99,8 @@
   "onboardingFailedSave": "Failed to save profile. Please try again.",
   "onboardingStep1Title": "Your body stats",
   "onboardingStep1Subtitle": "We use these to calculate your daily calorie needs",
-  "onboardingAgeLabel": "Age",
-  "onboardingAgeHint": "e.g. 25",
+  "onboardingBirthDateLabel": "Date of birth",
+  "onboardingBirthDateHint": "Tap to pick your birthday",
   "onboardingWeightLabel": "Weight (kg)",
   "onboardingWeightHint": "e.g. 70",
   "onboardingHeightLabel": "Height (cm)",
@@ -187,6 +187,7 @@
   "profileEditTooltip": "Edit Profile",
   "profileFreeMember": "Free Member",
   "profileAge": "Age",
+  "profileBirthDate": "Birthday",
   "profileYearsValue": "{value} years",
   "@profileYearsValue": {
     "placeholders": {
@@ -998,7 +999,7 @@
   "onboardingHeightFtHint": "e.g. 5",
   "onboardingHeightInLabel": "(in)",
   "onboardingHeightInHint": "e.g. 9",
-  "onboardingFillStats": "Please fill in your age, weight and height",
+  "onboardingFillStats": "Please fill in your date of birth, weight and height",
   "onboardingBmiCardLabel": "BMI (your weight compared to your height)",
   "onboardingGenderSubtitle": "Men and women burn calories at slightly different rates",
   "onboardingBmrCaption": "Calories your body burns resting",

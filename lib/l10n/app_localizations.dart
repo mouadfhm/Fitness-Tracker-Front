@@ -542,17 +542,17 @@ abstract class AppLocalizations {
   /// **'We use these to calculate your daily calorie needs'**
   String get onboardingStep1Subtitle;
 
-  /// No description provided for @onboardingAgeLabel.
+  /// No description provided for @onboardingBirthDateLabel.
   ///
   /// In en, this message translates to:
-  /// **'Age'**
-  String get onboardingAgeLabel;
+  /// **'Date of birth'**
+  String get onboardingBirthDateLabel;
 
-  /// No description provided for @onboardingAgeHint.
+  /// No description provided for @onboardingBirthDateHint.
   ///
   /// In en, this message translates to:
-  /// **'e.g. 25'**
-  String get onboardingAgeHint;
+  /// **'Tap to pick your birthday'**
+  String get onboardingBirthDateHint;
 
   /// No description provided for @onboardingWeightLabel.
   ///
@@ -931,6 +931,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Age'**
   String get profileAge;
+
+  /// No description provided for @profileBirthDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Birthday'**
+  String get profileBirthDate;
 
   /// No description provided for @profileYearsValue.
   ///
@@ -3569,7 +3575,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingFillStats.
   ///
   /// In en, this message translates to:
-  /// **'Please fill in your age, weight and height'**
+  /// **'Please fill in your date of birth, weight and height'**
   String get onboardingFillStats;
 
   /// No description provided for @onboardingBmiCardLabel.
