@@ -36,6 +36,11 @@ jobs:
           echo "BASE_URL=http://127.0.0.1:8787/api" > .env.development
           echo "BASE_URL=http://127.0.0.1:8787/api" > .env.production
 
+      # google_mobile_ads still ships only as a CocoaPod, and Flutter won't
+      # mix CocoaPods with Swift Package Manager plugins, so build with
+      # CocoaPods only.
+      - run: flutter config --no-enable-swift-package-manager
+
       - run: flutter pub get
 
       - name: Boot the iPhone simulator
