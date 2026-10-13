@@ -91,16 +91,13 @@ Future<void> setupFCM(ApiService api) async {
       sound: true,
     );
 
-    final token = await messaging.getToken();
-    if (token != null) {
-      await api.registerFcmToken(token);
-    } else {
-      debugPrint('FCM: getToken() returned null, device not registered');
-    }
-
     messaging.onTokenRefresh.listen((newToken) {
       api.registerFcmToken(newToken);
     });
+
+    // Registered separately so a token that isn't ready yet can't stop the
+    // listeners below from being set up.
+    await _registerToken(api);
 
     FirebaseMessaging.onMessage.listen(_showForegroundNotification);
 
@@ -116,6 +113,39 @@ Future<void> setupFCM(ApiService api) async {
   } catch (e) {
     debugPrint('FCM setup failed: $e');
   }
+}
+
+/// Sends this device's push token to the backend.
+///
+/// On iOS, FCM can only issue a token once Apple has handed the app its APNs
+/// token, which arrives a moment after launch. setupFCM runs before the first
+/// frame on a cold start, so asking straight away threw `apns-token-not-set`,
+/// and the device was never registered for that launch.
+Future<void> _registerToken(ApiService api) async {
+  try {
+    final messaging = FirebaseMessaging.instance;
+    if (_isApple && !await _waitForApnsToken(messaging)) {
+      debugPrint('FCM: no APNs token yet, device not registered');
+      return;
+    }
+
+    final token = await messaging.getToken();
+    if (token != null) {
+      await api.registerFcmToken(token);
+    } else {
+      debugPrint('FCM: getToken() returned null, device not registered');
+    }
+  } catch (e) {
+    debugPrint('FCM token registration failed: $e');
+  }
+}
+
+Future<bool> _waitForApnsToken(FirebaseMessaging messaging) async {
+  for (var attempt = 0; attempt < 10; attempt++) {
+    if (await messaging.getAPNSToken() != null) return true;
+    await Future<void>.delayed(const Duration(seconds: 1));
+  }
+  return false;
 }
 
 void _onRemoteNotificationTapped(RemoteMessage message) {
@@ -241,7 +271,12 @@ Future<bool> notificationPermissionUndecided() async {
 /// person why. Returns whether notifications are now allowed.
 Future<bool> requestNotificationPermission() async {
   try {
-    return await _requestNotificationPermission();
+    final granted = await _requestNotificationPermission();
+    // A launch whose registration found no APNs token gets another chance
+    // here, now that the person has said yes.
+    final api = _api;
+    if (granted && api != null) unawaited(_registerToken(api));
+    return granted;
   } catch (e) {
     debugPrint('Notification permission request failed: $e');
     return false;
