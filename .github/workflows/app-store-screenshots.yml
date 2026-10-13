@@ -133,9 +133,17 @@ jobs:
             while kill -0 "$pid" 2>/dev/null; do
               name=$(curl -s --max-time 2 http://127.0.0.1:8787/__pending || true)
               if [ "$name" = "preview/start" ]; then
-                xcrun simctl io "$UDID" recordVideo --codec=h264 --force "raw-$lang.mov" &
+                xcrun simctl io "$UDID" recordVideo --codec=h264 --force \
+                  "raw-$lang.mov" 2> "record-$lang.log" &
                 rec=$!
-                sleep 1
+                # It takes several seconds to start capturing; carry on only
+                # once it says so, or the first screens are missed.
+                for _ in $(seq 1 150); do
+                  grep -q "Recording started" "record-$lang.log" && break
+                  sleep 0.2
+                done
+                cat "record-$lang.log"
+                sleep 0.5
                 curl -s -X POST http://127.0.0.1:8787/__done > /dev/null || true
               elif [ "$name" = "preview/end" ]; then
                 kill -INT "$rec"
@@ -169,6 +177,7 @@ jobs:
             screenshots/
             test-*.log
             preview-*.log
+            record-*.log
 
       # Replaces the branch each run, so it only ever holds the latest set.
       - name: Commit screenshots to the app-store-screenshots branch
