@@ -3,9 +3,11 @@ name: App Store screenshots
 # Takes the App Store screenshots (iPhone 6.9", 1320 x 2868) on a GitHub Mac:
 # it runs integration_test/app_store_screenshots_test.dart on the iPhone 16
 # Pro Max simulator, once in English and once in French, and saves each
-# screen with `simctl io screenshot`. They are uploaded as the
-# "app-store-screenshots" artifact of the run, and also committed to the
-# app-store-screenshots branch, so they can be opened on GitHub directly.
+# screen with `simctl io screenshot`, plus 1206 x 2622 copies for the
+# 6.1"/6.3" slot. It then records an app preview video in each language.
+# Everything is uploaded as the "app-store-screenshots" artifact of the run,
+# and also committed to the app-store-screenshots branch, so it can be opened
+# on GitHub directly.
 #
 # The app talks to a demo backend inside the test (integration_test/
 # demo_backend.dart) with a made-up account, so no server, account or
@@ -100,8 +102,63 @@ jobs:
               exit "$status"
             fi
           done
+          # The iPhone 6.1"/6.3" slot takes 1206 x 2622: scale to that height
+          # and trim the extra pixel of width.
+          for lang in en fr; do
+            mkdir -p "screenshots/$lang-6.3in"
+            for f in screenshots/$lang/*.png; do
+              out="screenshots/$lang-6.3in/$(basename "$f")"
+              sips --resampleHeight 2622 "$f" --out "$out" > /dev/null
+              sips --cropToHeightWidth 2622 1206 "$out" > /dev/null
+            done
+          done
           for f in screenshots/*/*.png; do
             echo "$f: $(sips -g pixelWidth -g pixelHeight "$f" | awk '/pixel/ {print $2}' | paste -sd x -)"
+          done
+
+      # App previews: the same screens as a ~25 s walk-through. The test
+      # says when to start and stop recording; the video is then made to
+      # Apple's spec (886 x 1920, 30 fps, H.264, with a silent audio track,
+      # 15 to 30 s).
+      - name: Record app previews
+        run: |
+          command -v ffmpeg > /dev/null || brew install ffmpeg
+          mkdir -p screenshots/previews
+          for lang in en fr; do
+            flutter test integration_test/app_store_screenshots_test.dart \
+              -d "$UDID" --dart-define=SCREENSHOT_LANG=$lang \
+              --dart-define=APP_PREVIEW=true > "preview-$lang.log" 2>&1 &
+            pid=$!
+            rec=
+            while kill -0 "$pid" 2>/dev/null; do
+              name=$(curl -s --max-time 2 http://127.0.0.1:8787/__pending || true)
+              if [ "$name" = "preview/start" ]; then
+                xcrun simctl io "$UDID" recordVideo --codec=h264 --force "raw-$lang.mov" &
+                rec=$!
+                sleep 1
+                curl -s -X POST http://127.0.0.1:8787/__done > /dev/null || true
+              elif [ "$name" = "preview/end" ]; then
+                kill -INT "$rec"
+                wait "$rec" || true
+                curl -s -X POST http://127.0.0.1:8787/__done > /dev/null || true
+              fi
+              sleep 0.2
+            done
+            status=0
+            wait "$pid" || status=$?
+            tail -n 30 "preview-$lang.log"
+            if [ "$status" -ne 0 ]; then
+              echo "::error::The $lang preview run failed; see preview-$lang.log in the artifact."
+              exit "$status"
+            fi
+            ffmpeg -loglevel error -y -i "raw-$lang.mov" \
+              -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=44100 \
+              -vf "fps=30,scale=886:-2,crop=886:1920:0:0,format=yuv420p" \
+              -c:v libx264 -profile:v high -preset slow -crf 18 \
+              -c:a aac -b:a 128k -t 29.5 -shortest -movflags +faststart \
+              "screenshots/previews/app-preview-$lang.mp4"
+            ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate:format=duration \
+              -of compact "screenshots/previews/app-preview-$lang.mp4"
           done
 
       - uses: actions/upload-artifact@v4
@@ -111,6 +168,7 @@ jobs:
           path: |
             screenshots/
             test-*.log
+            preview-*.log
 
       # Replaces the branch each run, so it only ever holds the latest set.
       - name: Commit screenshots to the app-store-screenshots branch
