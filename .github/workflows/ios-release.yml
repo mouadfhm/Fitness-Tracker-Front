@@ -55,6 +55,11 @@ jobs:
       - name: Pick build number
         run: echo "BUILD_NUMBER=$((10 + GITHUB_RUN_NUMBER))" >> "$GITHUB_ENV"
 
+      # google_mobile_ads still ships as a CocoaPod that depends on
+      # webview_flutter_wkwebview, and with Swift Package Manager on that
+      # plugin is no longer a pod, so pod install can't resolve it.
+      - run: flutter config --no-enable-swift-package-manager
+
       - run: flutter pub get
 
       # Generates the Xcode settings and runs pod install without compiling.
