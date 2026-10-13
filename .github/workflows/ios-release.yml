@@ -67,10 +67,15 @@ jobs:
       # Flutter's own certificate check here.
       - run: flutter build ios --release --config-only --no-codesign --build-number="$BUILD_NUMBER"
 
-      # Sign with the distribution identity straight away: a development
-      # profile would need a registered device, and this team has none.
+      # Sign the app with the distribution identity straight away: a
+      # development profile would need a registered device, and this team has
+      # none. Only the Runner project is changed (and only on the runner);
+      # setting it on the command line would also hit the Pods targets, which
+      # sign for development.
       - name: Archive
         run: |
+          sed -i '' 's/"CODE_SIGN_IDENTITY\[sdk=iphoneos\*\]" = "iPhone Developer";/"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution";/' ios/Runner.xcodeproj/project.pbxproj
+          grep -c '"Apple Distribution"' ios/Runner.xcodeproj/project.pbxproj
           xcodebuild archive \
             -workspace ios/Runner.xcworkspace \
             -scheme Runner \
@@ -82,8 +87,7 @@ jobs:
             -authenticationKeyID "${{ secrets.APP_STORE_CONNECT_KEY_ID }}" \
             -authenticationKeyIssuerID "${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}" \
             DEVELOPMENT_TEAM="${{ secrets.APPLE_TEAM_ID }}" \
-            CODE_SIGN_STYLE=Automatic \
-            CODE_SIGN_IDENTITY="Apple Distribution"
+            CODE_SIGN_STYLE=Automatic
 
       - name: Export and upload to App Store Connect
         run: |
