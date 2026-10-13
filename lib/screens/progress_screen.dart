@@ -149,7 +149,9 @@ class _ProgressScreenState extends State<ProgressScreen> {
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              interval: 1,
+              // About five dates across, so they don't run into each other
+              // once there are more than a handful of entries.
+              interval: (sorted.length / 5).ceilToDouble().clamp(1, double.infinity),
               getTitlesWidget: (value, meta) {
                 final index = value.toInt();
                 if (index >= 0 && index < sorted.length) {

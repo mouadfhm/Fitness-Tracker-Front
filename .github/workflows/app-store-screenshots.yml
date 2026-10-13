@@ -1,0 +1,105 @@
+name: App Store screenshots
+
+# Takes the App Store screenshots (iPhone 6.9", 1320 x 2868) on a GitHub Mac:
+# it runs integration_test/app_store_screenshots_test.dart on the iPhone 16
+# Pro Max simulator, once in English and once in French, and saves each
+# screen with `simctl io screenshot`. They are uploaded as the
+# "app-store-screenshots" artifact of the run.
+#
+# The app talks to a demo backend inside the test (integration_test/
+# demo_backend.dart) with a made-up account, so no server, account or
+# secret is involved. Run it from the Actions tab with "Run workflow".
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - integration_test/**
+      - .github/workflows/app-store-screenshots.yml
+
+jobs:
+  screenshots:
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      # pubspec.yaml lists the env files as assets, so they have to exist.
+      # The test sets BASE_URL itself.
+      - name: Create placeholder env files
+        run: |
+          echo "BASE_URL=http://127.0.0.1:8787/api" > .env.development
+          echo "BASE_URL=http://127.0.0.1:8787/api" > .env.production
+
+      - run: flutter pub get
+
+      - name: Boot the iPhone simulator
+        run: |
+          udid=$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys
+          devices = [d for r in json.load(sys.stdin)["devices"].values() for d in r]
+          for name in ("iPhone 16 Pro Max", "iPhone 15 Pro Max"):
+              match = [d for d in devices if d["name"] == name]
+              if match:
+                  print(match[-1]["udid"])
+                  break
+          ')
+          if [ -z "$udid" ]; then
+            echo "::error::No iPhone 16 Pro Max or 15 Pro Max simulator on this runner."
+            xcrun simctl list devices available
+            exit 1
+          fi
+          xcrun simctl boot "$udid"
+          xcrun simctl bootstatus "$udid" -b
+          xcrun simctl ui "$udid" appearance light
+          # The clean status bar Apple uses in its own screenshots.
+          xcrun simctl status_bar "$udid" override --time 9:41 \
+            --dataNetwork wifi --wifiMode active --wifiBars 3 \
+            --cellularMode active --cellularBars 4 \
+            --batteryState charged --batteryLevel 100
+          echo "UDID=$udid" >> "$GITHUB_ENV"
+
+      # The test serves the demo data on port 8787 and, at each screen,
+      # puts the screenshot's name on /__pending until /__done says it's
+      # saved.
+      - name: Take screenshots
+        run: |
+          mkdir -p screenshots
+          for lang in en fr; do
+            flutter test integration_test/app_store_screenshots_test.dart \
+              -d "$UDID" --dart-define=SCREENSHOT_LANG=$lang > "test-$lang.log" 2>&1 &
+            pid=$!
+            while kill -0 "$pid" 2>/dev/null; do
+              name=$(curl -s --max-time 2 http://127.0.0.1:8787/__pending || true)
+              if [ -n "$name" ]; then
+                mkdir -p "screenshots/$(dirname "$name")"
+                xcrun simctl io "$UDID" screenshot "screenshots/$name.png"
+                curl -s -X POST http://127.0.0.1:8787/__done > /dev/null || true
+                echo "Saved $name.png"
+              fi
+              sleep 1
+            done
+            status=0
+            wait "$pid" || status=$?
+            tail -n 30 "test-$lang.log"
+            if [ "$status" -ne 0 ]; then
+              echo "::error::The $lang screenshot run failed; see test-$lang.log in the artifact."
+              exit "$status"
+            fi
+          done
+          for f in screenshots/*/*.png; do
+            echo "$f: $(sips -g pixelWidth -g pixelHeight "$f" | awk '/pixel/ {print $2}' | paste -sd x -)"
+          done
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: app-store-screenshots
+          path: |
+            screenshots/
+            test-*.log
