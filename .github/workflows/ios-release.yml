@@ -20,10 +20,17 @@ on:
 
 jobs:
   build-and-upload:
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+
+      # App Store Connect only accepts apps built with the iOS 26 SDK or later.
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - run: xcodebuild -version
 
       - uses: subosito/flutter-action@v2
         with:
@@ -55,11 +62,26 @@ jobs:
       - name: Pick build number
         run: echo "BUILD_NUMBER=$((10 + GITHUB_RUN_NUMBER))" >> "$GITHUB_ENV"
 
+      # google_mobile_ads still ships as a CocoaPod that depends on
+      # webview_flutter_wkwebview, and with Swift Package Manager on that
+      # plugin is no longer a pod, so pod install can't resolve it.
+      - run: flutter config --no-enable-swift-package-manager
+
       - run: flutter pub get
 
       # Generates the Xcode settings and runs pod install without compiling.
-      - run: flutter build ios --release --config-only --build-number="$BUILD_NUMBER"
+      # Signing happens in the Archive step with the API key, so skip
+      # Flutter's own certificate check here.
+      - run: flutter build ios --release --config-only --no-codesign --build-number="$BUILD_NUMBER"
 
+      # Archive unsigned. Automatic signing would ask Apple for a development
+      # profile, which needs a registered device, and it refuses a
+      # distribution identity; Xcode also refuses ad-hoc signing for iOS.
+      # The export step below signs the app for the App Store with the API
+      # key. It takes the entitlements from the app's existing signature, so
+      # first give the app a plain local signature carrying
+      # Runner.entitlements; otherwise the upload would lose push
+      # notifications.
       - name: Archive
         run: |
           xcodebuild archive \
@@ -68,12 +90,14 @@ jobs:
             -configuration Release \
             -destination 'generic/platform=iOS' \
             -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$ASC_KEY_PATH" \
-            -authenticationKeyID "${{ secrets.APP_STORE_CONNECT_KEY_ID }}" \
-            -authenticationKeyIssuerID "${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}" \
-            DEVELOPMENT_TEAM="${{ secrets.APPLE_TEAM_ID }}" \
-            CODE_SIGN_STYLE=Automatic
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Carry the entitlements into the archive
+        run: |
+          app="$RUNNER_TEMP/Runner.xcarchive/Products/Applications/Runner.app"
+          codesign --force --sign - --entitlements ios/Runner/Runner.entitlements "$app"
+          codesign -d --entitlements - "$app" 2>/dev/null | tee "$RUNNER_TEMP/entitlements.txt"
+          grep -q aps-environment "$RUNNER_TEMP/entitlements.txt"
 
       - name: Export and upload to App Store Connect
         run: |
