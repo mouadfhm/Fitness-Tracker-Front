@@ -4,6 +4,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../utils/adaptive.dart';
 import 'package:provider/provider.dart';
 import 'package:fitness_tracker_app/providers/profile_provider.dart';
@@ -279,11 +280,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Card(
                   child: Column(
                     children: [
-                      _buildProfileTile(
-                        Icons.cake,
-                        l10n.profileAge,
-                        l10n.profileYearsValue('${profileData['age']}'),
-                      ),
+                      _buildBirthdayTile(l10n, profileData),
                       _buildProfileTile(
                         Icons.monitor_weight,
                         l10n.profileWeight,
@@ -403,6 +400,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // Helper UI Builders
+  /// Birthday and age, or just the age for accounts that have no birthday yet.
+  Widget _buildBirthdayTile(AppLocalizations l10n, Map<String, dynamic> profileData) {
+    final age = l10n.profileYearsValue('${profileData['age']}');
+    final birthDate = DateTime.tryParse(profileData['birth_date']?.toString() ?? '');
+    if (birthDate == null) return _buildProfileTile(Icons.cake, l10n.profileAge, age);
+    final date = DateFormat.yMMMMd(Localizations.localeOf(context).toString()).format(birthDate);
+    return _buildProfileTile(Icons.cake, l10n.profileBirthDate, '$date · $age');
+  }
+
   Widget _buildProfileTile(IconData icon, String title, String value) {
     final colorScheme = Theme.of(context).colorScheme;
     

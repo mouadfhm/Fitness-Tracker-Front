@@ -9,6 +9,14 @@ Widget _wrap(Widget child) => MaterialApp(
       home: child,
     );
 
+/// Opens the date picker and accepts its starting date, 25 years ago.
+Future<void> pickBirthDate(WidgetTester tester) async {
+  await tester.tap(find.byKey(const Key('birth_date_field')));
+  await tester.pumpAndSettle();
+  await tester.tap(find.text('OK'));
+  await tester.pumpAndSettle();
+}
+
 void main() {
   group('OnboardingScreen Step 1', () {
     testWidgets('shows progress bar with 4 segments', (tester) async {
@@ -31,7 +39,7 @@ void main() {
 
     testWidgets('Next button advances to step 2', (tester) async {
       await tester.pumpWidget(_wrap(const OnboardingScreen()));
-      await tester.enterText(find.byKey(const Key('age_field')), '25');
+      await pickBirthDate(tester);
       await tester.enterText(find.byKey(const Key('weight_field')), '70');
       await tester.enterText(find.byKey(const Key('height_field')), '175');
       await tester.pump();
@@ -46,7 +54,7 @@ void main() {
   group('OnboardingScreen Steps 2-4', () {
     Future<void> advanceToStep2(WidgetTester tester) async {
       await tester.pumpWidget(_wrap(const OnboardingScreen()));
-      await tester.enterText(find.byKey(const Key('age_field')), '25');
+      await pickBirthDate(tester);
       await tester.enterText(find.byKey(const Key('weight_field')), '70');
       await tester.enterText(find.byKey(const Key('height_field')), '175');
       await tester.pump();
@@ -92,6 +100,33 @@ void main() {
       expect(find.text('Lose weight'), findsOneWidget);
       expect(find.text('Build muscle'), findsOneWidget);
       expect(find.text('Stay at my weight'), findsOneWidget);
+    });
+  });
+
+  group('OnboardingScreen birthday', () {
+    testWidgets('Next asks for a birthday before moving on', (tester) async {
+      await tester.pumpWidget(_wrap(const OnboardingScreen()));
+      await tester.enterText(find.byKey(const Key('weight_field')), '70');
+      await tester.enterText(find.byKey(const Key('height_field')), '175');
+      await tester.pump();
+      await tester.ensureVisible(find.text('Next'));
+      await tester.tap(find.text('Next'));
+      await tester.pump();
+      expect(find.text('Please fill in your date of birth, weight and height'), findsOneWidget);
+    });
+
+    testWidgets('picked birthday shows the age', (tester) async {
+      await tester.pumpWidget(_wrap(const OnboardingScreen()));
+      await pickBirthDate(tester);
+      expect(find.text('25 years'), findsOneWidget);
+    });
+
+    testWidgets('editing shows the saved birthday', (tester) async {
+      await tester.pumpWidget(_wrap(const OnboardingScreen(
+        initialData: {'birth_date': '1990-04-12', 'age': 36},
+        isEditing: true,
+      )));
+      expect(find.text('April 12, 1990'), findsOneWidget);
     });
   });
 

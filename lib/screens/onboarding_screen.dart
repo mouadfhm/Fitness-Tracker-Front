@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../services/api_service.dart';
+import '../utils/adaptive.dart';
 import '../utils/friendly_error.dart';
 import 'package:provider/provider.dart';
 import '../providers/profile_provider.dart';
@@ -24,7 +26,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final _pageController = PageController();
   int _currentPage = 0;
 
-  final _ageController = TextEditingController();
+  DateTime? _birthDate;
   final _weightController = TextEditingController();
   final _heightController = TextEditingController();
   // Used instead of _heightController when entering feet and inches.
@@ -43,7 +45,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void initState() {
     super.initState();
     if (widget.initialData.isNotEmpty) {
-      _ageController.text = widget.initialData['age']?.toString() ?? '';
+      _birthDate = DateTime.tryParse(widget.initialData['birth_date']?.toString() ?? '');
       _weightController.text = widget.initialData['weight']?.toString() ?? '';
       _heightController.text = widget.initialData['height']?.toString() ?? '';
       const validGenders = ['male', 'female'];
@@ -60,13 +62,32 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   void dispose() {
-    _ageController.dispose();
     _weightController.dispose();
     _heightController.dispose();
     _heightFtController.dispose();
     _heightInController.dispose();
     _pageController.dispose();
     super.dispose();
+  }
+
+  /// Whole years since [_birthDate], or 0 when none is picked yet.
+  int get _age {
+    final b = _birthDate;
+    if (b == null) return 0;
+    final now = DateTime.now();
+    final hadBirthday = now.month > b.month || (now.month == b.month && now.day >= b.day);
+    return now.year - b.year - (hadBirthday ? 0 : 1);
+  }
+
+  Future<void> _pickBirthDate() async {
+    final now = DateTime.now();
+    final picked = await showAdaptiveDatePicker(
+      context: context,
+      initialDate: _birthDate ?? DateTime(now.year - 25, now.month, now.day),
+      firstDate: DateTime(1900),
+      lastDate: now,
+    );
+    if (picked != null) setState(() => _birthDate = picked);
   }
 
   double? _parse(TextEditingController c) =>
@@ -114,7 +135,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   double get _bmr {
     final w = _weightKg;
     final h = _heightCm;
-    final a = double.tryParse(_ageController.text) ?? 0;
+    final a = _age;
     if (w <= 0 || h <= 0 || a <= 0) return 0;
     return _gender == 'male'
         ? (10 * w) + (6.25 * h) - (5 * a) + 5
@@ -159,7 +180,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     setState(() => _isLoading = true);
     try {
       await ApiService().updateProfile({
-        'age': int.tryParse(_ageController.text.trim()),
+        // The server works the age out from this, so it stays right after
+        // each birthday.
+        'birth_date': DateFormat('yyyy-MM-dd').format(_birthDate!),
         'weight': double.parse(_weightKg.toStringAsFixed(1)),
         'height': double.parse(_heightCm.toStringAsFixed(1)),
         'gender': _gender,
@@ -262,13 +285,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          _buildNumberField(
-            key: const Key('age_field'),
-            controller: _ageController,
-            label: l10n.onboardingAgeLabel,
-            hint: l10n.onboardingAgeHint,
-            icon: Icons.cake_outlined,
-          ),
+          _buildBirthDateField(),
           const SizedBox(height: 12),
           _buildNumberField(
             key: const Key('weight_field'),
@@ -313,10 +330,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         ],
       ),
       onNext: () {
-        final age = int.tryParse(_ageController.text.trim());
+        final age = _age;
         final weight = _weightKg;
         final height = _heightCm;
-        if (age == null || age <= 0 || age > 120 ||
+        if (_birthDate == null || age <= 0 || age > 120 ||
             weight <= 0 || weight > 500 ||
             height <= 0 || height > 300) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -621,6 +638,36 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [child]),
+    );
+  }
+
+  Widget _buildBirthDateField() {
+    final l10n = AppLocalizations.of(context)!;
+    final colorScheme = Theme.of(context).colorScheme;
+    final b = _birthDate;
+    return InkWell(
+      key: const Key('birth_date_field'),
+      onTap: _pickBirthDate,
+      borderRadius: BorderRadius.circular(12),
+      child: InputDecorator(
+        isEmpty: b == null,
+        decoration: InputDecoration(
+          labelText: l10n.onboardingBirthDateLabel,
+          hintText: l10n.onboardingBirthDateHint,
+          prefixIcon: const Icon(Icons.cake_outlined),
+          suffixText: b == null ? null : l10n.profileYearsValue('$_age'),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: colorScheme.outlineVariant),
+          ),
+        ),
+        child: Text(
+          b == null
+              ? ''
+              : DateFormat.yMMMMd(Localizations.localeOf(context).toString()).format(b),
+        ),
+      ),
     );
   }
 

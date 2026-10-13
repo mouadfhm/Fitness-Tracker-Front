@@ -248,10 +248,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'We use these to calculate your daily calorie needs';
 
   @override
-  String get onboardingAgeLabel => 'Age';
+  String get onboardingBirthDateLabel => 'Date of birth';
 
   @override
-  String get onboardingAgeHint => 'e.g. 25';
+  String get onboardingBirthDateHint => 'Tap to pick your birthday';
 
   @override
   String get onboardingWeightLabel => 'Weight (kg)';
@@ -456,6 +456,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileAge => 'Age';
+
+  @override
+  String get profileBirthDate => 'Birthday';
 
   @override
   String profileYearsValue(String value) {
@@ -2041,7 +2044,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingFillStats =>
-      'Please fill in your age, weight and height';
+      'Please fill in your date of birth, weight and height';
 
   @override
   String get onboardingBmiCardLabel =>
