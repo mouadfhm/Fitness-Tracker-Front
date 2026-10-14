@@ -2,7 +2,9 @@ name: iOS release
 
 # Builds the iPhone app on a GitHub-hosted Mac and uploads it to App Store
 # Connect (it then shows under TestFlight and can be picked as the build for a
-# version). Run it from the Actions tab with "Run workflow".
+# version). It runs on its own when a version tag like v2.0.1 is pushed, or
+# from the Actions tab with "Run workflow". android-release.yml does the same
+# for Google Play, so one tag ships to both stores.
 #
 # Signing is automatic: Xcode uses the App Store Connect API key to create or
 # fetch the distribution certificate and profile, so no certificates are
@@ -16,7 +18,15 @@ name: iOS release
 #   ENV_PRODUCTION                 Full contents of .env.production
 
 on:
+  push:
+    tags:
+      - "v*"
   workflow_dispatch:
+
+# One upload at a time, so two runs never race for the same build number.
+concurrency:
+  group: ios-release
+  cancel-in-progress: false
 
 jobs:
   build-and-upload:

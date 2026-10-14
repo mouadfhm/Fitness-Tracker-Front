@@ -25,8 +25,10 @@ flutter test
 # Run a single test file
 flutter test test/widget_test.dart
 
-# iOS App Store build: run the "iOS release" workflow (.github/workflows/ios-release.yml)
-# from the Actions tab; it archives on a GitHub Mac and uploads to App Store Connect.
+# Store builds: push a version tag (git tag v2.0.1 && git push origin v2.0.1).
+# .github/workflows/ios-release.yml archives on a GitHub Mac and uploads to App Store
+# Connect (TestFlight); .github/workflows/android-release.yml uploads the app bundle to
+# Google Play's internal track. Both can also be run from the Actions tab.
 
 # Generate app icons from lib/assets/fitnessTrackerLogo.png
 flutter pub run flutter_launcher_icons
