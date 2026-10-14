@@ -71,6 +71,11 @@ android {
     buildTypes {
         getByName("release") {
             signingConfig = signingConfigs.getByName("release")
+            // Ship native debug symbols in the bundle so Play can symbolicate
+            // native crashes and ANRs (Play warns when they're missing).
+            ndk {
+                debugSymbolLevel = "SYMBOL_TABLE"
+            }
             // Enable minify/R8 if you want smaller/obfuscated builds. Keep rules must be present.
             isMinifyEnabled = true
             isShrinkResources = true
