@@ -4,7 +4,8 @@ name: Android release
 # testing track. It runs on its own when a version tag like v2.0.1 is pushed
 # (ios-release.yml ships the same tag to TestFlight), or from the Actions tab
 # with "Run workflow". From the internal track, promote the release to
-# production in the Play Console.
+# production in the Play Console. Pull requests that touch android/ build
+# the bundle too, without uploading, so a broken build shows up before a tag.
 #
 # The versionCode is the git commit count (android/app/build.gradle.kts), so
 # the checkout fetches the full history. Play refuses a versionCode it has
@@ -29,9 +30,14 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
+  pull_request:
+    paths:
+      - android/**
+      - pubspec.yaml
+      - .github/workflows/android-release.yml
 
 concurrency:
-  group: android-release
+  group: android-release-${{ github.event_name == 'pull_request' && github.ref || 'upload' }}
   cancel-in-progress: false
 
 jobs:
@@ -94,6 +100,7 @@ jobs:
       - run: flutter build appbundle --release
 
       - name: Upload to Google Play (internal track)
+        if: github.event_name != 'pull_request'
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
