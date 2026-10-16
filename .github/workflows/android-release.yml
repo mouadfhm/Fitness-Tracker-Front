@@ -96,14 +96,6 @@ jobs:
 
       - run: flutter build appbundle --release
 
-      - name: List BitmapFactory call sites (temporary)
-        if: github.event_name == 'pull_request'
-        run: |
-          dexdump="$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)dexdump"
-          mkdir -p "$RUNNER_TEMP/aab"
-          unzip -q build/app/outputs/bundle/release/app-release.aab 'base/dex/*' -d "$RUNNER_TEMP/aab"
-          for f in "$RUNNER_TEMP"/aab/base/dex/*.dex; do "$dexdump" -d "$f"; done > "$RUNNER_TEMP/dump.txt"
-          python3 .github/scripts/bitmap-sites.py "$RUNNER_TEMP/dump.txt" build/app/outputs/mapping/release/mapping.txt
 
       - name: Upload to Google Play (internal track)
         if: github.event_name != 'pull_request'
