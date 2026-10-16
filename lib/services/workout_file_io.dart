@@ -10,7 +10,7 @@ class WorkoutFileIO {
     required String contents,
   }) async {
     final isMobile = !kIsWeb && (Platform.isAndroid || Platform.isIOS);
-    final path = await FilePicker.saveFile(
+    final path = await FilePicker.platform.saveFile(
       dialogTitle: 'Save workout program',
       fileName: suggestedFileName,
       type: FileType.custom,
@@ -19,7 +19,7 @@ class WorkoutFileIO {
     );
     if (path == null) return false;
 
-    // On desktop platforms, FilePicker.saveFile only returns the
+    // On desktop platforms, FilePicker.platform.saveFile only returns the
     // chosen path without writing any data, so we must write the file
     // ourselves. On web and mobile, the bytes passed above are already
     // written by the plugin.
@@ -30,7 +30,7 @@ class WorkoutFileIO {
   }
 
   static Future<String?> pickJsonFileContents() async {
-    final result = await FilePicker.pickFiles(
+    final result = await FilePicker.platform.pickFiles(
       dialogTitle: 'Import workout program',
       type: FileType.custom,
       allowedExtensions: ['json'],
