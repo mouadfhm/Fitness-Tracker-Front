@@ -32,7 +32,7 @@ android {
 
     // Compile/target SDK set to 36 (Android 16) per Play requirements
     compileSdk = 36
-    ndkVersion = "27.0.12077973"
+    ndkVersion = "28.2.13676358"
 
     compileOptions {
         // Required by flutter_local_notifications.
