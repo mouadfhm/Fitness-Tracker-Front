@@ -29,6 +29,9 @@ flutter test test/widget_test.dart
 # .github/workflows/ios-release.yml archives on a GitHub Mac and uploads to App Store
 # Connect (TestFlight); .github/workflows/android-release.yml uploads the app bundle to
 # Google Play's internal track. Both can also be run from the Actions tab.
+# Both write .env.production with .github/scripts/write-env.sh: BASE_URL comes from the
+# PROD_BASE_URL repo variable (default https://api.mouadfhm.duckdns.org/api), other keys
+# from the optional ENV_PRODUCTION secret.
 
 # Generate app icons from lib/assets/fitnessTrackerLogo.png
 flutter pub run flutter_launcher_icons

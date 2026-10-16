@@ -17,9 +17,12 @@ name: Android release
 #   ANDROID_KEY_ALIAS              The key alias inside it
 #   ANDROID_KEY_PASSWORD           The key password
 #   PLAY_SERVICE_ACCOUNT_JSON      Full contents of the Google Play service account JSON key
-#   ENV_PRODUCTION                 Full contents of .env.production (shared with iOS)
+#   ENV_PRODUCTION                 Optional: other .env.production keys (SUPPORT_EMAIL,
+#                                  PRIVACY_POLICY_URL), shared with iOS. Its BASE_URL is ignored.
 #
-# Optional repository variable:
+# Optional repository variables:
+#   PROD_BASE_URL                  The API root the app talks to. Defaults to
+#                                  https://api.mouadfhm.duckdns.org/api
 #   PLAY_RELEASE_STATUS            "completed" (default) rolls the release out to
 #                                  internal testers; set it to "draft" while the
 #                                  app has never been published, since Play only
@@ -62,14 +65,8 @@ jobs:
       - name: Write env files
         env:
           ENV_PRODUCTION: ${{ secrets.ENV_PRODUCTION }}
-        run: |
-          if [ -z "$ENV_PRODUCTION" ]; then
-            echo "::error::The ENV_PRODUCTION secret is missing."
-            exit 1
-          fi
-          printf '%s\n' "$ENV_PRODUCTION" > .env.production
-          # main.dart loads .env.production; this one only has to exist.
-          cp .env.production .env.development
+          PROD_BASE_URL: ${{ vars.PROD_BASE_URL || 'https://api.mouadfhm.duckdns.org/api' }}
+        run: .github/scripts/write-env.sh
 
       # build.gradle.kts signs release builds with android/key.properties.
       - name: Write upload keystore
