@@ -1,4 +1,3 @@
-import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -13,12 +12,9 @@ val keystoreProperties = Properties().apply {
 // without needing a manual bump. Falls back to 1 if git isn't available (e.g. CI
 // checkout without history, or building outside a git repo).
 val gitVersionCode: Int = try {
-    val stdout = ByteArrayOutputStream()
-    exec {
+    providers.exec {
         commandLine("git", "rev-list", "--count", "HEAD")
-        standardOutput = stdout
-    }
-    stdout.toString().trim().toInt()
+    }.standardOutput.asText.get().trim().toInt()
 } catch (e: Exception) {
     1
 }
@@ -36,17 +32,13 @@ android {
 
     // Compile/target SDK set to 36 (Android 16) per Play requirements
     compileSdk = 36
-    ndkVersion = "27.0.12077973"
+    ndkVersion = "28.2.13676358"
 
     compileOptions {
         // Required by flutter_local_notifications.
         isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
     defaultConfig {
@@ -100,7 +92,13 @@ dependencies {
     // Keep other app dependencies (if you have any module-specific ones)
     // For example, if your project requires androidx libraries, they belong here too.
 }
- 
+
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
+    }
+}
+
 flutter {
     source = "../.."
 }
