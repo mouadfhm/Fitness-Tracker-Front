@@ -25,9 +25,20 @@ class ExercisesProvider extends ChangeNotifier {
   String get selectedCategory => _selectedCategory;
 
   /// Category (the English name the filter matches on) -> the name in the
-  /// app's language, from the backend's display_name.
+  /// app's language, from the backend's display_category.
   final Map<String, String> _categoryLabels = {};
   String categoryLabel(String category) => _categoryLabels[category] ?? category;
+
+  /// The group an activity is filtered by. Older servers have no `category`;
+  /// their activity name was the group.
+  static String categoryOf(dynamic workout) =>
+      (workout['category'] ?? workout['name'])?.toString() ?? 'Other';
+
+  /// [categoryOf] in the app's language.
+  static String categoryLabelOf(dynamic workout) {
+    final label = workout['display_category'] ?? workout['display_name'];
+    return label is String && label.isNotEmpty ? label : categoryOf(workout);
+  }
 
   String _searchQuery = '';
   String get searchQuery => _searchQuery;
@@ -44,13 +55,10 @@ class ExercisesProvider extends ChangeNotifier {
       final Set<String> categorySet = {'All'};
       _categoryLabels.clear();
       for (var workout in workouts) {
-        final category = workout['name']?.toString() ?? 'Other';
+        final category = categoryOf(workout);
         if (category.isNotEmpty) {
           categorySet.add(category);
-          final label = workout['display_name']?.toString();
-          if (label != null && label.isNotEmpty) {
-            _categoryLabels.putIfAbsent(category, () => label);
-          }
+          _categoryLabels.putIfAbsent(category, () => categoryLabelOf(workout));
         }
       }
 
@@ -78,8 +86,8 @@ class ExercisesProvider extends ChangeNotifier {
     } else {
       temp =
           _allWorkouts.where((workout) {
-            final name = workout['name']?.toString().toLowerCase() ?? '';
-            return name == _selectedCategory.toLowerCase();
+            return categoryOf(workout).toLowerCase() ==
+                _selectedCategory.toLowerCase();
           }).toList();
     }
     // Then filter by search query if any

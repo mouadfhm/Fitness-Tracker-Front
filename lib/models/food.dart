@@ -1,5 +1,5 @@
+import '../services/locale_service.dart';
 import '../utils/l10n.dart';
-// ignore_for_file: prefer_interpolation_to_compose_strings
 
 class Food {
   final int id;
@@ -28,8 +28,7 @@ class Food {
         id: json['id'] is int
             ? json['id'] as int
             : int.tryParse(json['id'].toString()) ?? 0,
-        // Use 'brands' as name for Open Food Facts, change as needed
-        name: ((json['brands']?.toString().toUpperCase() ?? '') + ', ' + ((json["_keywords"] as List<dynamic>?)?.join(', ') ?? '')).trim().isEmpty ? 'Unknown' : ((json['brands']?.toString().toUpperCase() ?? '') + ', ' + ((json["_keywords"] as List<dynamic>?)?.join(', ') ?? '')).trim(),
+        name: scannedFoodName(json),
         calories: nutriments['energy-kcal_100g'] is num
             ? (nutriments['energy-kcal_100g'] as num).toDouble()
             : double.tryParse(nutriments['energy-kcal_100g']?.toString() ?? '') ?? 0.0,
@@ -58,4 +57,39 @@ class Food {
       );
     }
   }
+}
+
+/// A readable name for an Open Food Facts product: its name in the app's
+/// language (or its default name), then the brand when the name doesn't
+/// already say it, e.g. "Pâte à tartiner, Nutella". Symbols such as
+/// brackets, slashes or "®" are dropped.
+String scannedFoodName(Map<String, dynamic> product) {
+  final lang = LocaleService.languageCode;
+  String? pick(List<String> keys) {
+    for (final key in keys) {
+      final value = product[key]?.toString().trim();
+      if (value != null && value.isNotEmpty) return value;
+    }
+    return null;
+  }
+
+  final name = pick([
+    'product_name_$lang',
+    'product_name',
+    'generic_name_$lang',
+    'generic_name',
+  ]);
+  final brand = product['brands']?.toString().split(',').first.trim();
+  final hasBrand = brand != null && brand.isNotEmpty;
+
+  var result = name ?? (hasBrand ? brand : '');
+  if (name != null && hasBrand && !name.toLowerCase().contains(brand.toLowerCase())) {
+    result = '$name, $brand';
+  }
+  result = result
+      .replaceAll(RegExp(r"[^\p{L}\p{N} ,'\-]", unicode: true), ' ')
+      .replaceAll(RegExp(r'\s+'), ' ')
+      .replaceAll(RegExp(r'\s+,'), ',')
+      .trim();
+  return result.isEmpty ? 'Unknown' : result;
 }

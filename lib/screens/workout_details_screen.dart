@@ -340,7 +340,8 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
     final localeName = Localizations.localeOf(context).toString();
     final name = localizedName(widget.workout, fallback: l10n.workoutDetailsNoName);
     final description = widget.workout['display_name'] ?? widget.workout['description'] ?? l10n.workoutNoDescription;
-    final category = localizedName(widget.workout, fallback: l10n.workoutDetailsUncategorized);
+    final category = widget.workout['display_category'] as String? ??
+        localizedName(widget.workout, fallback: l10n.workoutDetailsUncategorized);
     final difficulty =
         _intensityCode(widget.workout['caloriesPerKg'] as num);
     final difficultyText = _intensityDisplay(l10n, difficulty);
@@ -350,8 +351,11 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
             ? l10n.workoutDetailsLoggedSuccess(_loggedMinutes!)
             : null;
 
-    final Color categoryColor = _getCategoryColor(category);
-    final IconData categoryIcon = _getCategoryIcon(category);
+    // Colour and icon are picked from the English name; only the shown text
+    // is translated.
+    final String iconKey = widget.workout['name'] as String? ?? category;
+    final Color categoryColor = _getCategoryColor(iconKey);
+    final IconData categoryIcon = _getCategoryIcon(iconKey);
     final profileProvider = Provider.of<ProfileProvider>(context);
     final weight = profileProvider.profileData?['weight'] ?? 0;
     final colorScheme = Theme.of(context).colorScheme;
