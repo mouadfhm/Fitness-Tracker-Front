@@ -6,7 +6,6 @@ import '../l10n/app_localizations.dart';
 import 'workout_details_screen.dart';
 import '../utils/add_banner.dart';
 import '../utils/labels.dart';
-import '../utils/l10n.dart';
 import '../utils/ad_list_helper.dart';
 
 class WorkoutScreen extends StatefulWidget {
@@ -621,7 +620,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                             final categoryKey = name ?? 'Other';
                             final category = name == null
                                 ? l10n.workoutCategoryOther
-                                : localizedName(workout);
+                                : ExercisesProvider.categoryLabelOf(workout);
                             final caloriesPerKg =
                                 (workout['caloriesPerKg'] as num).toDouble();
                             // Calorie burn per kg is really an intensity
