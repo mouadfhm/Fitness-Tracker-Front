@@ -1,7 +1,10 @@
-import 'dart:typed_data';
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
+import 'package:image/image.dart' as img;
+
 import '../models/food.dart';
+import 'api_service.dart';
 import 'locale_service.dart';
 
 /// One food seen in a camera frame.
@@ -30,22 +33,73 @@ class FoodDetection {
   });
 
   bool get isUnsure => confidence < unsureBelow;
+
+  /// One item of the `POST /meals/scan` answer. A food the foods table
+  /// doesn't have comes with id 0 and estimated macros per 100 g.
+  factory FoodDetection.fromJson(Map<String, dynamic> json) {
+    double number(Object? v) => v is num ? v.toDouble() : double.tryParse('$v') ?? 0;
+    final box = (json['box'] as Map?) ?? const {};
+    return FoodDetection(
+      food: Food.fromJson(Map<String, dynamic>.from(json['food'] as Map)),
+      box: Rect.fromLTWH(
+        number(box['x']),
+        number(box['y']),
+        number(box['width']),
+        number(box['height']),
+      ),
+      grams: number(json['grams']),
+      confidence: number(json['confidence']),
+    );
+  }
 }
 
 /// Finds the foods in one camera frame.
-///
-/// The full feature sends a small JPEG of the frame to the backend, which
-/// asks a vision model (Claude Haiku) for each food, its position and its
-/// portion, and matches each one to the foods table. The prototype uses
-/// [DemoMealDetector] instead.
 abstract class MealDetector {
   Future<List<FoodDetection>> detect(Uint8List jpeg);
 }
 
-/// Answers with sample detections for the prototype: the foods appear over a
-/// few frames and the portions wobble a little, the way a live detector's
-/// estimates settle while the camera moves. The positions fit the sample
-/// photo used for the prototype screenshots.
+/// The backend's meal scanner: the frame goes to `POST /meals/scan`, where a
+/// vision model (Claude Haiku) names each food, where it is and its portion,
+/// and each one is matched to the foods table.
+class ApiMealDetector implements MealDetector {
+  final ApiService _api;
+
+  ApiMealDetector([ApiService? api]) : _api = api ?? ApiService();
+
+  @override
+  Future<List<FoodDetection>> detect(Uint8List jpeg) async {
+    final upright = await compute(prepareFrame, jpeg);
+    final foods = await _api.scanMeal(upright);
+    return [
+      for (final item in foods.whereType<Map<String, dynamic>>())
+        FoodDetection.fromJson(item),
+    ];
+  }
+}
+
+/// Turns a camera JPEG upright and shrinks it to at most 768 px on its long
+/// side. Phone cameras often save the picture sideways with an orientation
+/// tag, which the model would ignore, putting every box in the wrong place;
+/// a smaller frame also uploads faster and costs fewer image tokens.
+///
+/// Runs in a background isolate (see [compute]).
+Uint8List prepareFrame(Uint8List jpeg) {
+  final decoded = img.decodeJpg(jpeg);
+  if (decoded == null) return jpeg;
+  var frame = img.bakeOrientation(decoded);
+  const maxSide = 768;
+  if (frame.width > maxSide || frame.height > maxSide) {
+    frame = frame.width >= frame.height
+        ? img.copyResize(frame, width: maxSide)
+        : img.copyResize(frame, height: maxSide);
+  }
+  return img.encodeJpg(frame, quality: 80);
+}
+
+/// Answers with sample detections, for previews and screenshots without a
+/// server: the foods appear over a few frames and the portions wobble a
+/// little, the way live estimates settle while the camera moves. The
+/// positions fit the sample fruit photo used for the screenshots.
 class DemoMealDetector implements MealDetector {
   int _frame = 0;
 

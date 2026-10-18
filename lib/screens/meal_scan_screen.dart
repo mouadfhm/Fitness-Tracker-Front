@@ -25,8 +25,7 @@ import '../utils/labels.dart';
 /// Scanning runs on its own and pauses once the foods stop changing, so a
 /// still plate doesn't keep sending frames.
 class MealScanScreen extends StatefulWidget {
-  /// Finds the foods in each frame. Defaults to the prototype's sample
-  /// detections until the backend endpoint exists.
+  /// Finds the foods in each frame. Defaults to the backend's scanner.
   final MealDetector? detector;
 
   /// Shown instead of the live camera (screenshots, or a device with no
@@ -81,6 +80,13 @@ class _MealScanScreenState extends State<MealScanScreen>
   /// Scans in a row with no new food before scanning pauses itself.
   static const _stableScansToPause = 3;
 
+  /// Frames per run at most, so a camera pointed at no food (or at a plate
+  /// that keeps changing) stops sending frames; each one is a paid call.
+  static const _maxScansPerRun = 20;
+
+  /// Failed frames in a row before scanning gives up and says so.
+  static const _failuresToPause = 3;
+
   /// Colours for the items, readable as white text's background and as a
   /// thin outline on any photo.
   static const _palette = [
@@ -94,7 +100,7 @@ class _MealScanScreenState extends State<MealScanScreen>
     Color(0xFFAB47BC),
   ];
 
-  late final MealDetector _detector = widget.detector ?? DemoMealDetector();
+  late final MealDetector _detector = widget.detector ?? ApiMealDetector();
   CameraController? _camera;
   String? _cameraError;
   Size? _frameSize;
@@ -105,6 +111,11 @@ class _MealScanScreenState extends State<MealScanScreen>
   final List<Rect> _dismissed = [];
   int _nextKey = 0;
   int _stableScans = 0;
+  int _scansThisRun = 0;
+  int _failures = 0;
+
+  /// Why scanning stopped on its own, shown under the meal title.
+  String Function(AppLocalizations)? _scanProblem;
   bool _scanning = true;
   bool _busy = false;
   bool _saving = false;
@@ -192,15 +203,33 @@ class _MealScanScreenState extends State<MealScanScreen>
       return;
     }
     _busy = true;
+    _scansThisRun++;
     try {
       final bytes = camera != null
           ? await (await camera.takePicture()).readAsBytes()
           : Uint8List(0);
       final detections = await _detector.detect(bytes);
       if (!mounted || !_scanning) return;
-      setState(() => _merge(detections));
+      setState(() {
+        _failures = 0;
+        _merge(detections);
+        if (_scanning && _scansThisRun >= _maxScansPerRun) _setScanning(false);
+      });
+    } on MealScanUnavailable {
+      if (!mounted) return;
+      setState(() {
+        _scanProblem = (l10n) => l10n.mealScanUnavailable;
+        _setScanning(false);
+      });
     } catch (e) {
       debugPrint('Meal scan frame failed: $e');
+      if (!mounted) return;
+      if (++_failures >= _failuresToPause) {
+        setState(() {
+          _scanProblem = (l10n) => l10n.mealScanFailed;
+          _setScanning(false);
+        });
+      }
     } finally {
       _busy = false;
     }
@@ -219,7 +248,7 @@ class _MealScanScreenState extends State<MealScanScreen>
       for (final item in _items) {
         if (item.box == null || seen.contains(item)) continue;
         final score =
-            _overlap(item.box!, d.box) + (item.food.id == d.food.id ? 0.5 : 0);
+            _overlap(item.box!, d.box) + (_sameFood(item.food, d.food) ? 0.5 : 0);
         if (score > best) {
           best = score;
           match = item;
@@ -257,6 +286,11 @@ class _MealScanScreenState extends State<MealScanScreen>
     }
   }
 
+  /// Foods missing from the foods table all have id 0, so compare those by
+  /// name.
+  bool _sameFood(Food a, Food b) =>
+      a.id > 0 ? a.id == b.id : b.id <= 0 && a.name == b.name;
+
   /// Intersection over union of two boxes.
   double _overlap(Rect a, Rect b) {
     final i = a.intersect(b);
@@ -268,6 +302,11 @@ class _MealScanScreenState extends State<MealScanScreen>
   void _setScanning(bool on) {
     _scanning = on;
     _stableScans = 0;
+    if (on) {
+      _scansThisRun = 0;
+      _failures = 0;
+      _scanProblem = null;
+    }
     final camera = _camera;
     if (camera != null && camera.value.isInitialized) {
       on ? camera.resumePreview() : camera.pausePreview();
@@ -329,15 +368,29 @@ class _MealScanScreenState extends State<MealScanScreen>
     });
     final api = ApiService();
     final date = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    var count = 0;
+    var kcal = 0.0;
     try {
-      for (final item in _items) {
-        await api.storeMeal(item.food.name, item.grams.roundToDouble(), _mealTime, date);
+      // One at a time, dropping each from the list once logged, so a retry
+      // after a failure doesn't log the first foods twice.
+      while (_items.isNotEmpty) {
+        final item = _items.first;
+        final foodId = item.food.id > 0 ? item.food.id : await _saveNewFood(api, item.food);
+        await api.storeMeal(
+          item.food.name,
+          item.grams.roundToDouble(),
+          _mealTime,
+          date,
+          foodId: foodId,
+        );
+        count++;
+        kcal += item.kcal;
+        if (mounted) setState(() => _items.remove(item));
       }
       if (!mounted) return;
-      final kcal = _items.fold<double>(0, (s, i) => s + i.kcal).round();
       Navigator.pop(
         context,
-        l10n.mealScanLogged(_items.length, mealTimeLabel(_mealTime), kcal),
+        l10n.mealScanLogged(count, mealTimeLabel(_mealTime), kcal.round()),
       );
     } catch (e) {
       if (!mounted) return;
@@ -345,6 +398,20 @@ class _MealScanScreenState extends State<MealScanScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.mealScanLogFailed(friendlyError(e)))),
       );
+    }
+  }
+
+  /// A food the foods table didn't have is added as the user's own food,
+  /// with the scanner's estimate per 100 g, so the meal can point at it.
+  /// When one by that name already exists, the meal is logged by name.
+  Future<int?> _saveNewFood(ApiService api, Food food) async {
+    try {
+      final saved = await api.addFood(food.name, food.calories, food.protein, food.carbs, food.fats);
+      final id = (saved['food'] as Map?)?['id'];
+      return id is int ? id : int.tryParse('$id');
+    } catch (e) {
+      debugPrint('Saving scanned food failed, logging it by name: $e');
+      return null;
     }
   }
 
@@ -622,11 +689,13 @@ class _MealScanScreenState extends State<MealScanScreen>
                   children: [
                     Text(l10n.mealScanTitle, style: theme.textTheme.titleMedium),
                     Text(
-                      _items.isEmpty
-                          ? l10n.mealScanLooking
-                          : l10n.mealScanItemCount(_items.length),
-                      style: theme.textTheme.bodySmall
-                          ?.copyWith(color: scheme.onSurfaceVariant),
+                      _scanProblem?.call(l10n) ??
+                          (_items.isEmpty
+                              ? l10n.mealScanLooking
+                              : l10n.mealScanItemCount(_items.length)),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: _scanProblem != null ? scheme.error : scheme.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),

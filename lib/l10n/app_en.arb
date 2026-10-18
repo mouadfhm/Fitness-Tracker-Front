@@ -1236,5 +1236,7 @@
   "@mealScanRowUnsure": {"placeholders": {"grams": {"type": "int"}}},
   "mealScanChangeFood": "Change",
   "mealScanRemove": "Remove",
-  "mealScanDone": "Done"
+  "mealScanDone": "Done",
+  "mealScanUnavailable": "Meal scanning isn't available right now. Add foods by hand below.",
+  "mealScanFailed": "Couldn't reach the scanner. Tap the scan button to try again."
 }

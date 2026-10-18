@@ -4705,6 +4705,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Done'**
   String get mealScanDone;
+
+  /// No description provided for @mealScanUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Meal scanning isn\'t available right now. Add foods by hand below.'**
+  String get mealScanUnavailable;
+
+  /// No description provided for @mealScanFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t reach the scanner. Tap the scan button to try again.'**
+  String get mealScanFailed;
 }
 
 class _AppLocalizationsDelegate

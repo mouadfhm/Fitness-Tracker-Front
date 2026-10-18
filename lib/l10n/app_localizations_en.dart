@@ -2757,4 +2757,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mealScanDone => 'Done';
+
+  @override
+  String get mealScanUnavailable =>
+      'Meal scanning isn\'t available right now. Add foods by hand below.';
+
+  @override
+  String get mealScanFailed =>
+      'Couldn\'t reach the scanner. Tap the scan button to try again.';
 }

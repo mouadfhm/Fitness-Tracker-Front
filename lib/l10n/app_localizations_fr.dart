@@ -2830,4 +2830,12 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get mealScanDone => 'Valider';
+
+  @override
+  String get mealScanUnavailable =>
+      'L\'analyse des repas n\'est pas disponible pour le moment. Ajoutez les aliments à la main ci-dessous.';
+
+  @override
+  String get mealScanFailed =>
+      'Impossible de joindre l\'analyse. Touchez le bouton d\'analyse pour réessayer.';
 }
