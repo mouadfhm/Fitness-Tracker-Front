@@ -56,9 +56,6 @@ dependencies:
   # which zone this device is in, which is the only thing needed here.
   flutter_timezone: ^5.1.0
   file_picker: ^10.3.10  # For export/import of workout program JSON files
-  camera: ^0.12.1  # Live preview and frames for the meal scanner
-  image: ^4.5.4  # Uprights and shrinks meal-scanner frames before upload
-  http_parser: ^4.1.2  # Content type of the meal-scanner frame upload
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

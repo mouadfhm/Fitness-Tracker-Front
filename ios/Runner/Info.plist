@@ -46,7 +46,7 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>The camera is used to scan food barcodes and to recognise the foods on your plate so you can log meals quickly.</string>
+	<string>The camera is used to scan food barcodes so you can log meals quickly.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Your photo library is used only if you choose a profile picture.</string>
 	<key>UIBackgroundModes</key>
