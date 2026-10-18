@@ -7,7 +7,7 @@ name: Android release
 # production in the Play Console. Pull requests that touch android/ build
 # the bundle too, without uploading, so a broken build shows up before a tag.
 #
-# The versionCode is the git commit count (android/app/build.gradle.kts), so
+# The versionCode is the git commit count plus 100 (android/app/build.gradle.kts), so
 # the checkout fetches the full history. Play refuses a versionCode it has
 # already seen, so each upload needs at least one new commit.
 #
