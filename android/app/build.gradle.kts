@@ -8,11 +8,15 @@ val keystoreProperties = Properties().apply {
     }
 }
 
-// versionCode = total git commit count, so it always increases with each commit
-// without needing a manual bump. Falls back to 1 if git isn't available (e.g. CI
-// checkout without history, or building outside a git repo).
+// versionCode = total git commit count plus an offset, so it always increases with
+// each commit without needing a manual bump. The offset keeps it above version code
+// 123, which a local build uploaded to Play on 2026-10-18 while the count was 97;
+// Play refuses any versionCode at or below one it has already seen.
+// Falls back to 1 if git isn't available (e.g. CI checkout without history, or
+// building outside a git repo).
+val versionCodeOffset = 100
 val gitVersionCode: Int = try {
-    providers.exec {
+    versionCodeOffset + providers.exec {
         commandLine("git", "rev-list", "--count", "HEAD")
     }.standardOutput.asText.get().trim().toInt()
 } catch (e: Exception) {
