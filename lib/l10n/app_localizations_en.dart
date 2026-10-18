@@ -2669,4 +2669,100 @@ class AppLocalizationsEn extends AppLocalizations {
   String achievementTargetCaloriesK(String thousands) {
     return 'Reach ${thousands}k calories';
   }
+
+  @override
+  String get mealScanTooltip => 'Scan your meal with the camera';
+
+  @override
+  String get mealScanTitle => 'Your meal';
+
+  @override
+  String get mealScanLooking => 'Point the camera at your plate';
+
+  @override
+  String mealScanItemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count foods',
+      one: '$count food',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String mealScanKcal(int kcal) {
+    return '$kcal kcal';
+  }
+
+  @override
+  String get mealScanScanning => 'Scanning';
+
+  @override
+  String get mealScanPaused => 'Paused';
+
+  @override
+  String get mealScanPause => 'Pause scanning';
+
+  @override
+  String get mealScanRescan => 'Scan again';
+
+  @override
+  String get mealScanNoCamera =>
+      'Couldn\'t open the camera. Check that the app may use it in your phone\'s settings, or add foods by hand below.';
+
+  @override
+  String get mealScanUnsureHint =>
+      'Foods marked ? may be wrong. Tap one to check it.';
+
+  @override
+  String get mealScanAddItem => 'Add a food';
+
+  @override
+  String mealScanLogTo(String meal) {
+    return 'Add to $meal';
+  }
+
+  @override
+  String mealScanLogged(int count, String meal, int kcal) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Added $count foods to $meal ($kcal kcal)',
+      one: 'Added $count food to $meal ($kcal kcal)',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String mealScanLogFailed(String error) {
+    return 'Couldn\'t add the meal. $error';
+  }
+
+  @override
+  String mealScanRow(int grams, int kcal) {
+    return '$grams g · $kcal kcal';
+  }
+
+  @override
+  String mealScanRowUnsure(int grams) {
+    return '$grams g · not sure, tap to check';
+  }
+
+  @override
+  String get mealScanChangeFood => 'Change';
+
+  @override
+  String get mealScanRemove => 'Remove';
+
+  @override
+  String get mealScanDone => 'Done';
+
+  @override
+  String get mealScanUnavailable =>
+      'Meal scanning isn\'t available right now. Add foods by hand below.';
+
+  @override
+  String get mealScanFailed =>
+      'Couldn\'t reach the scanner. Tap the scan button to try again.';
 }
