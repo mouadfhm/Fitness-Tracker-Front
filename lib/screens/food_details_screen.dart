@@ -68,6 +68,11 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
     }
   }
 
+  static int? _idOf(Map<String, dynamic> saved) {
+    final id = (saved['food'] as Map?)?['id'];
+    return id is int ? id : int.tryParse('$id');
+  }
+
   Future<void> _storeMeal() async {
     final name = widget.food.name.trim();
 
@@ -90,7 +95,14 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
     });
 
     try {
-      await _apiService.storeMeal(name, quantity, mealTime.toLowerCase(), mealDate);
+      // Log by id: the name shown is the plain or French name, which the
+      // server can't always match to a food, and an unmatched name used to
+      // log an empty meal. A barcode product has no id yet, so save it first.
+      final food = widget.food;
+      final foodId = food.id > 0
+          ? food.id
+          : _idOf(await _apiService.addFood(name, food.calories, food.protein, food.carbs, food.fats));
+      await _apiService.storeMeal(name, quantity, mealTime.toLowerCase(), mealDate, foodId: foodId);
       if (!mounted) return;
       final kcal = (widget.food.calories * quantity / 100).round();
       Navigator.pop(
