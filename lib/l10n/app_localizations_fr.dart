@@ -2742,4 +2742,100 @@ class AppLocalizationsFr extends AppLocalizations {
   String achievementTargetCaloriesK(String thousands) {
     return 'Atteindre ${thousands}k calories';
   }
+
+  @override
+  String get mealScanTooltip => 'Scanner votre repas avec la caméra';
+
+  @override
+  String get mealScanTitle => 'Votre repas';
+
+  @override
+  String get mealScanLooking => 'Pointez la caméra vers votre assiette';
+
+  @override
+  String mealScanItemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count aliments',
+      one: '$count aliment',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String mealScanKcal(int kcal) {
+    return '$kcal kcal';
+  }
+
+  @override
+  String get mealScanScanning => 'Analyse en cours';
+
+  @override
+  String get mealScanPaused => 'En pause';
+
+  @override
+  String get mealScanPause => 'Mettre l\'analyse en pause';
+
+  @override
+  String get mealScanRescan => 'Relancer l\'analyse';
+
+  @override
+  String get mealScanNoCamera =>
+      'Impossible d\'ouvrir la caméra. Vérifiez que l\'application peut l\'utiliser dans les réglages du téléphone, ou ajoutez les aliments à la main ci-dessous.';
+
+  @override
+  String get mealScanUnsureHint =>
+      'Les aliments marqués ? peuvent être erronés. Touchez-en un pour le vérifier.';
+
+  @override
+  String get mealScanAddItem => 'Ajouter un aliment';
+
+  @override
+  String mealScanLogTo(String meal) {
+    return 'Ajouter au repas : $meal';
+  }
+
+  @override
+  String mealScanLogged(int count, String meal, int kcal) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count aliments ajoutés au repas : $meal ($kcal kcal)',
+      one: '$count aliment ajouté au repas : $meal ($kcal kcal)',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String mealScanLogFailed(String error) {
+    return 'Impossible d\'ajouter le repas. $error';
+  }
+
+  @override
+  String mealScanRow(int grams, int kcal) {
+    return '$grams g · $kcal kcal';
+  }
+
+  @override
+  String mealScanRowUnsure(int grams) {
+    return '$grams g · incertain, touchez pour vérifier';
+  }
+
+  @override
+  String get mealScanChangeFood => 'Changer';
+
+  @override
+  String get mealScanRemove => 'Retirer';
+
+  @override
+  String get mealScanDone => 'Valider';
+
+  @override
+  String get mealScanUnavailable =>
+      'L\'analyse des repas n\'est pas disponible pour le moment. Ajoutez les aliments à la main ci-dessous.';
+
+  @override
+  String get mealScanFailed =>
+      'Impossible de joindre l\'analyse. Touchez le bouton d\'analyse pour réessayer.';
 }
