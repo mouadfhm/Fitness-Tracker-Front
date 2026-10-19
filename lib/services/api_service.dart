@@ -3,6 +3,7 @@ import '../utils/friendly_error.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'token_service.dart';
@@ -537,12 +538,15 @@ class ApiService {
     }
   }
 
+  /// Logs one food. [foodId] is preferred when known: the name is matched
+  /// against the stored name, which differs from the name shown in French.
   Future<Map<String, dynamic>> storeMeal(
     String name,
     double quantity,
     String? mealTime,
-    String date,
-  ) async {
+    String date, {
+    int? foodId,
+  }) async {
     final token = await _requireToken();
     final response = await http.post(
       Uri.parse('$baseUrl/meals/add'),
@@ -554,7 +558,11 @@ class ApiService {
         'date': date,
         'meal_time': mealTime,
         'foods': [
-          {'name': name, 'quantity': quantity},
+          {
+            'name': name,
+            'quantity': quantity,
+            if (foodId != null && foodId > 0) 'food_id': foodId,
+          },
         ],
       }),
     );
@@ -565,6 +573,30 @@ class ApiService {
     } else {
       throw Exception('Failed to store meal: ${response.body}');
     }
+  }
+
+  /// Sends one camera frame to the meal scanner and returns the foods on it
+  /// (`label`, `box`, `grams`, `confidence`, `food`). Throws
+  /// [MealScanUnavailable] when the server has no scanner set up.
+  Future<List<dynamic>> scanMeal(Uint8List jpeg) async {
+    final token = await _requireToken();
+    final request = http.MultipartRequest('POST', Uri.parse('$baseUrl/meals/scan'))
+      ..headers['Authorization'] = 'Bearer $token'
+      ..headers['Accept'] = 'application/json'
+      ..files.add(http.MultipartFile.fromBytes(
+        'image',
+        jpeg,
+        filename: 'frame.jpg',
+        contentType: MediaType('image', 'jpeg'),
+      ));
+    final response = await http.Response.fromStream(await request.send());
+
+    _checkUnauthorized(response);
+    if (response.statusCode == 200) {
+      return (jsonDecode(response.body) as Map<String, dynamic>)['foods'] as List<dynamic>;
+    }
+    if (response.statusCode == 503) throw MealScanUnavailable();
+    throw Exception('Failed to scan meal: ${response.body}');
   }
 
   Future<List<dynamic>> getMeals() async {
@@ -1374,3 +1406,6 @@ Future<Map<String, dynamic>> storeCustomWorkout(
     }
   }
 }
+
+/// The server answered that meal scanning isn't set up (no model API key).
+class MealScanUnavailable implements Exception {}

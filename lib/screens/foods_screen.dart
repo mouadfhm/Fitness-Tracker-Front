@@ -5,6 +5,7 @@ import '../models/food.dart';
 import '../providers/food_provider.dart';
 import '../services/food_service.dart';
 import 'food_details_screen.dart';
+import 'meal_scan_screen.dart';
 import 'new_food_screen.dart';
 import '../utils/add_banner.dart';
 import '../utils/ad_list_helper.dart';
@@ -115,6 +116,21 @@ class _FoodsScreenState extends State<FoodsScreen>
     } catch (e) {
       if (!mounted) return;
       _showSnackBar(AppLocalizations.of(context)!.foodsScanFailed(friendlyError(e)));
+    }
+  }
+
+  /// Opens the live meal scanner; when it logs a meal, says so here (or goes
+  /// back to Home with the message when picking for a meal).
+  Future<void> _scanMeal() async {
+    final added = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(builder: (_) => const MealScanScreen()),
+    );
+    if (!mounted || added == null) return;
+    if (_isPicker) {
+      Navigator.pop(context, added);
+    } else {
+      _showSnackBar(added);
     }
   }
 
@@ -685,6 +701,22 @@ class _FoodsScreenState extends State<FoodsScreen>
                 style: TextStyle(color: colorScheme.onSurface),
                 cursorColor: colorScheme.primary,
                 onChanged: (query) => setState(() {}), // triggers rebuild to filter list
+              ),
+            ),
+            const SizedBox(width: 8),
+            AspectRatio(
+              aspectRatio: 1,
+              child: IconButton.filled(
+                onPressed: _scanMeal,
+                tooltip: l10n.mealScanTooltip,
+                style: IconButton.styleFrom(
+                  backgroundColor: colorScheme.primary,
+                  foregroundColor: colorScheme.onPrimary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                icon: const Icon(Icons.photo_camera_outlined),
               ),
             ),
             const SizedBox(width: 8),

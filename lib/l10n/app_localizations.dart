@@ -4585,6 +4585,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reach {thousands}k calories'**
   String achievementTargetCaloriesK(String thousands);
+
+  /// No description provided for @mealScanTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan your meal with the camera'**
+  String get mealScanTooltip;
+
+  /// No description provided for @mealScanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your meal'**
+  String get mealScanTitle;
+
+  /// No description provided for @mealScanLooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Point the camera at your plate'**
+  String get mealScanLooking;
+
+  /// No description provided for @mealScanItemCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} food} other{{count} foods}}'**
+  String mealScanItemCount(int count);
+
+  /// No description provided for @mealScanKcal.
+  ///
+  /// In en, this message translates to:
+  /// **'{kcal} kcal'**
+  String mealScanKcal(int kcal);
+
+  /// No description provided for @mealScanScanning.
+  ///
+  /// In en, this message translates to:
+  /// **'Scanning'**
+  String get mealScanScanning;
+
+  /// No description provided for @mealScanPaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get mealScanPaused;
+
+  /// No description provided for @mealScanPause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause scanning'**
+  String get mealScanPause;
+
+  /// No description provided for @mealScanRescan.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan again'**
+  String get mealScanRescan;
+
+  /// No description provided for @mealScanNoCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open the camera. Check that the app may use it in your phone\'s settings, or add foods by hand below.'**
+  String get mealScanNoCamera;
+
+  /// No description provided for @mealScanUnsureHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Foods marked ? may be wrong. Tap one to check it.'**
+  String get mealScanUnsureHint;
+
+  /// No description provided for @mealScanAddItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a food'**
+  String get mealScanAddItem;
+
+  /// No description provided for @mealScanLogTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to {meal}'**
+  String mealScanLogTo(String meal);
+
+  /// No description provided for @mealScanLogged.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{Added {count} food to {meal} ({kcal} kcal)} other{Added {count} foods to {meal} ({kcal} kcal)}}'**
+  String mealScanLogged(int count, String meal, int kcal);
+
+  /// No description provided for @mealScanLogFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t add the meal. {error}'**
+  String mealScanLogFailed(String error);
+
+  /// No description provided for @mealScanRow.
+  ///
+  /// In en, this message translates to:
+  /// **'{grams} g · {kcal} kcal'**
+  String mealScanRow(int grams, int kcal);
+
+  /// No description provided for @mealScanRowUnsure.
+  ///
+  /// In en, this message translates to:
+  /// **'{grams} g · not sure, tap to check'**
+  String mealScanRowUnsure(int grams);
+
+  /// No description provided for @mealScanChangeFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get mealScanChangeFood;
+
+  /// No description provided for @mealScanRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get mealScanRemove;
+
+  /// No description provided for @mealScanDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get mealScanDone;
+
+  /// No description provided for @mealScanUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Meal scanning isn\'t available right now. Add foods by hand below.'**
+  String get mealScanUnavailable;
+
+  /// No description provided for @mealScanFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t reach the scanner. Tap the scan button to try again.'**
+  String get mealScanFailed;
 }
 
 class _AppLocalizationsDelegate
