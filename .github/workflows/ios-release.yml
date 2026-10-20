@@ -27,6 +27,11 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
+    inputs:
+      upload:
+        description: Upload to App Store Connect (untick to only check that it archives)
+        type: boolean
+        default: true
 
 # One upload at a time, so two runs never race for the same build number.
 concurrency:
@@ -109,6 +114,7 @@ jobs:
           grep -q aps-environment "$RUNNER_TEMP/entitlements.txt"
 
       - name: Export and upload to App Store Connect
+        if: github.event_name != 'workflow_dispatch' || inputs.upload
         run: |
           sed "s/TEAM_ID/${{ secrets.APPLE_TEAM_ID }}/" ios/ci/ExportOptions.plist > "$RUNNER_TEMP/ExportOptions.plist"
           xcodebuild -exportArchive \

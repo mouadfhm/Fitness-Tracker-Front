@@ -39,5 +39,11 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+    # google_mobile_ads 9.x imports GoogleMobileAds_Beta.h, a private header of
+    # the ads SDK that isn't in a module, and Xcode 26 turns that into an
+    # archive error. Fixed upstream after 9.1.0; drop this once we're past it.
+    target.build_configurations.each do |config|
+      config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+    end
   end
 end
