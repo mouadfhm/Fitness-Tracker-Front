@@ -2838,4 +2838,357 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get mealScanFailed =>
       'Impossible de joindre l\'analyse. Touchez le bouton d\'analyse pour réessayer.';
+
+  @override
+  String get storyCreate => 'Créer une story';
+
+  @override
+  String get storyChooseLayout => 'Choisissez une mise en page';
+
+  @override
+  String get storyChooseLayoutHint =>
+      'Ensuite, ajoutez votre photo, puis déplacez et modifiez tout.';
+
+  @override
+  String get storyLayoutFullPhoto => 'Photo pleine';
+
+  @override
+  String get storyLayoutPhotoPanel => 'Photo + stats';
+
+  @override
+  String get storyTemplateBold => 'Impact';
+
+  @override
+  String get storyTemplateCentered => 'Centré';
+
+  @override
+  String get storyTemplateMinimal => 'Minimal';
+
+  @override
+  String get storyTemplatePanelBottom => 'Panneau en bas';
+
+  @override
+  String get storyTemplatePanelTop => 'Panneau en haut';
+
+  @override
+  String get storyTemplateCard => 'Carte';
+
+  @override
+  String get storyStatusCompleted => 'Séance terminée';
+
+  @override
+  String get storyStatusPlanned => 'Séance prévue';
+
+  @override
+  String get storyPlanCaption => 'Au programme';
+
+  @override
+  String get storyStatDuration => 'Durée';
+
+  @override
+  String get storyStatDurationEstimated => 'Durée estimée';
+
+  @override
+  String get storyStatCalories => 'kcal (estim.)';
+
+  @override
+  String get storyStatExercises => 'Exercices';
+
+  @override
+  String get storyStatSets => 'Séries';
+
+  @override
+  String get storyStatReps => 'Répétitions';
+
+  @override
+  String storyMinutes(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String storyHoursMinutes(int hours, String minutes) {
+    return '$hours h $minutes';
+  }
+
+  @override
+  String storyExerciseSetsReps(int sets, int reps) {
+    return '$sets × $reps';
+  }
+
+  @override
+  String storyExerciseSetsSeconds(int sets, int seconds) {
+    return '$sets × $seconds s';
+  }
+
+  @override
+  String storyMoreExercises(int count) {
+    return '+$count autres';
+  }
+
+  @override
+  String get storyBrand => 'Fitness Tracker';
+
+  @override
+  String get storyNewText => 'Votre texte';
+
+  @override
+  String get storyToolPhoto => 'Photo';
+
+  @override
+  String get storyToolText => 'Texte';
+
+  @override
+  String get storyToolStats => 'Stats';
+
+  @override
+  String get storyToolStyle => 'Style';
+
+  @override
+  String get storyToolLayers => 'Calques';
+
+  @override
+  String get storyAddPhoto => 'Ajouter une photo';
+
+  @override
+  String get storyGallery => 'Galerie';
+
+  @override
+  String get storyReplacePhoto => 'Remplacer';
+
+  @override
+  String get storyCamera => 'Appareil photo';
+
+  @override
+  String get storyResetPhoto => 'Recentrer';
+
+  @override
+  String get storyPhotoHint =>
+      'Pincez pour zoomer, glissez pour déplacer la photo';
+
+  @override
+  String get storyDim => 'Assombrir';
+
+  @override
+  String get storyGradient => 'Dégradé';
+
+  @override
+  String get storyAddText => 'Ajouter du texte';
+
+  @override
+  String get storyAddExercises => 'Ajouter les exercices';
+
+  @override
+  String get storyAddStats => 'Ajouter les statistiques';
+
+  @override
+  String get storyTextHint =>
+      'Touchez un texte de la story pour le sélectionner, puis à nouveau pour le modifier.';
+
+  @override
+  String get storyEditText => 'Modifier le texte';
+
+  @override
+  String get storyApply => 'Appliquer';
+
+  @override
+  String get storyFontDisplay => 'Condensée';
+
+  @override
+  String get storyFontBody => 'Standard';
+
+  @override
+  String get storySize => 'Taille';
+
+  @override
+  String get storySpacing => 'Espacement';
+
+  @override
+  String get storyWeightRegular => 'Normal';
+
+  @override
+  String get storyWeightMedium => 'Moyen';
+
+  @override
+  String get storyWeightBold => 'Gras';
+
+  @override
+  String get storyWeightBlack => 'Noir';
+
+  @override
+  String get storyAlignStart => 'Aligner au début';
+
+  @override
+  String get storyAlignCenter => 'Centrer';
+
+  @override
+  String get storyAlignEnd => 'Aligner à la fin';
+
+  @override
+  String get storyColorWhite => 'Blanc';
+
+  @override
+  String get storyColorGray => 'Gris';
+
+  @override
+  String get storyColorAccent => 'Accent';
+
+  @override
+  String get storyColorDark => 'Noir';
+
+  @override
+  String get storyUppercase => 'Majuscules';
+
+  @override
+  String get storyShadow => 'Ombre';
+
+  @override
+  String get storyStatsNone =>
+      'Cette séance n\'a aucune statistique à afficher.';
+
+  @override
+  String get storyStatsHint =>
+      'Activez ou masquez les statistiques, et faites-les glisser pour les réordonner.';
+
+  @override
+  String get storyStatsHintPlanned =>
+      'Ce sont les chiffres du programme, affichés sous « Au programme ». Activez-les ou masquez-les, et faites-les glisser pour les réordonner.';
+
+  @override
+  String get storyEstimate => 'estimation';
+
+  @override
+  String get storyAccent => 'Couleur d\'accent';
+
+  @override
+  String get storyBranding => 'Afficher le nom de l\'app';
+
+  @override
+  String get storyChangeLayout => 'Changer la mise en page';
+
+  @override
+  String get storyResetDesign => 'Réinitialiser';
+
+  @override
+  String get storyResetConfirmTitle => 'Réinitialiser la mise en page ?';
+
+  @override
+  String get storyResetConfirmBody =>
+      'Les textes, statistiques et le style reviennent à la mise en page d\'origine. Votre photo est conservée.';
+
+  @override
+  String get storyReset => 'Réinitialiser';
+
+  @override
+  String get storyLayerStats => 'Statistiques';
+
+  @override
+  String get storyLayerBrand => 'Nom de l\'app';
+
+  @override
+  String get storyLayerEmpty => 'Texte vide';
+
+  @override
+  String get storyDuplicate => 'Dupliquer';
+
+  @override
+  String get storyDelete => 'Supprimer';
+
+  @override
+  String get storyLock => 'Verrouiller';
+
+  @override
+  String get storyUnlock => 'Déverrouiller';
+
+  @override
+  String get storyBringForward => 'Avancer';
+
+  @override
+  String get storySendBackward => 'Reculer';
+
+  @override
+  String get storyHide => 'Masquer';
+
+  @override
+  String get storyShow => 'Afficher';
+
+  @override
+  String get storyUndo => 'Annuler';
+
+  @override
+  String get storyRedo => 'Rétablir';
+
+  @override
+  String get storyPreview => 'Aperçu';
+
+  @override
+  String get storyClosePreview => 'Retour à l\'édition';
+
+  @override
+  String get storyNext => 'Suivant';
+
+  @override
+  String get storyDiscardTitle => 'Abandonner cette story ?';
+
+  @override
+  String get storyDiscardBody => 'Vos modifications seront perdues.';
+
+  @override
+  String get storyDiscard => 'Abandonner';
+
+  @override
+  String get storyKeepEditing => 'Continuer';
+
+  @override
+  String storyExportFailed(String error) {
+    return 'Impossible de créer l\'image. $error';
+  }
+
+  @override
+  String get storyExportTitle => 'Votre story';
+
+  @override
+  String get storySave => 'Enregistrer';
+
+  @override
+  String get storyShare => 'Partager';
+
+  @override
+  String get storyDone => 'Terminé';
+
+  @override
+  String get storySaved => 'Enregistrée dans votre galerie';
+
+  @override
+  String get storySaveDenied =>
+      'Autorisez l\'accès aux photos dans les Réglages pour enregistrer votre story.';
+
+  @override
+  String storySaveFailed(String error) {
+    return 'Impossible d\'enregistrer l\'image. $error';
+  }
+
+  @override
+  String get storyNotEnoughSpace =>
+      'Pas assez d\'espace de stockage pour enregistrer l\'image.';
+
+  @override
+  String storyShareFailed(String error) {
+    return 'Impossible de partager l\'image. $error';
+  }
+
+  @override
+  String get storyShareUnavailable =>
+      'Le partage n\'est pas disponible sur cet appareil.';
+
+  @override
+  String get storyPhotoDenied =>
+      'Autorisez l\'accès aux photos dans les Réglages pour choisir une photo.';
+
+  @override
+  String get storyCameraDenied =>
+      'Autorisez l\'accès à l\'appareil photo dans les Réglages pour prendre une photo.';
+
+  @override
+  String get storyPhotoFailed =>
+      'Impossible d\'ouvrir cette photo. Essayez-en une autre.';
 }

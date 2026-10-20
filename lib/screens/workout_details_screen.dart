@@ -7,6 +7,8 @@ import 'package:fitness_tracker_app/providers/profile_provider.dart';
 import 'package:fitness_tracker_app/utils/friendly_error.dart';
 import '../utils/l10n.dart';
 import '../l10n/app_localizations.dart';
+import '../workout_story/models/story_workout_data.dart';
+import '../workout_story/screens/story_template_screen.dart';
 
 class WorkoutDetailsScreen extends StatefulWidget {
   final dynamic workout;
@@ -25,6 +27,8 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
   // Outcome of the last "I did this" tap; the message is built in build() so
   // it follows the current language.
   int? _loggedMinutes;
+  // The workout the backend recorded for that tap, for "Create story".
+  Map? _loggedWorkout;
   String? _addWorkoutError;
   bool get _hasAddWorkoutResult => _loggedMinutes != null || _addWorkoutError != null;
   bool get _addWorkoutFailed => _addWorkoutError != null;
@@ -299,20 +303,21 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
     setState(() {
       _isAddingWorkout = true;
       _loggedMinutes = null;
+      _loggedWorkout = null;
       _addWorkoutError = null;
     });
 
     try {
-      await _apiService.storeWorkout(workoutName, duration, workoutDate);
+      final response = await _apiService.storeWorkout(workoutName, duration, workoutDate);
       if (!mounted) return;
       setState(() {
         _loggedMinutes = duration;
-      });
-
-      Future.delayed(const Duration(seconds: 2), () {
-        if (mounted) {
-          Navigator.pop(context);
-        }
+        final logged = response['workout'];
+        // Older servers may not echo the workout; what was sent is still what
+        // the user did (calories are then unknown, so the story leaves them out).
+        _loggedWorkout = logged is Map
+            ? logged
+            : {'duration': duration, 'workout_date': workoutDate};
       });
     } catch (error) {
       if (!mounted) return;
@@ -786,6 +791,34 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                                     ),
                                   ],
                                 ),
+                              ),
+                            ),
+                          if (_loggedWorkout != null && !_addWorkoutFailed)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 12),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: FilledButton.icon(
+                                      key: const ValueKey('create-story'),
+                                      onPressed: () => StoryTemplateScreen.open(
+                                        context,
+                                        StoryWorkoutData.fromLoggedActivity(
+                                          activity: widget.workout as Map,
+                                          logged: _loggedWorkout!,
+                                          fallbackTitle: name,
+                                        ),
+                                      ),
+                                      icon: const Icon(Icons.auto_awesome_outlined),
+                                      label: Text(l10n.storyCreate),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: Text(l10n.storyDone),
+                                  ),
+                                ],
                               ),
                             ),
                         ],

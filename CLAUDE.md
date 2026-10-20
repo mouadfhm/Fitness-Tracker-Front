@@ -77,6 +77,9 @@ Light and dark themes live in `lib/utils/app_theme.dart`: a white page in light 
 
 For dialogs, date and time pickers use `AlertDialog.adaptive` with `AdaptiveDialogAction`, `showAdaptiveDatePicker` and `showAdaptiveTimePicker` (`lib/utils/adaptive.dart`) so iPhone users get iOS-style controls.
 
+### Workout stories
+`lib/workout_story/` turns a workout into a 1080×1920 social-media story with the user's photo. Entry points: "Create story" after logging an activity (`WorkoutDetailsScreen`, completed) and on a custom workout (`workout/workout_detail_screen.dart`, planned: labelled as a plan, never as done). `StoryWorkoutData` is read from the existing API maps and is never written back; `StoryDocument` (immutable, normalized layer positions, versioned JSON) is the single source of truth, edited through `StoryEditorController` (undo/redo). `StoryRenderer` draws both the live canvas and the export (`StoryExporter`, `PictureRecorder`), so they match pixel for pixel. Fonts Barlow / Barlow Condensed are bundled in `lib/assets/fonts/story/`. Photos stay on the device: `image_picker` in, `gal` (gallery) and `share_plus` out. `share_plus` is held at 12.x because 13.x needs win32 6, which file_picker 10.3.x can't use.
+
 ### Token/Auth Flow
 On startup, `main.dart` calls `TokenService.getToken()`. If a token exists, the app starts on `MainShell` (Today tab); otherwise on `LoginScreen`. Logout clears the token via `ApiService.logout()` → `TokenService.deleteToken()` and navigates back to `LoginScreen` with the entire navigation stack cleared.
 

@@ -8,6 +8,8 @@ import '../../services/workout_export_service.dart';
 import '../../services/workout_file_io.dart';
 import '../../utils/l10n.dart';
 import '../../l10n/app_localizations.dart';
+import '../../workout_story/models/story_workout_data.dart';
+import '../../workout_story/screens/story_template_screen.dart';
 
 class WorkoutDetailScreen extends StatefulWidget {
   final int workoutId;
@@ -171,6 +173,20 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
                                 color: colorScheme.onSurface,
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            key: const ValueKey('create-story'),
+                            icon: Icon(Icons.auto_awesome_outlined, color: colorScheme.primary),
+                            tooltip: l10n.storyCreate,
+                            // A plan: the story says so and shows the plan's numbers.
+                            onPressed: () => StoryTemplateScreen.open(
+                              context,
+                              StoryWorkoutData.fromCustomWorkout(
+                                workout,
+                                estimatedMinutes:
+                                    exercises.isEmpty ? null : _calculateTotalMinutes(exercises),
                               ),
                             ),
                           ),

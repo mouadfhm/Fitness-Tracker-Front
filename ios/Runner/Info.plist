@@ -46,9 +46,11 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>The camera is used to scan food barcodes and to recognise the foods on your plate so you can log meals quickly.</string>
+	<string>The camera is used to scan food barcodes, to recognise the foods on your plate so you can log meals quickly, and to take a photo for a workout story.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Your photo library is used only if you choose a profile picture.</string>
+	<string>Your photo library is used only if you choose a profile picture or a photo for a workout story.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Workout stories you create are saved to your photo library when you tap Save.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>
