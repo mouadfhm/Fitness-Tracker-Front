@@ -59,6 +59,12 @@ dependencies:
   camera: ^0.12.1  # Live preview and frames for the meal scanner
   image: ^4.5.4  # Uprights and shrinks meal-scanner frames before upload
   http_parser: ^4.1.2  # Content type of the meal-scanner frame upload
+  # Workout stories: the rendered PNG goes to a temporary file (path_provider,
+  # already here transitively), then to the system share sheet (share_plus) or
+  # the photo gallery (gal, which needs no storage permission on Android 10+).
+  path_provider: ^2.1.5
+  share_plus: ^12.0.2  # 13.x needs win32 6, which file_picker 10.3.x (held, see build notes) cannot use
+  gal: ^2.3.3
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -112,6 +118,30 @@ flutter:
 
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/to/asset-from-package
+
+  # Bundled so workout stories render the same offline, in the editor and in
+  # the exported image (SIL Open Font License, lib/assets/fonts/story/OFL.txt).
+  fonts:
+    - family: BarlowCondensed
+      fonts:
+        - asset: lib/assets/fonts/story/BarlowCondensed-Regular.ttf
+          weight: 400
+        - asset: lib/assets/fonts/story/BarlowCondensed-Medium.ttf
+          weight: 500
+        - asset: lib/assets/fonts/story/BarlowCondensed-Bold.ttf
+          weight: 700
+        - asset: lib/assets/fonts/story/BarlowCondensed-Black.ttf
+          weight: 900
+    - family: Barlow
+      fonts:
+        - asset: lib/assets/fonts/story/Barlow-Regular.ttf
+          weight: 400
+        - asset: lib/assets/fonts/story/Barlow-Medium.ttf
+          weight: 500
+        - asset: lib/assets/fonts/story/Barlow-Bold.ttf
+          weight: 700
+        - asset: lib/assets/fonts/story/Barlow-Black.ttf
+          weight: 900
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a

@@ -2765,4 +2765,354 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get mealScanFailed =>
       'Couldn\'t reach the scanner. Tap the scan button to try again.';
+
+  @override
+  String get storyCreate => 'Create story';
+
+  @override
+  String get storyChooseLayout => 'Choose a layout';
+
+  @override
+  String get storyChooseLayoutHint =>
+      'Next you can add your photo, then move and edit everything.';
+
+  @override
+  String get storyLayoutFullPhoto => 'Full photo';
+
+  @override
+  String get storyLayoutPhotoPanel => 'Photo + stats';
+
+  @override
+  String get storyTemplateBold => 'Bold';
+
+  @override
+  String get storyTemplateCentered => 'Centered';
+
+  @override
+  String get storyTemplateMinimal => 'Minimal';
+
+  @override
+  String get storyTemplatePanelBottom => 'Panel below';
+
+  @override
+  String get storyTemplatePanelTop => 'Panel above';
+
+  @override
+  String get storyTemplateCard => 'Card';
+
+  @override
+  String get storyStatusCompleted => 'Workout complete';
+
+  @override
+  String get storyStatusPlanned => 'Planned workout';
+
+  @override
+  String get storyPlanCaption => 'The plan';
+
+  @override
+  String get storyStatDuration => 'Duration';
+
+  @override
+  String get storyStatDurationEstimated => 'Est. time';
+
+  @override
+  String get storyStatCalories => 'kcal (est.)';
+
+  @override
+  String get storyStatExercises => 'Exercises';
+
+  @override
+  String get storyStatSets => 'Sets';
+
+  @override
+  String get storyStatReps => 'Reps';
+
+  @override
+  String storyMinutes(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String storyHoursMinutes(int hours, String minutes) {
+    return '$hours h $minutes';
+  }
+
+  @override
+  String storyExerciseSetsReps(int sets, int reps) {
+    return '$sets × $reps';
+  }
+
+  @override
+  String storyExerciseSetsSeconds(int sets, int seconds) {
+    return '$sets × $seconds s';
+  }
+
+  @override
+  String storyMoreExercises(int count) {
+    return '+$count more';
+  }
+
+  @override
+  String get storyBrand => 'Fitness Tracker';
+
+  @override
+  String get storyNewText => 'Your text';
+
+  @override
+  String get storyToolPhoto => 'Photo';
+
+  @override
+  String get storyToolText => 'Text';
+
+  @override
+  String get storyToolStats => 'Stats';
+
+  @override
+  String get storyToolStyle => 'Style';
+
+  @override
+  String get storyToolLayers => 'Layers';
+
+  @override
+  String get storyAddPhoto => 'Add photo';
+
+  @override
+  String get storyGallery => 'Gallery';
+
+  @override
+  String get storyReplacePhoto => 'Replace';
+
+  @override
+  String get storyCamera => 'Camera';
+
+  @override
+  String get storyResetPhoto => 'Recenter';
+
+  @override
+  String get storyPhotoHint => 'Pinch to zoom, drag to move the photo';
+
+  @override
+  String get storyDim => 'Dim';
+
+  @override
+  String get storyGradient => 'Gradient';
+
+  @override
+  String get storyAddText => 'Add text';
+
+  @override
+  String get storyAddExercises => 'Add exercises';
+
+  @override
+  String get storyAddStats => 'Add statistics';
+
+  @override
+  String get storyTextHint =>
+      'Tap a text on the story to select it, tap again to edit it.';
+
+  @override
+  String get storyEditText => 'Edit text';
+
+  @override
+  String get storyApply => 'Apply';
+
+  @override
+  String get storyFontDisplay => 'Condensed';
+
+  @override
+  String get storyFontBody => 'Regular';
+
+  @override
+  String get storySize => 'Size';
+
+  @override
+  String get storySpacing => 'Spacing';
+
+  @override
+  String get storyWeightRegular => 'Regular';
+
+  @override
+  String get storyWeightMedium => 'Medium';
+
+  @override
+  String get storyWeightBold => 'Bold';
+
+  @override
+  String get storyWeightBlack => 'Black';
+
+  @override
+  String get storyAlignStart => 'Align start';
+
+  @override
+  String get storyAlignCenter => 'Center';
+
+  @override
+  String get storyAlignEnd => 'Align end';
+
+  @override
+  String get storyColorWhite => 'White';
+
+  @override
+  String get storyColorGray => 'Gray';
+
+  @override
+  String get storyColorAccent => 'Accent';
+
+  @override
+  String get storyColorDark => 'Black';
+
+  @override
+  String get storyUppercase => 'Capitals';
+
+  @override
+  String get storyShadow => 'Shadow';
+
+  @override
+  String get storyStatsNone => 'This workout has no statistics to show.';
+
+  @override
+  String get storyStatsHint =>
+      'Turn statistics on or off, and drag to reorder them.';
+
+  @override
+  String get storyStatsHintPlanned =>
+      'These are the plan\'s numbers, shown under \"The plan\". Turn them on or off, and drag to reorder.';
+
+  @override
+  String get storyEstimate => 'estimate';
+
+  @override
+  String get storyAccent => 'Accent color';
+
+  @override
+  String get storyBranding => 'Show the app name';
+
+  @override
+  String get storyChangeLayout => 'Change layout';
+
+  @override
+  String get storyResetDesign => 'Reset design';
+
+  @override
+  String get storyResetConfirmTitle => 'Reset the design?';
+
+  @override
+  String get storyResetConfirmBody =>
+      'Text, stats and style go back to the layout as it started. Your photo stays.';
+
+  @override
+  String get storyReset => 'Reset';
+
+  @override
+  String get storyLayerStats => 'Statistics';
+
+  @override
+  String get storyLayerBrand => 'App name';
+
+  @override
+  String get storyLayerEmpty => 'Empty text';
+
+  @override
+  String get storyDuplicate => 'Duplicate';
+
+  @override
+  String get storyDelete => 'Delete';
+
+  @override
+  String get storyLock => 'Lock';
+
+  @override
+  String get storyUnlock => 'Unlock';
+
+  @override
+  String get storyBringForward => 'Bring forward';
+
+  @override
+  String get storySendBackward => 'Send backward';
+
+  @override
+  String get storyHide => 'Hide';
+
+  @override
+  String get storyShow => 'Show';
+
+  @override
+  String get storyUndo => 'Undo';
+
+  @override
+  String get storyRedo => 'Redo';
+
+  @override
+  String get storyPreview => 'Preview';
+
+  @override
+  String get storyClosePreview => 'Back to editing';
+
+  @override
+  String get storyNext => 'Next';
+
+  @override
+  String get storyDiscardTitle => 'Discard this story?';
+
+  @override
+  String get storyDiscardBody => 'Your changes will be lost.';
+
+  @override
+  String get storyDiscard => 'Discard';
+
+  @override
+  String get storyKeepEditing => 'Keep editing';
+
+  @override
+  String storyExportFailed(String error) {
+    return 'Couldn\'t create the image. $error';
+  }
+
+  @override
+  String get storyExportTitle => 'Your story';
+
+  @override
+  String get storySave => 'Save';
+
+  @override
+  String get storyShare => 'Share';
+
+  @override
+  String get storyDone => 'Done';
+
+  @override
+  String get storySaved => 'Saved to your gallery';
+
+  @override
+  String get storySaveDenied =>
+      'Allow photo access in Settings to save your story.';
+
+  @override
+  String storySaveFailed(String error) {
+    return 'Couldn\'t save the image. $error';
+  }
+
+  @override
+  String get storyNotEnoughSpace =>
+      'Not enough storage space to save the image.';
+
+  @override
+  String storyShareFailed(String error) {
+    return 'Couldn\'t share the image. $error';
+  }
+
+  @override
+  String get storyShareUnavailable =>
+      'Sharing isn\'t available on this device.';
+
+  @override
+  String get storyPhotoDenied =>
+      'Allow photo access in Settings to choose a photo.';
+
+  @override
+  String get storyCameraDenied =>
+      'Allow camera access in Settings to take a photo.';
+
+  @override
+  String get storyPhotoFailed => 'Couldn\'t open this photo. Try another one.';
 }

@@ -4717,6 +4717,654 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t reach the scanner. Tap the scan button to try again.'**
   String get mealScanFailed;
+
+  /// No description provided for @storyCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Create story'**
+  String get storyCreate;
+
+  /// No description provided for @storyChooseLayout.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a layout'**
+  String get storyChooseLayout;
+
+  /// No description provided for @storyChooseLayoutHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Next you can add your photo, then move and edit everything.'**
+  String get storyChooseLayoutHint;
+
+  /// No description provided for @storyLayoutFullPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Full photo'**
+  String get storyLayoutFullPhoto;
+
+  /// No description provided for @storyLayoutPhotoPanel.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo + stats'**
+  String get storyLayoutPhotoPanel;
+
+  /// No description provided for @storyTemplateBold.
+  ///
+  /// In en, this message translates to:
+  /// **'Bold'**
+  String get storyTemplateBold;
+
+  /// No description provided for @storyTemplateCentered.
+  ///
+  /// In en, this message translates to:
+  /// **'Centered'**
+  String get storyTemplateCentered;
+
+  /// No description provided for @storyTemplateMinimal.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimal'**
+  String get storyTemplateMinimal;
+
+  /// No description provided for @storyTemplatePanelBottom.
+  ///
+  /// In en, this message translates to:
+  /// **'Panel below'**
+  String get storyTemplatePanelBottom;
+
+  /// No description provided for @storyTemplatePanelTop.
+  ///
+  /// In en, this message translates to:
+  /// **'Panel above'**
+  String get storyTemplatePanelTop;
+
+  /// No description provided for @storyTemplateCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Card'**
+  String get storyTemplateCard;
+
+  /// No description provided for @storyStatusCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout complete'**
+  String get storyStatusCompleted;
+
+  /// No description provided for @storyStatusPlanned.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned workout'**
+  String get storyStatusPlanned;
+
+  /// No description provided for @storyPlanCaption.
+  ///
+  /// In en, this message translates to:
+  /// **'The plan'**
+  String get storyPlanCaption;
+
+  /// No description provided for @storyStatDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get storyStatDuration;
+
+  /// No description provided for @storyStatDurationEstimated.
+  ///
+  /// In en, this message translates to:
+  /// **'Est. time'**
+  String get storyStatDurationEstimated;
+
+  /// No description provided for @storyStatCalories.
+  ///
+  /// In en, this message translates to:
+  /// **'kcal (est.)'**
+  String get storyStatCalories;
+
+  /// No description provided for @storyStatExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercises'**
+  String get storyStatExercises;
+
+  /// No description provided for @storyStatSets.
+  ///
+  /// In en, this message translates to:
+  /// **'Sets'**
+  String get storyStatSets;
+
+  /// No description provided for @storyStatReps.
+  ///
+  /// In en, this message translates to:
+  /// **'Reps'**
+  String get storyStatReps;
+
+  /// No description provided for @storyMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String storyMinutes(int minutes);
+
+  /// No description provided for @storyHoursMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} h {minutes}'**
+  String storyHoursMinutes(int hours, String minutes);
+
+  /// No description provided for @storyExerciseSetsReps.
+  ///
+  /// In en, this message translates to:
+  /// **'{sets} × {reps}'**
+  String storyExerciseSetsReps(int sets, int reps);
+
+  /// No description provided for @storyExerciseSetsSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'{sets} × {seconds} s'**
+  String storyExerciseSetsSeconds(int sets, int seconds);
+
+  /// No description provided for @storyMoreExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'+{count} more'**
+  String storyMoreExercises(int count);
+
+  /// No description provided for @storyBrand.
+  ///
+  /// In en, this message translates to:
+  /// **'Fitness Tracker'**
+  String get storyBrand;
+
+  /// No description provided for @storyNewText.
+  ///
+  /// In en, this message translates to:
+  /// **'Your text'**
+  String get storyNewText;
+
+  /// No description provided for @storyToolPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo'**
+  String get storyToolPhoto;
+
+  /// No description provided for @storyToolText.
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
+  String get storyToolText;
+
+  /// No description provided for @storyToolStats.
+  ///
+  /// In en, this message translates to:
+  /// **'Stats'**
+  String get storyToolStats;
+
+  /// No description provided for @storyToolStyle.
+  ///
+  /// In en, this message translates to:
+  /// **'Style'**
+  String get storyToolStyle;
+
+  /// No description provided for @storyToolLayers.
+  ///
+  /// In en, this message translates to:
+  /// **'Layers'**
+  String get storyToolLayers;
+
+  /// No description provided for @storyAddPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Add photo'**
+  String get storyAddPhoto;
+
+  /// No description provided for @storyGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get storyGallery;
+
+  /// No description provided for @storyReplacePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace'**
+  String get storyReplacePhoto;
+
+  /// No description provided for @storyCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get storyCamera;
+
+  /// No description provided for @storyResetPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Recenter'**
+  String get storyResetPhoto;
+
+  /// No description provided for @storyPhotoHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Pinch to zoom, drag to move the photo'**
+  String get storyPhotoHint;
+
+  /// No description provided for @storyDim.
+  ///
+  /// In en, this message translates to:
+  /// **'Dim'**
+  String get storyDim;
+
+  /// No description provided for @storyGradient.
+  ///
+  /// In en, this message translates to:
+  /// **'Gradient'**
+  String get storyGradient;
+
+  /// No description provided for @storyAddText.
+  ///
+  /// In en, this message translates to:
+  /// **'Add text'**
+  String get storyAddText;
+
+  /// No description provided for @storyAddExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'Add exercises'**
+  String get storyAddExercises;
+
+  /// No description provided for @storyAddStats.
+  ///
+  /// In en, this message translates to:
+  /// **'Add statistics'**
+  String get storyAddStats;
+
+  /// No description provided for @storyTextHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a text on the story to select it, tap again to edit it.'**
+  String get storyTextHint;
+
+  /// No description provided for @storyEditText.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit text'**
+  String get storyEditText;
+
+  /// No description provided for @storyApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get storyApply;
+
+  /// No description provided for @storyFontDisplay.
+  ///
+  /// In en, this message translates to:
+  /// **'Condensed'**
+  String get storyFontDisplay;
+
+  /// No description provided for @storyFontBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Regular'**
+  String get storyFontBody;
+
+  /// No description provided for @storySize.
+  ///
+  /// In en, this message translates to:
+  /// **'Size'**
+  String get storySize;
+
+  /// No description provided for @storySpacing.
+  ///
+  /// In en, this message translates to:
+  /// **'Spacing'**
+  String get storySpacing;
+
+  /// No description provided for @storyWeightRegular.
+  ///
+  /// In en, this message translates to:
+  /// **'Regular'**
+  String get storyWeightRegular;
+
+  /// No description provided for @storyWeightMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get storyWeightMedium;
+
+  /// No description provided for @storyWeightBold.
+  ///
+  /// In en, this message translates to:
+  /// **'Bold'**
+  String get storyWeightBold;
+
+  /// No description provided for @storyWeightBlack.
+  ///
+  /// In en, this message translates to:
+  /// **'Black'**
+  String get storyWeightBlack;
+
+  /// No description provided for @storyAlignStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Align start'**
+  String get storyAlignStart;
+
+  /// No description provided for @storyAlignCenter.
+  ///
+  /// In en, this message translates to:
+  /// **'Center'**
+  String get storyAlignCenter;
+
+  /// No description provided for @storyAlignEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Align end'**
+  String get storyAlignEnd;
+
+  /// No description provided for @storyColorWhite.
+  ///
+  /// In en, this message translates to:
+  /// **'White'**
+  String get storyColorWhite;
+
+  /// No description provided for @storyColorGray.
+  ///
+  /// In en, this message translates to:
+  /// **'Gray'**
+  String get storyColorGray;
+
+  /// No description provided for @storyColorAccent.
+  ///
+  /// In en, this message translates to:
+  /// **'Accent'**
+  String get storyColorAccent;
+
+  /// No description provided for @storyColorDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Black'**
+  String get storyColorDark;
+
+  /// No description provided for @storyUppercase.
+  ///
+  /// In en, this message translates to:
+  /// **'Capitals'**
+  String get storyUppercase;
+
+  /// No description provided for @storyShadow.
+  ///
+  /// In en, this message translates to:
+  /// **'Shadow'**
+  String get storyShadow;
+
+  /// No description provided for @storyStatsNone.
+  ///
+  /// In en, this message translates to:
+  /// **'This workout has no statistics to show.'**
+  String get storyStatsNone;
+
+  /// No description provided for @storyStatsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn statistics on or off, and drag to reorder them.'**
+  String get storyStatsHint;
+
+  /// No description provided for @storyStatsHintPlanned.
+  ///
+  /// In en, this message translates to:
+  /// **'These are the plan\'s numbers, shown under \"The plan\". Turn them on or off, and drag to reorder.'**
+  String get storyStatsHintPlanned;
+
+  /// No description provided for @storyEstimate.
+  ///
+  /// In en, this message translates to:
+  /// **'estimate'**
+  String get storyEstimate;
+
+  /// No description provided for @storyAccent.
+  ///
+  /// In en, this message translates to:
+  /// **'Accent color'**
+  String get storyAccent;
+
+  /// No description provided for @storyBranding.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the app name'**
+  String get storyBranding;
+
+  /// No description provided for @storyChangeLayout.
+  ///
+  /// In en, this message translates to:
+  /// **'Change layout'**
+  String get storyChangeLayout;
+
+  /// No description provided for @storyResetDesign.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset design'**
+  String get storyResetDesign;
+
+  /// No description provided for @storyResetConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset the design?'**
+  String get storyResetConfirmTitle;
+
+  /// No description provided for @storyResetConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Text, stats and style go back to the layout as it started. Your photo stays.'**
+  String get storyResetConfirmBody;
+
+  /// No description provided for @storyReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get storyReset;
+
+  /// No description provided for @storyLayerStats.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get storyLayerStats;
+
+  /// No description provided for @storyLayerBrand.
+  ///
+  /// In en, this message translates to:
+  /// **'App name'**
+  String get storyLayerBrand;
+
+  /// No description provided for @storyLayerEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty text'**
+  String get storyLayerEmpty;
+
+  /// No description provided for @storyDuplicate.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate'**
+  String get storyDuplicate;
+
+  /// No description provided for @storyDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get storyDelete;
+
+  /// No description provided for @storyLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock'**
+  String get storyLock;
+
+  /// No description provided for @storyUnlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock'**
+  String get storyUnlock;
+
+  /// No description provided for @storyBringForward.
+  ///
+  /// In en, this message translates to:
+  /// **'Bring forward'**
+  String get storyBringForward;
+
+  /// No description provided for @storySendBackward.
+  ///
+  /// In en, this message translates to:
+  /// **'Send backward'**
+  String get storySendBackward;
+
+  /// No description provided for @storyHide.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide'**
+  String get storyHide;
+
+  /// No description provided for @storyShow.
+  ///
+  /// In en, this message translates to:
+  /// **'Show'**
+  String get storyShow;
+
+  /// No description provided for @storyUndo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get storyUndo;
+
+  /// No description provided for @storyRedo.
+  ///
+  /// In en, this message translates to:
+  /// **'Redo'**
+  String get storyRedo;
+
+  /// No description provided for @storyPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get storyPreview;
+
+  /// No description provided for @storyClosePreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to editing'**
+  String get storyClosePreview;
+
+  /// No description provided for @storyNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get storyNext;
+
+  /// No description provided for @storyDiscardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard this story?'**
+  String get storyDiscardTitle;
+
+  /// No description provided for @storyDiscardBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your changes will be lost.'**
+  String get storyDiscardBody;
+
+  /// No description provided for @storyDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get storyDiscard;
+
+  /// No description provided for @storyKeepEditing.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get storyKeepEditing;
+
+  /// No description provided for @storyExportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t create the image. {error}'**
+  String storyExportFailed(String error);
+
+  /// No description provided for @storyExportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your story'**
+  String get storyExportTitle;
+
+  /// No description provided for @storySave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get storySave;
+
+  /// No description provided for @storyShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get storyShare;
+
+  /// No description provided for @storyDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get storyDone;
+
+  /// No description provided for @storySaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved to your gallery'**
+  String get storySaved;
+
+  /// No description provided for @storySaveDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow photo access in Settings to save your story.'**
+  String get storySaveDenied;
+
+  /// No description provided for @storySaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save the image. {error}'**
+  String storySaveFailed(String error);
+
+  /// No description provided for @storyNotEnoughSpace.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough storage space to save the image.'**
+  String get storyNotEnoughSpace;
+
+  /// No description provided for @storyShareFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t share the image. {error}'**
+  String storyShareFailed(String error);
+
+  /// No description provided for @storyShareUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing isn\'t available on this device.'**
+  String get storyShareUnavailable;
+
+  /// No description provided for @storyPhotoDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow photo access in Settings to choose a photo.'**
+  String get storyPhotoDenied;
+
+  /// No description provided for @storyCameraDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow camera access in Settings to take a photo.'**
+  String get storyCameraDenied;
+
+  /// No description provided for @storyPhotoFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open this photo. Try another one.'**
+  String get storyPhotoFailed;
 }
 
 class _AppLocalizationsDelegate
