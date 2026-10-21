@@ -972,7 +972,7 @@
   "helpFaqMacrosQ": "What are protein, carbs and fat?",
   "helpFaqMacrosA": "They are the three nutrients that give food its calories. Protein helps build and repair muscle, carbs are your main energy source, and fat supports your body in many ways. Focus on calories first, then on getting enough protein.",
   "helpFaqCalorieGoalQ": "How is my daily calorie goal worked out?",
-  "helpFaqCalorieGoalA": "From your age, weight, height, gender and how active you are, we estimate how many calories you burn on a normal day. Then we take away 500 to lose weight, add 300 to build muscle, or keep it the same. Exercise you log is added on top for that day.",
+  "helpFaqCalorieGoalA": "From your age, weight, height, gender and how active you are (your workouts included), we estimate how many calories you burn on a typical day. To lose weight we take away 500 (less if your burn is small, and never below 1,200 kcal for women or 1,500 for men); to build muscle we add up to 300. Workouts you log are shown but not added again, because your activity level already counts them.",
   "helpFaqLogExerciseQ": "How do I log exercise?",
   "helpFaqLogExerciseA": "Go to the Workouts tab. In Simple mode, find the activity (walking, cycling, …), tap it, choose how many minutes and tap \"I did this\".",
   "helpFaqAdvancedModeQ": "What is Advanced mode?",
@@ -1025,8 +1025,18 @@
   "onboardingGoalBuildMuscleDetail": "Eat a bit more than you burn, and do strength training",
   "onboardingGoalStayLabel": "Stay at my weight",
   "onboardingGoalStayDetail": "Eat about what you burn",
-  "onboardingOffsetLose": "500 kcal less than you burn on a typical day",
-  "onboardingOffsetGain": "300 kcal more than you burn on a typical day",
+  "onboardingOffsetLose": "{kcal} kcal less than you burn on a typical day",
+  "@onboardingOffsetLose": {
+    "placeholders": {
+      "kcal": { "type": "int" }
+    }
+  },
+  "onboardingOffsetGain": "{kcal} kcal more than you burn on a typical day",
+  "@onboardingOffsetGain": {
+    "placeholders": {
+      "kcal": { "type": "int" }
+    }
+  },
   "onboardingOffsetSame": "The same as you burn on a typical day",
   "onboardingDailyGoalCaption": "Your daily calorie goal",
   "newWorkoutCouldNotLoadExercises": "Couldn't load exercises. {error}",
@@ -1137,7 +1147,7 @@
   "homeSummaryLabelKcal": "{label} (kcal)",
   "@homeSummaryLabelKcal": {"placeholders": {"label": {"type": "String"}}},
   "homeFinishProfileForGoal": "Finish your profile on the Me tab to get a daily calorie goal.",
-  "homeExerciseAddedToGoal": "Today's exercise is already added to your goal.",
+  "homeExerciseAddedToGoal": "Your activity level already counts your workouts, so they don't change your goal.",
   "homeNutrientOfGoal": "{eaten} of {goal} g",
   "@homeNutrientOfGoal": {"placeholders": {"eaten": {"type": "int"}, "goal": {"type": "int"}}},
   "homeNothingAddedYet": "Nothing added yet",

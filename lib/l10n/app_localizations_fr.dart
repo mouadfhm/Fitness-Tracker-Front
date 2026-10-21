@@ -2018,7 +2018,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get helpFaqCalorieGoalA =>
-      'À partir de votre âge, votre poids, votre taille, votre sexe et votre niveau d\'activité, nous estimons combien de calories vous brûlez lors d\'une journée normale. Ensuite, nous retirons 500 pour perdre du poids, ajoutons 300 pour prendre du muscle, ou gardons la même valeur. L\'exercice que vous enregistrez s\'ajoute pour la journée.';
+      'À partir de votre âge, votre poids, votre taille, votre sexe et votre niveau d\'activité (entraînements compris), nous estimons combien de calories vous brûlez lors d\'une journée type. Pour perdre du poids, nous retirons 500 (moins si vous brûlez peu, et jamais en dessous de 1 200 kcal pour les femmes ou 1 500 pour les hommes) ; pour prendre du muscle, nous ajoutons jusqu\'à 300. Les entraînements enregistrés sont affichés mais pas ajoutés une seconde fois, car votre niveau d\'activité les compte déjà.';
 
   @override
   String get helpFaqLogExerciseQ =>
@@ -2192,12 +2192,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get onboardingGoalStayDetail => 'Manger à peu près ce que vous brûlez';
 
   @override
-  String get onboardingOffsetLose =>
-      '500 kcal de moins que ce que vous brûlez lors d\'une journée type';
+  String onboardingOffsetLose(int kcal) {
+    return '$kcal kcal de moins que ce que vous brûlez lors d\'une journée type';
+  }
 
   @override
-  String get onboardingOffsetGain =>
-      '300 kcal de plus que ce que vous brûlez lors d\'une journée type';
+  String onboardingOffsetGain(int kcal) {
+    return '$kcal kcal de plus que ce que vous brûlez lors d\'une journée type';
+  }
 
   @override
   String get onboardingOffsetSame =>
@@ -2533,7 +2535,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get homeExerciseAddedToGoal =>
-      'L\'exercice du jour est déjà ajouté à votre objectif.';
+      'Votre niveau d\'activité compte déjà vos entraînements, ils ne changent donc pas votre objectif.';
 
   @override
   String homeNutrientOfGoal(int eaten, int goal) {

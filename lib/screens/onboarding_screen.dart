@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../services/api_service.dart';
@@ -37,7 +39,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   bool _imperial = false;
 
   String _gender = 'male';
-  String _activityLevel = 'Moderate';
+  String _activityLevel = 'moderate';
   String _fitnessGoal = 'weight_loss';
   bool _isLoading = false;
 
@@ -49,13 +51,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       _weightController.text = widget.initialData['weight']?.toString() ?? '';
       _heightController.text = widget.initialData['height']?.toString() ?? '';
       const validGenders = ['male', 'female'];
-      const validActivities = ['sedentary', 'light', 'Moderate', 'active', 'very_active'];
+      const validActivities = ['sedentary', 'light', 'moderate', 'active', 'very_active'];
       const validGoals = ['weight_loss', 'muscle_gain', 'maintenance'];
       final g = widget.initialData['gender'];
-      final a = widget.initialData['activity_level'];
+      // Lower-cased because older versions saved "Moderate".
+      final a = widget.initialData['activity_level']?.toString().toLowerCase();
       final go = widget.initialData['fitness_goal'];
       if (validGenders.contains(g)) _gender = g;
-      if (validActivities.contains(a)) _activityLevel = a;
+      if (a != null && validActivities.contains(a)) _activityLevel = a;
       if (validGoals.contains(go)) _fitnessGoal = go;
     }
   }
@@ -142,29 +145,39 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         : (10 * w) + (6.25 * h) - (5 * a) - 161;
   }
 
+  // The preview mirrors User::totalDailyEnergyExpenditure and
+  // User::dailyCalorieTarget on the backend, so the number shown here is the
+  // goal Today shows after saving. Change both together.
   double get _activityMultiplier {
     const map = {
       'sedentary': 1.2,
       'light': 1.375,
-      'Moderate': 1.55,
+      'moderate': 1.55,
       'active': 1.725,
       'very_active': 1.9,
     };
-    return map[_activityLevel] ?? 1.55;
+    return map[_activityLevel] ?? 1.2;
   }
 
   double get _tdee => _bmr * _activityMultiplier;
 
-  double get _dailyTarget {
+  /// kcal taken off (weight loss) or added (muscle gain) to [_tdee]: 500 and
+  /// 300 for most people, at most 20% / 10% of a small burn, and weight loss
+  /// never goes below 1500 (men) / 1200 (women) kcal.
+  double get _goalOffset {
+    final tdee = _tdee;
     switch (_fitnessGoal) {
       case 'weight_loss':
-        return _tdee - 500;
+        final floor = math.min(tdee, _gender == 'male' ? 1500.0 : 1200.0);
+        return math.max(tdee - math.min(500.0, 0.2 * tdee), floor) - tdee;
       case 'muscle_gain':
-        return _tdee + 300;
+        return math.min(300.0, 0.1 * tdee);
       default:
-        return _tdee;
+        return 0;
     }
   }
+
+  double get _dailyTarget => _tdee + _goalOffset;
 
   void _nextPage() => _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
@@ -515,11 +528,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       ('muscle_gain', '💪', l10n.onboardingGoalBuildMuscleLabel, l10n.onboardingGoalBuildMuscleDetail),
       ('maintenance', '⚖️', l10n.onboardingGoalStayLabel, l10n.onboardingGoalStayDetail),
     ];
-    final offset = _fitnessGoal == 'weight_loss'
-        ? l10n.onboardingOffsetLose
-        : _fitnessGoal == 'muscle_gain'
-            ? l10n.onboardingOffsetGain
-            : l10n.onboardingOffsetSame;
+    final kcal = _goalOffset.abs().round();
+    final offset = kcal == 0
+        ? l10n.onboardingOffsetSame
+        : _fitnessGoal == 'weight_loss'
+            ? l10n.onboardingOffsetLose(kcal)
+            : l10n.onboardingOffsetGain(kcal);
     return _buildStepShell(
       title: l10n.onboardingStep4Title,
       subtitle: l10n.onboardingStep4Subtitle,

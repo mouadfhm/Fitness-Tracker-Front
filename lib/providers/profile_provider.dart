@@ -94,56 +94,6 @@ class ProfileProvider extends ChangeNotifier {
     }
   }
   
-/// Calculate BMI and fetch relevant health data.
-Future<Map<String, dynamic>> fetchHealthStats() async {
-  try {
-    if (_profileData == null) {
-      throw Exception('Profile data not available');
-    }
-    
-    final double weight = _profileData!['weight'].toDouble();
-    final double heightInCm = _profileData!['height'].toDouble();
-    final double heightInMeters = heightInCm / 100;
-    
-    // Calculate BMI
-    final double bmi = weight / (heightInMeters * heightInMeters);
-    
-    // Get today's date in format YYYY-MM-DD
-    final today = DateTime.now().toString().substring(0, 10);
-    
-    // Fetch additional health data
-    final double caloriesBurned = await _apiService.getCalories(today);
-    final dailyMacros = await _apiService.getGoal();
-    final consumedMacros = await _apiService.getMacros();
-    
-    // Calculate calorie deficit/surplus
-    final double calorieGoal = dailyMacros['calories'] ?? 2000.0;
-    final double consumedCalories = consumedMacros['calories'] ?? 0.0;
-    final double calorieBalance = calorieGoal - consumedCalories + caloriesBurned;
-    
-    return {
-      'bmi': bmi,
-      'bmiCategory': _getBMICategory(bmi),
-      'caloriesBurned': caloriesBurned,
-      'dailyMacros': dailyMacros,
-      'consumedMacros': consumedMacros,
-      'calorieBalance': calorieBalance,
-      // 'weightTrend': await _apiService.getWeightTrend(),
-    };
-  } catch (e) {
-    _errorMessage = "Couldn't load your stats. ${friendlyError(e)}";
-    notifyListeners();
-    rethrow;
-  }
-}
-
-// Get BMI category based on the BMI value
-String _getBMICategory(double bmi) {
-  if (bmi < 18.5) return "Underweight";
-  if (bmi < 25) return "Normal";
-  if (bmi < 30) return "Overweight";
-  return "Obese";
-}  
   /// Reset profile data (for testing or logout).
   void resetProfile() {
     _profileData = null;

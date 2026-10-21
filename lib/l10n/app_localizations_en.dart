@@ -1960,7 +1960,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpFaqCalorieGoalA =>
-      'From your age, weight, height, gender and how active you are, we estimate how many calories you burn on a normal day. Then we take away 500 to lose weight, add 300 to build muscle, or keep it the same. Exercise you log is added on top for that day.';
+      'From your age, weight, height, gender and how active you are (your workouts included), we estimate how many calories you burn on a typical day. To lose weight we take away 500 (less if your burn is small, and never below 1,200 kcal for women or 1,500 for men); to build muscle we add up to 300. Workouts you log are shown but not added again, because your activity level already counts them.';
 
   @override
   String get helpFaqLogExerciseQ => 'How do I log exercise?';
@@ -2127,12 +2127,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingGoalStayDetail => 'Eat about what you burn';
 
   @override
-  String get onboardingOffsetLose =>
-      '500 kcal less than you burn on a typical day';
+  String onboardingOffsetLose(int kcal) {
+    return '$kcal kcal less than you burn on a typical day';
+  }
 
   @override
-  String get onboardingOffsetGain =>
-      '300 kcal more than you burn on a typical day';
+  String onboardingOffsetGain(int kcal) {
+    return '$kcal kcal more than you burn on a typical day';
+  }
 
   @override
   String get onboardingOffsetSame => 'The same as you burn on a typical day';
@@ -2460,7 +2462,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeExerciseAddedToGoal =>
-      'Today\'s exercise is already added to your goal.';
+      'Your activity level already counts your workouts, so they don\'t change your goal.';
 
   @override
   String homeNutrientOfGoal(int eaten, int goal) {
