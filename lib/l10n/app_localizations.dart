@@ -3431,7 +3431,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpFaqCalorieGoalA.
   ///
   /// In en, this message translates to:
-  /// **'From your age, weight, height, gender and how active you are, we estimate how many calories you burn on a normal day. Then we take away 500 to lose weight, add 300 to build muscle, or keep it the same. Exercise you log is added on top for that day.'**
+  /// **'From your age, weight, height, gender and how active you are (your workouts included), we estimate how many calories you burn on a typical day. To lose weight we take away 500 (less if your burn is small, and never below 1,200 kcal for women or 1,500 for men); to build muscle we add up to 300. Workouts you log are shown but not added again, because your activity level already counts them.'**
   String get helpFaqCalorieGoalA;
 
   /// No description provided for @helpFaqLogExerciseQ.
@@ -3719,14 +3719,14 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingOffsetLose.
   ///
   /// In en, this message translates to:
-  /// **'500 kcal less than you burn on a typical day'**
-  String get onboardingOffsetLose;
+  /// **'{kcal} kcal less than you burn on a typical day'**
+  String onboardingOffsetLose(int kcal);
 
   /// No description provided for @onboardingOffsetGain.
   ///
   /// In en, this message translates to:
-  /// **'300 kcal more than you burn on a typical day'**
-  String get onboardingOffsetGain;
+  /// **'{kcal} kcal more than you burn on a typical day'**
+  String onboardingOffsetGain(int kcal);
 
   /// No description provided for @onboardingOffsetSame.
   ///
@@ -4241,7 +4241,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeExerciseAddedToGoal.
   ///
   /// In en, this message translates to:
-  /// **'Today\'s exercise is already added to your goal.'**
+  /// **'Your activity level already counts your workouts, so they don\'t change your goal.'**
   String get homeExerciseAddedToGoal;
 
   /// No description provided for @homeNutrientOfGoal.
