@@ -55,11 +55,20 @@ class _StoryEditorScreenState extends State<StoryEditorScreen> {
   StoryLabels? _labels;
   late final StoryPhotoPicker _picker = widget.photoPicker ?? DeviceStoryPhotoPicker();
   StoryRenderer? _renderer;
+  ui.Image? _logo;
   bool _preview = false;
   bool _photoBusy = false;
   bool _exporting = false;
 
   StoryEditorController get _c => _controller!;
+
+  @override
+  void initState() {
+    super.initState();
+    loadStoryLogo().then((logo) {
+      if (mounted && logo != null) setState(() => _logo = logo);
+    });
+  }
 
   @override
   void didChangeDependencies() {
@@ -88,14 +97,16 @@ class _StoryEditorScreenState extends State<StoryEditorScreen> {
     data: widget.data,
     labels: _labels!,
     photo: _c.photo,
+    logo: _logo,
     textDirection: Directionality.of(context),
   );
 
-  /// One renderer per photo, so its layout cache survives edits.
+  /// One renderer per photo (and logo), so its layout cache survives edits.
   StoryRenderer _rendererNow() {
     final r = _renderer;
     if (r != null &&
         identical(r.context.photo, _c.photo) &&
+        identical(r.context.logo, _logo) &&
         r.context.textDirection == Directionality.of(context)) {
       return r;
     }

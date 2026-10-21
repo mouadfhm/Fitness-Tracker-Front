@@ -119,3 +119,20 @@ Future<ui.Image> decodeStoryPhotoFile(String path) async {
   }
   return decodeStoryPhoto(bytes);
 }
+
+/// The app logo for the story's brand layer, decoded once and kept for the
+/// app's lifetime (it is small). Null if the asset can't be read, in which
+/// case the brand falls back to a dot.
+Future<ui.Image?> loadStoryLogo() => _logo ??= _decodeLogo();
+
+Future<ui.Image?>? _logo;
+
+Future<ui.Image?> _decodeLogo() async {
+  try {
+    final data = await rootBundle.load('lib/assets/fitnessTrackerLogo.png');
+    return await decodeStoryPhoto(data.buffer.asUint8List(), maxSide: 384);
+  } catch (_) {
+    _logo = null;
+    return null;
+  }
+}

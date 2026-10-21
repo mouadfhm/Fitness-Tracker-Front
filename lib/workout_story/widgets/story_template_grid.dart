@@ -7,6 +7,7 @@ import '../models/story_document.dart';
 import '../models/story_templates.dart';
 import '../models/story_workout_data.dart';
 import '../rendering/story_renderer.dart';
+import '../services/story_photo_service.dart';
 import '../story_labels.dart';
 import 'story_painters.dart';
 
@@ -48,7 +49,12 @@ class StoryTemplateGrid extends StatelessWidget {
   final bool shrinkWrap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => FutureBuilder<ui.Image?>(
+    future: loadStoryLogo(),
+    builder: (context, logo) => _grid(context, logo.data),
+  );
+
+  Widget _grid(BuildContext context, ui.Image? logo) {
     final l10n = AppLocalizations.of(context)!;
     final scheme = Theme.of(context).colorScheme;
     final renderer = StoryRenderer(
@@ -56,6 +62,7 @@ class StoryTemplateGrid extends StatelessWidget {
         data: data,
         labels: labels,
         photo: photo,
+        logo: logo,
         textDirection: Directionality.of(context),
       ),
     );
