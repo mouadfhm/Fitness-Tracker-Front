@@ -1,3 +1,7 @@
+# R8 full mode strips the no-arg constructor Room uses to instantiate generated
+# databases (WorkManager's WorkDatabase), which crashes the app at startup.
+-keep class * extends androidx.room.RoomDatabase { <init>(); }
+
 # Keep Flutter engine / plugin entry points
 -keep class io.flutter.embedding.android.** { *; }
 -keep class io.flutter.embedding.engine.deferredcomponents.** { *; }
