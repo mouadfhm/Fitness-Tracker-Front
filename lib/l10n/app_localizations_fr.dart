@@ -9,7 +9,7 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
-  String get appTitle => 'Fitness Tracker';
+  String get appTitle => 'Fitness Tracker: Meals & Gym';
 
   @override
   String get settingsTitle => 'Paramètres';
