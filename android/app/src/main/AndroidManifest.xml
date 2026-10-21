@@ -9,7 +9,7 @@
     android:maxSdkVersion="29"
     tools:replace="android:maxSdkVersion" />
     <application
-        android:label="Fitness Tracker"
+        android:label="Fitness Tracker: Meals &amp; Gym"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true">

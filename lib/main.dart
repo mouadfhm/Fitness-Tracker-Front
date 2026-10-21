@@ -80,7 +80,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       navigatorKey: NavigationService.navigatorKey,
-      title: 'Fitness Tracker',
+      title: 'Fitness Tracker: Meals & Gym',
       debugShowCheckedModeBanner: false,
       locale: localeProvider.locale,
       supportedLocales: LocaleProvider.supportedLocales,

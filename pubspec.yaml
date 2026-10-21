@@ -85,10 +85,16 @@ dev_dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "lib/assets/fitnessTrackerLogo.png"
+  # Sources live in assets/app_icon/ (not bundled into the app); source.png is
+  # the original artwork. Legacy Android icon: logo on transparent.
+  image_path: "assets/app_icon/android.png"
+  # Android 8+ adaptive icon: the logo sits inside the safe zone so circle
+  # and squircle masks don't clip the ribbon.
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/app_icon/android_foreground.png"
   # App Store Connect rejects an iOS icon with any transparency, and iOS
   # clips the corners, so iOS gets a padded copy on a solid background.
-  image_path_ios: "lib/assets/fitnessTrackerLogo_ios.png"
+  image_path_ios: "assets/app_icon/ios.png"
   remove_alpha_ios: true
   background_color_ios: "#FFFFFF"
 
