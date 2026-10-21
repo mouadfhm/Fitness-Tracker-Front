@@ -58,7 +58,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       final a = widget.initialData['activity_level']?.toString().toLowerCase();
       final go = widget.initialData['fitness_goal'];
       if (validGenders.contains(g)) _gender = g;
-      if (validActivities.contains(a)) _activityLevel = a;
+      if (a != null && validActivities.contains(a)) _activityLevel = a;
       if (validGoals.contains(go)) _fitnessGoal = go;
     }
   }
