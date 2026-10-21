@@ -166,6 +166,33 @@ void main() {
       });
     });
 
+    testWidgets('the brand shows the app logo before the name', (tester) async {
+      await tester.runAsync(() async {
+        // A plain green square stands in for the logo.
+        final recorder = ui.PictureRecorder();
+        Canvas(recorder).drawColor(const Color(0xFF00FF00), BlendMode.src);
+        final logo = await recorder.endRecording().toImage(100, 100);
+        final data = completedRun();
+        final doc = StoryTemplates.build('full_bold', data, labels).copyWith(dim: 0, gradient: 0);
+        final brand = doc.layer(StoryLayerIds.brand)!;
+        final ctx = StoryRenderContext(data: data, labels: labels, logo: logo);
+        final renderer = StoryRenderer(ctx);
+        final size = renderer.layerSize(brand, doc);
+        final logoSide = brand.style.fontSize * 2.2;
+        expect(size.height, closeTo(logoSide, 0.5));
+
+        final image = await StoryExporter.renderImage(doc, ctx);
+        final rgba = await _rgba(image);
+        // Start-aligned: the logo is the box's first square.
+        final left = brand.cx * kStoryWidth - size.width / 2;
+        final top = brand.cy * kStoryHeight - size.height / 2;
+        final at = _pixel(rgba, 1080, (left + logoSide / 2).round(), (top + logoSide / 2).round());
+        expect(at, const Color(0xFF00FF00));
+        image.dispose();
+        logo.dispose();
+      });
+    });
+
     testWidgets('crops the photo where the transform says', (tester) async {
       await tester.runAsync(() async {
         // A landscape photo in a full 9:16 frame: only its middle shows.

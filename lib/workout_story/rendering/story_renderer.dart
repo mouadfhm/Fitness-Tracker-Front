@@ -14,6 +14,7 @@ class StoryRenderContext {
     required this.data,
     required this.labels,
     this.photo,
+    this.logo,
     this.textDirection = TextDirection.ltr,
   });
 
@@ -22,6 +23,10 @@ class StoryRenderContext {
 
   /// The decoded photo for the document's photo path, if one is loaded.
   final ui.Image? photo;
+
+  /// The app logo drawn before the app name (see [loadStoryLogo]); a dot in
+  /// the accent colour stands in until it has loaded.
+  final ui.Image? logo;
   final TextDirection textDirection;
 }
 
@@ -318,21 +323,57 @@ class StoryRenderer {
   _Laid _layoutBrand(StoryLayer layer, StoryPalette palette) {
     final width = layer.width * size.width;
     final s = layer.style;
+    final logo = context.logo;
+    if (logo == null) {
+      final p = TextPainter(
+        text: TextSpan(
+          children: [
+            TextSpan(text: '● ', style: _style(s, palette.accent)),
+            TextSpan(
+              text: _caseOf(context.labels.brand, s),
+              style: _style(s, palette.resolve(s.color)),
+            ),
+          ],
+        ),
+        textAlign: _align(s.align),
+        textDirection: context.textDirection,
+        maxLines: 1,
+      )..layout(minWidth: width, maxWidth: width);
+      return _Laid(Size(width, p.height), (c) => p.paint(c, Offset.zero));
+    }
+
+    // The logo sits before the name, a little taller than its capitals.
+    final logoHeight = s.fontSize * 2.2;
+    final logoWidth = logoHeight * logo.width / logo.height;
+    final gap = s.fontSize * 0.5;
     final p = TextPainter(
       text: TextSpan(
-        children: [
-          TextSpan(text: '● ', style: _style(s, palette.accent)),
-          TextSpan(
-            text: _caseOf(context.labels.brand, s),
-            style: _style(s, palette.resolve(s.color)),
-          ),
-        ],
+        text: _caseOf(context.labels.brand, s),
+        style: _style(s, palette.resolve(s.color)),
       ),
-      textAlign: _align(s.align),
       textDirection: context.textDirection,
       maxLines: 1,
-    )..layout(minWidth: width, maxWidth: width);
-    return _Laid(Size(width, p.height), (c) => p.paint(c, Offset.zero));
+      ellipsis: '…',
+    )..layout(maxWidth: math.max(0, width - logoWidth - gap));
+    final height = math.max(logoHeight, p.height);
+    final total = logoWidth + gap + p.width;
+    final rtl = context.textDirection == TextDirection.rtl;
+    final left = switch (s.align) {
+      StoryAlign.center => (width - total) / 2,
+      StoryAlign.start => rtl ? width - total : 0.0,
+      StoryAlign.end => rtl ? 0.0 : width - total,
+    };
+    final logoLeft = rtl ? left + total - logoWidth : left;
+    final textLeft = rtl ? left : left + logoWidth + gap;
+    return _Laid(Size(width, height), (c) {
+      c.drawImageRect(
+        logo,
+        Rect.fromLTWH(0, 0, logo.width.toDouble(), logo.height.toDouble()),
+        Rect.fromLTWH(logoLeft, (height - logoHeight) / 2, logoWidth, logoHeight),
+        Paint()..filterQuality = FilterQuality.medium,
+      );
+      p.paint(c, Offset(textLeft, (height - p.height) / 2));
+    });
   }
 
   List<(String, String)> _statItems(StoryDocument doc) {
