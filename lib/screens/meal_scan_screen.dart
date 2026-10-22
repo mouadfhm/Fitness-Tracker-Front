@@ -17,6 +17,10 @@ import '../utils/food_search.dart';
 import '../utils/friendly_error.dart';
 import '../utils/labels.dart';
 
+/// Shows the meal scan button on the Foods tab. Off until the server's
+/// scanner works (it needs a workspace-scoped Anthropic key and credit).
+const bool mealScanEnabled = false;
+
 /// Point the camera at a plate: each food it recognises gets a label over the
 /// preview with its estimated portion, and the meal builds up underneath.
 /// Tap a label or a row to fix the portion or swap the food, add anything the
