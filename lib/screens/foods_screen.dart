@@ -703,22 +703,24 @@ class _FoodsScreenState extends State<FoodsScreen>
                 onChanged: (query) => setState(() {}), // triggers rebuild to filter list
               ),
             ),
-            const SizedBox(width: 8),
-            AspectRatio(
-              aspectRatio: 1,
-              child: IconButton.filled(
-                onPressed: _scanMeal,
-                tooltip: l10n.mealScanTooltip,
-                style: IconButton.styleFrom(
-                  backgroundColor: colorScheme.primary,
-                  foregroundColor: colorScheme.onPrimary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+            if (mealScanEnabled) ...[
+              const SizedBox(width: 8),
+              AspectRatio(
+                aspectRatio: 1,
+                child: IconButton.filled(
+                  onPressed: _scanMeal,
+                  tooltip: l10n.mealScanTooltip,
+                  style: IconButton.styleFrom(
+                    backgroundColor: colorScheme.primary,
+                    foregroundColor: colorScheme.onPrimary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
+                  icon: const Icon(Icons.photo_camera_outlined),
                 ),
-                icon: const Icon(Icons.photo_camera_outlined),
               ),
-            ),
+            ],
             const SizedBox(width: 8),
             // Same height and corner radius as the search field, filled with
             // the primary colour like the app's other main actions.
