@@ -57,7 +57,7 @@ Future<void> initializeFirebase() async {
 Future<void> _initLocalNotifications() async {
   await _localNotifications.initialize(
     settings: const InitializationSettings(
-      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+      android: AndroidInitializationSettings('@drawable/ic_notification'),
       iOS: DarwinInitializationSettings(),
     ),
     onDidReceiveNotificationResponse: _onLocalNotificationTapped,
@@ -243,7 +243,10 @@ void _showForegroundNotification(RemoteMessage message) {
         channelDescription: _channel.description,
         importance: Importance.high,
         priority: Priority.high,
-        icon: '@mipmap/ic_launcher',
+        // White-on-transparent silhouette; same icon and tint as the
+        // background notifications set in AndroidManifest.xml.
+        icon: '@drawable/ic_notification',
+        color: const Color(0xFFFC333A),
       ),
     ),
   );

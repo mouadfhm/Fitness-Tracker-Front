@@ -51,6 +51,15 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="fitness_reminders"/>
+        <!-- Status bar icon for those notifications. Android draws it from the
+             alpha channel only, so it must be white on transparent: the app
+             icon would show as a plain white shape. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_notification"/>
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/notification_accent"/>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
