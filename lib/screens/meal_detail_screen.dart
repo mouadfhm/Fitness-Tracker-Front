@@ -32,8 +32,17 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
   }
 
   void _deleteFood(int index) async {
-    final mealId = _foods[index]['pivot']['meal_id'];
-    await _apiService.removeFoodFromMeal(mealId);
+    final pivot = _foods[index]['pivot'];
+    final mealId = pivot['meal_id'];
+    // A repeated meal is logged as one meal holding several foods, so only
+    // this food's entry goes. A meal with one food (how single foods are
+    // logged) is deleted whole, which works on older servers too.
+    final sharesMeal = _foods.where((f) => f['pivot']['meal_id'] == mealId).length > 1;
+    if (sharesMeal && pivot['id'] != null) {
+      await _apiService.removeFoodEntry(mealId, pivot['id']);
+    } else {
+      await _apiService.removeFoodFromMeal(mealId);
+    }
 
     setState(() {
       _foods.removeAt(index);

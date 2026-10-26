@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3117,4 +3118,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get storyPhotoFailed => 'Couldn\'t open this photo. Try another one.';
+
+  @override
+  String get homeSameAsYesterday => 'Same as yesterday';
+
+  @override
+  String get homeCopyFrom => 'Copy from…';
+
+  @override
+  String repeatMealTitle(String meal) {
+    return 'Repeat $meal';
+  }
+
+  @override
+  String get repeatMealHint =>
+      'Untick what you didn\'t eat and change the grams if needed.';
+
+  @override
+  String repeatMealLogButton(int count, int kcal) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Add $count foods · $kcal kcal',
+      one: 'Add $count food · $kcal kcal',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String repeatMealGrams(String name) {
+    return 'Grams of $name';
+  }
+
+  @override
+  String get repeatMealLess => 'Less';
+
+  @override
+  String get repeatMealMore => 'More';
+
+  @override
+  String get copyMealSheetTitle => 'Copy a past meal';
+
+  @override
+  String copyMealSheetSubtitle(String meal) {
+    return '$meal from the last 30 days';
+  }
 }

@@ -1364,5 +1364,19 @@
   "storyShareUnavailable": "Sharing isn't available on this device.",
   "storyPhotoDenied": "Allow photo access in Settings to choose a photo.",
   "storyCameraDenied": "Allow camera access in Settings to take a photo.",
-  "storyPhotoFailed": "Couldn't open this photo. Try another one."
+  "storyPhotoFailed": "Couldn't open this photo. Try another one.",
+  "homeSameAsYesterday": "Same as yesterday",
+  "homeCopyFrom": "Copy from…",
+  "repeatMealTitle": "Repeat {meal}",
+  "@repeatMealTitle": {"placeholders": {"meal": {"type": "String"}}},
+  "repeatMealHint": "Untick what you didn't eat and change the grams if needed.",
+  "repeatMealLogButton": "{count, plural, one{Add {count} food · {kcal} kcal} other{Add {count} foods · {kcal} kcal}}",
+  "@repeatMealLogButton": {"placeholders": {"count": {"type": "int"}, "kcal": {"type": "int"}}},
+  "repeatMealGrams": "Grams of {name}",
+  "@repeatMealGrams": {"placeholders": {"name": {"type": "String"}}},
+  "repeatMealLess": "Less",
+  "repeatMealMore": "More",
+  "copyMealSheetTitle": "Copy a past meal",
+  "copyMealSheetSubtitle": "{meal} from the last 30 days",
+  "@copyMealSheetSubtitle": {"placeholders": {"meal": {"type": "String"}}}
 }

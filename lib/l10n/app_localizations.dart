@@ -5365,6 +5365,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t open this photo. Try another one.'**
   String get storyPhotoFailed;
+
+  /// No description provided for @homeSameAsYesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Same as yesterday'**
+  String get homeSameAsYesterday;
+
+  /// No description provided for @homeCopyFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy from…'**
+  String get homeCopyFrom;
+
+  /// No description provided for @repeatMealTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat {meal}'**
+  String repeatMealTitle(String meal);
+
+  /// No description provided for @repeatMealHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Untick what you didn\'t eat and change the grams if needed.'**
+  String get repeatMealHint;
+
+  /// No description provided for @repeatMealLogButton.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{Add {count} food · {kcal} kcal} other{Add {count} foods · {kcal} kcal}}'**
+  String repeatMealLogButton(int count, int kcal);
+
+  /// No description provided for @repeatMealGrams.
+  ///
+  /// In en, this message translates to:
+  /// **'Grams of {name}'**
+  String repeatMealGrams(String name);
+
+  /// No description provided for @repeatMealLess.
+  ///
+  /// In en, this message translates to:
+  /// **'Less'**
+  String get repeatMealLess;
+
+  /// No description provided for @repeatMealMore.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get repeatMealMore;
+
+  /// No description provided for @copyMealSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy a past meal'**
+  String get copyMealSheetTitle;
+
+  /// No description provided for @copyMealSheetSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{meal} from the last 30 days'**
+  String copyMealSheetSubtitle(String meal);
 }
 
 class _AppLocalizationsDelegate
