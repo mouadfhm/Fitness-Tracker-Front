@@ -4,6 +4,7 @@ import 'main_shell.dart';
 import 'package:intl/intl.dart';
 import 'meal_detail_screen.dart';
 import 'meal_history_screen.dart';
+import 'repeat_meal_screen.dart';
 import 'foods_screen.dart';
 import '../services/api_service.dart';
 import '../utils/add_banner.dart';
@@ -132,6 +133,22 @@ class _HomeScreenState extends State<HomeScreen> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(added)));
     }
     _fetchData();
+  }
+
+  /// Opens the review screen to log [source] again today.
+  Future<void> _repeatMeal(String mealTime, PastMeal source) async {
+    final added = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(builder: (_) => RepeatMealScreen(mealTime: mealTime, source: source)),
+    );
+    if (!mounted || added == null) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(added)));
+    _fetchData();
+  }
+
+  Future<void> _copyMeal(String mealTime, List<PastMeal> versions) async {
+    final picked = await showCopyMealSheet(context, mealTime, versions);
+    if (picked != null && mounted) await _repeatMeal(mealTime, picked);
   }
 
   Future<void> _openMeal(String mealTime, List<dynamic> foods) async {
@@ -453,9 +470,14 @@ class _HomeScreenState extends State<HomeScreen> {
       ...mainMealTimes,
       ...byMeal.keys.where((m) => !mainMealTimes.contains(m)).toList()..sort(),
     ];
+    final yesterday = DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 1)));
 
     return mealTimes.map((mealTime) {
       final foods = byMeal[mealTime] ?? [];
+      // Meal preppers eat the same thing most days: an empty meal offers
+      // yesterday's, or any version from the last 30 days, in a tap or two.
+      final versions = foods.isEmpty ? pastMealVersions(_pastMeals, mealTime) : const <PastMeal>[];
+      final yesterdays = versions.where((v) => v.date == yesterday).firstOrNull;
       final totals = MealTotals()..addFoods(foods);
       final names = foods.map((f) => localizedName(f)).toList();
       final summary = names.isEmpty
@@ -507,6 +529,27 @@ class _HomeScreenState extends State<HomeScreen> {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(fontSize: 14, color: colorScheme.onSurfaceVariant),
                       ),
+                      if (versions.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 6),
+                          child: Wrap(
+                            spacing: 8,
+                            runSpacing: 4,
+                            children: [
+                              if (yesterdays != null)
+                                ActionChip(
+                                  avatar: const Icon(Icons.replay, size: 18),
+                                  label: Text(l10n.homeSameAsYesterday),
+                                  onPressed: () => _repeatMeal(mealTime, yesterdays),
+                                ),
+                              ActionChip(
+                                avatar: const Icon(Icons.history, size: 18),
+                                label: Text(l10n.homeCopyFrom),
+                                onPressed: () => _copyMeal(mealTime, versions),
+                              ),
+                            ],
+                          ),
+                        ),
                     ],
                   ),
                 ),

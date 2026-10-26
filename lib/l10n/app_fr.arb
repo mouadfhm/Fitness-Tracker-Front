@@ -905,5 +905,15 @@
   "storyShareUnavailable": "Le partage n'est pas disponible sur cet appareil.",
   "storyPhotoDenied": "Autorisez l'accès aux photos dans les Réglages pour choisir une photo.",
   "storyCameraDenied": "Autorisez l'accès à l'appareil photo dans les Réglages pour prendre une photo.",
-  "storyPhotoFailed": "Impossible d'ouvrir cette photo. Essayez-en une autre."
+  "storyPhotoFailed": "Impossible d'ouvrir cette photo. Essayez-en une autre.",
+  "homeSameAsYesterday": "Comme hier",
+  "homeCopyFrom": "Copier depuis…",
+  "repeatMealTitle": "Refaire : {meal}",
+  "repeatMealHint": "Décochez ce que vous n'avez pas mangé et ajustez les grammes si besoin.",
+  "repeatMealLogButton": "{count, plural, one{Ajouter {count} aliment · {kcal} kcal} other{Ajouter {count} aliments · {kcal} kcal}}",
+  "repeatMealGrams": "Grammes de {name}",
+  "repeatMealLess": "Moins",
+  "repeatMealMore": "Plus",
+  "copyMealSheetTitle": "Copier un repas passé",
+  "copyMealSheetSubtitle": "{meal} des 30 derniers jours"
 }

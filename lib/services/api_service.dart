@@ -580,6 +580,31 @@ class ApiService {
     }
   }
 
+  /// Logs several foods as one meal in one request, all or nothing. Each
+  /// entry is `{'food_id': int, 'quantity': grams}`.
+  Future<Map<String, dynamic>> storeMealFoods(
+    String mealTime,
+    String date,
+    List<Map<String, dynamic>> foods,
+  ) async {
+    final token = await _requireToken();
+    final response = await http.post(
+      Uri.parse('$baseUrl/meals/add'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({'date': date, 'meal_time': mealTime, 'foods': foods}),
+    );
+
+    _checkUnauthorized(response);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to store meal: ${response.body}');
+    }
+  }
+
   /// Sends one camera frame to the meal scanner and returns the foods on it
   /// (`label`, `box`, `grams`, `confidence`, `food`). Throws
   /// [MealScanUnavailable] when the server has no scanner set up.
@@ -668,6 +693,23 @@ class ApiService {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonDecode(response.body);
     } else {
+      throw Exception('Failed to remove food from meal: ${response.body}');
+    }
+  }
+
+  /// Removes one food from a meal that holds several, by its entry id
+  /// (`pivot.id`). The server deletes the meal once it is empty.
+  Future<void> removeFoodEntry(int mealId, int entryId) async {
+    final token = await _requireToken();
+    final response = await http.delete(
+      Uri.parse('$baseUrl/meals/$mealId/food-entries/$entryId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    _checkUnauthorized(response);
+    if (response.statusCode != 200) {
       throw Exception('Failed to remove food from meal: ${response.body}');
     }
   }
