@@ -1,5 +1,6 @@
 // import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'food_cache.dart';
 // ignore: deprecated_member_use, avoid_web_libraries_in_flutter
 
 class TokenService {
@@ -31,5 +32,7 @@ class TokenService {
     // } else {
     await _secureStorage.delete(key: 'token');
     // }
+    // The saved food list holds this account's favourites and own foods.
+    await FoodCache.clear();
   }
 }

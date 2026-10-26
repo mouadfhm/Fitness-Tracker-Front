@@ -452,20 +452,25 @@ class ApiService {
     }
   }
 
-  // get foods
-  Future<List<dynamic>> getFoods() async {
+  /// The whole food list as raw JSON, for [FoodProvider] to parse and save.
+  /// With the [etag] of the list the app already has, an unchanged list comes
+  /// back as a 304 and `body` is null. The server gzips it (Dart unzips).
+  Future<({String? body, String? etag})> getFoods({String? etag}) async {
     final token = await _requireToken();
     final response = await http.get(
       Uri.parse('$baseUrl/foods/search'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
+        if (etag != null) 'If-None-Match': etag,
       },
     );
 
     _checkUnauthorized(response);
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+    if (response.statusCode == 304) {
+      return (body: null, etag: etag);
+    } else if (response.statusCode == 200) {
+      return (body: response.body, etag: response.headers['etag']);
     } else {
       throw Exception('Failed to load foods');
     }
