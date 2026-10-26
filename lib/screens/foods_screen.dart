@@ -68,16 +68,12 @@ class _FoodsScreenState extends State<FoodsScreen>
   void initState() {
     super.initState();
     // The provider first loads at app start, which fails if the person
-    // wasn't logged in yet, or in another language. Reload when the screen
-    // opens.
+    // wasn't logged in yet, and may hold another account's or language's
+    // list. Refresh when the screen opens: the list on screen stays while it
+    // runs, and an unchanged list is only a 304.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      final provider = Provider.of<FoodProvider>(context, listen: false);
-      if (!provider.isLoading && (provider.foods.isEmpty ||
-              provider.errorMessage.isNotEmpty ||
-              provider.isStaleLanguage)) {
-        provider.refreshFoods();
-      }
+      Provider.of<FoodProvider>(context, listen: false).refreshFoods();
     });
   }
 
