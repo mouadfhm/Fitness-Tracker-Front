@@ -8,20 +8,20 @@ val keystoreProperties = Properties().apply {
     }
 }
 
-// versionCode = total git commit count plus an offset, so it always increases with
-// each commit without needing a manual bump. The offset keeps it above version code
-// 123, which a local build uploaded to Play on 2026-10-18 while the count was 97;
-// Play refuses any versionCode at or below one it has already seen.
-// Falls back to 1 if git isn't available (e.g. CI checkout without history, or
-// building outside a git repo).
+// versionCode: CI sets VERSION_CODE from its run number (android-release.yml), so
+// every upload gets a new code, even a second run on the same commit. Without it
+// (local builds) it falls back to the git commit count plus 100. Play refuses any
+// versionCode it has already seen; don't upload local builds, they would take
+// codes CI hasn't reached yet. Falls back to 1 if git isn't available.
 val versionCodeOffset = 100
-val gitVersionCode: Int = try {
-    versionCodeOffset + providers.exec {
-        commandLine("git", "rev-list", "--count", "HEAD")
-    }.standardOutput.asText.get().trim().toInt()
-} catch (e: Exception) {
-    1
-}
+val gitVersionCode: Int = providers.environmentVariable("VERSION_CODE").orNull?.toIntOrNull()
+    ?: try {
+        versionCodeOffset + providers.exec {
+            commandLine("git", "rev-list", "--count", "HEAD")
+        }.standardOutput.asText.get().trim().toInt()
+    } catch (e: Exception) {
+        1
+    }
 
 plugins {
     id("com.android.application")
