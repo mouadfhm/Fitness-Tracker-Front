@@ -7,9 +7,11 @@ name: Android release
 # production in the Play Console. Pull requests that touch android/ build
 # the bundle too, without uploading, so a broken build shows up before a tag.
 #
-# The versionCode is the git commit count plus 100 (android/app/build.gradle.kts), so
-# the checkout fetches the full history. Play refuses a versionCode it has
-# already seen, so each upload needs at least one new commit.
+# The versionCode is 300 plus the workflow run number (VERSION_CODE, read by
+# android/app/build.gradle.kts), so every run gets a code Play hasn't seen, even
+# a second run on the same commit. The offset keeps it above 250, the last code
+# from the old commit-count scheme. A version tag must point at the tip of dev:
+# a tag made on an out-of-date local dev would ship old code, so the run stops.
 #
 # Repository secrets it needs:
 #   ANDROID_KEYSTORE_BASE64        The upload keystore (.jks), base64-encoded
@@ -52,6 +54,18 @@ jobs:
         with:
           fetch-depth: 0
 
+      # A tag made on a local dev that wasn't pulled points at an old commit
+      # (v2.0.10, v2.0.11 and v2.0.13 all pointed at f293b67 from 2026-10-20).
+      - name: Check the tag is the latest dev
+        if: github.ref_type == 'tag'
+        run: |
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/dev)" ] \
+              && git merge-base --is-ancestor HEAD origin/dev; then
+            behind=$(git rev-list --count HEAD..origin/dev)
+            echo "::error::Tag $GITHUB_REF_NAME points at $(git rev-parse --short HEAD), $behind commits behind dev. Run 'git checkout dev && git pull' before tagging, or start this workflow from the Actions tab on dev."
+            exit 1
+          fi
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -93,6 +107,9 @@ jobs:
           echo "KEYSTORE_PATH=$keystore" >> "$GITHUB_ENV"
 
       - run: flutter pub get
+
+      - name: Pick version code
+        run: echo "VERSION_CODE=$((300 + GITHUB_RUN_NUMBER))" >> "$GITHUB_ENV"
 
       - run: flutter build appbundle --release
 
